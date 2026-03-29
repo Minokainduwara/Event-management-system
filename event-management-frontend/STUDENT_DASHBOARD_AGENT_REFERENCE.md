@@ -41,6 +41,12 @@ Student-protected routes are guarded by role check in local storage (userRole=st
 4. My Registrations
 - Shows requested events and current status (pending/registered).
 
+5. UI/Styling Notes
+- Global Layout: Uses `StudentLayout.tsx` which provides a sticky glassmorphism header, university branding, and active tab states.
+- Dashboard Styling: Features a dense gradient hero block and responsive hover-animated metric cards.
+- Icons: `lucide-react` is used heavily across components for visual accents.
+- All styles strictly use Tailwinds v4 utility classes.
+
 ## Data Layer
 - File: src/services/studentData.ts
 - Current mode: mock-first local storage implementation.
