@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { StudentLayout } from "../components/StudentLayout";
 import { getStudentProfile, saveStudentProfile } from "../services/studentData";
-import type { StudentProfile } from "../types/student";
+import type { StudentProfile } from "../../../shared/types/student";
 
 interface ProfileErrors {
     fullName?: string;
