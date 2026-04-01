@@ -204,7 +204,7 @@ function AdminEvents() {
 
             <div className="bg-white shadow-md rounded-lg  overflow-x-auto max-h-[400px]">
               <table className="min-w-full border border-gray-200">
-                {/* Table Header */}
+              
                 <thead className="bg-gray-100">
                   <tr>
                     <th className="px-4 py-3 text-left">Name</th>
@@ -217,7 +217,7 @@ function AdminEvents() {
                   </tr>
                 </thead>
 
-                {/* Table Body */}
+                
                 <tbody>
                   {filteredEvents.length === 0 ? (
                     <tr>
@@ -240,9 +240,7 @@ function AdminEvents() {
 
                         
                         <td className="px-4 py-3 text-center space-x-2">
-                          <button className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
-                            Edit
-                          </button>
+                          <Link to={`/admin/events/edit/${event.id}`} className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">Edit</Link>
 
                           <button className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
                             Delete

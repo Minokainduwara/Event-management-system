@@ -13,6 +13,7 @@ import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
+import  AdminEditEvent from './pages/AdminEditEvent.tsx'
 
 
 const router = createBrowserRouter([
@@ -43,6 +44,10 @@ const router = createBrowserRouter([
    {
     path: "/viewstudents",
     element: <ViewStudent/>,
+  },
+  {
+    path: "/admin/events/edit/:id",
+    element: <AdminEditEvent/>,
   },
 ]);
 
