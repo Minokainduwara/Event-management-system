@@ -14,7 +14,9 @@ export function Login() {
         localStorage.setItem('userRole', 'student');
         localStorage.setItem('userId', '3');
         localStorage.setItem('userName', 'John Smith');
-        navigate('/');
+        localStorage.setItem('registrationNumber', 'RUH/2022/CS/145');
+        localStorage.setItem('userEmail', email || 'john.smith@ruh.ac.lk');
+        navigate('/dashboard');
     };
 
     return (
