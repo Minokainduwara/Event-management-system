@@ -59,7 +59,7 @@ export function Home() {
                 </div>
 
                 {/* Stats row */}
-                <div className="relative z-10 mt-8 flex flex-wrap gap-6">
+                <div className="relative z-10 mt-8 flex flex-wrap gap-3">
                     {[
                         { label: 'Total Events', value: MOCK_EVENTS.length },
                         { label: 'Upcoming', value: MOCK_EVENTS.filter(e => e.status === 'upcoming').length },
@@ -109,7 +109,7 @@ export function Home() {
             </div>
 
             {/* ── Results Count ── */}
-            <p className="text-sm text-gray-500 mb-5">
+            <p className="text-sm text-gray-500 mb-5 bg-white px-4 py-2 rounded-full inline-flex border border-gray-100 shadow-sm">
                 Showing <span className="font-semibold text-gray-700">{filtered.length}</span> event{filtered.length !== 1 ? 's' : ''}
                 {activeCategory !== 'All' && <> in <span className="font-semibold text-[#1E3A8A]">{activeCategory}</span></>}
             </p>

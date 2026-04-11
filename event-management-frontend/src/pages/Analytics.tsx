@@ -139,7 +139,7 @@ export function Analytics() {
                 {STAT_CARDS.map((card) => (
                     <div
                         key={card.label}
-                        className={`${card.bg} rounded-2xl p-5 border border-white shadow-sm`}
+                        className={`${card.bg} rounded-2xl p-5 border border-white shadow-sm hover:shadow-md transition-all duration-200`}
                     >
                         <div className={`${card.iconBg} w-10 h-10 rounded-xl flex items-center justify-center mb-3`}>
                             {card.icon}
@@ -227,7 +227,7 @@ export function Analytics() {
                 <ResponsiveContainer width="100%" height={280}>
                     <BarChart data={departmentAttendance} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" />
-                        <XAxis dataKey="dept" tick={{ fontSize: 12 }} stroke="#9CA3AF" />
+                        <XAxis dataKey="dept" tick={{ fontSize: 11 }} stroke="#9CA3AF" interval={0} />
                         <YAxis tick={{ fontSize: 12 }} stroke="#9CA3AF" />
                         <Tooltip
                             contentStyle={{ borderRadius: '12px', border: '1px solid #E5E7EB', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}

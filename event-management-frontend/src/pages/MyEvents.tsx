@@ -71,7 +71,7 @@ export function MyEvents() {
             </div>
 
             {/* ── Summary Cards ── */}
-            <div className="grid grid-cols-3 gap-4 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
                 {[
                     {
                         label: 'Total Registered',
@@ -108,7 +108,7 @@ export function MyEvents() {
             </div>
 
             {/* ── Tab Switcher ── */}
-            <div className="flex gap-2 mb-6 bg-gray-100 p-1.5 rounded-xl w-fit">
+            <div className="flex gap-2 mb-6 bg-gray-100 p-1.5 rounded-xl w-fit overflow-x-auto max-w-full">
                 {tabs.map((tab) => (
                     <button
                         key={tab.key}

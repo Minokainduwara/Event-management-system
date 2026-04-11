@@ -12,8 +12,8 @@ export function Layout({ children }: LayoutProps) {
             <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
                 {children}
             </main>
-            <footer className="bg-[#1E3A8A] text-white/60 text-sm text-center py-4 mt-auto">
-                © {new Date().getFullYear()} UniEvents — University Event Management System
+            <footer className="bg-[#1E3A8A] text-white/50 text-sm text-center py-5 mt-auto border-t border-white/5">
+                Made with ❤️ by the UniEvents Team · © {new Date().getFullYear()} University Event Management System
             </footer>
         </div>
     );
