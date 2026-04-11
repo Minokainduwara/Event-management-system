@@ -4,6 +4,7 @@ import { Routes, Route } from "react-router";
 import {Login} from "./pages/login.tsx";
 import { Home } from "./pages/Home.tsx";
 import { EventDetail } from "./pages/EventDetail.tsx";
+import { MyEvents } from "./pages/MyEvents.tsx";
 
 function App() {
 
@@ -13,6 +14,7 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/" element={<Home />} />
               <Route path="/events/:id" element={<EventDetail />} />
+              <Route path="/my-events" element={<MyEvents />} />
           </Routes>
       </div>
   )
