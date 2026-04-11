@@ -113,6 +113,52 @@ export function Login() {
                         </button>
                     </div>
 
+                    {/* Quick Demo Login */}
+                    <div className="mt-6">
+                        <div className="relative flex items-center gap-2 mb-4">
+                            <div className="flex-1 border-t border-gray-200" />
+                            <span className="text-xs text-gray-400 whitespace-nowrap">Quick Demo Login</span>
+                            <div className="flex-1 border-t border-gray-200" />
+                        </div>
+                        <div className="grid grid-cols-3 gap-2">
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    localStorage.setItem('userRole', 'student');
+                                    localStorage.setItem('userId', '3');
+                                    localStorage.setItem('userName', 'John Smith');
+                                    navigate('/');
+                                }}
+                                className="py-2 px-3 text-xs font-medium rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-[#1E3A8A] hover:text-[#1E3A8A] transition-all duration-200"
+                            >
+                                🎓 Student
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    localStorage.setItem('userRole', 'faculty');
+                                    localStorage.setItem('userId', '2');
+                                    localStorage.setItem('userName', 'Dr. Sarah Johnson');
+                                    navigate('/');
+                                }}
+                                className="py-2 px-3 text-xs font-medium rounded-lg border border-[#FBBF24] text-[#92400e] bg-[#FBBF24]/10 hover:bg-[#FBBF24]/20 transition-all duration-200"
+                            >
+                                👩‍🏫 Faculty
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    localStorage.setItem('userRole', 'admin');
+                                    localStorage.setItem('userId', '1');
+                                    localStorage.setItem('userName', 'Admin User');
+                                    navigate('/');
+                                }}
+                                className="py-2 px-3 text-xs font-medium rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-[#1E3A8A] hover:text-[#1E3A8A] transition-all duration-200"
+                            >
+                                🛡️ Admin
+                            </button>
+                        </div>
+                    </div>
 
                 </div>
             </div>
