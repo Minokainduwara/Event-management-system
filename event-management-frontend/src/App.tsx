@@ -6,6 +6,7 @@ import { Home } from "./pages/Home.tsx";
 import { EventDetail } from "./pages/EventDetail.tsx";
 import { MyEvents } from "./pages/MyEvents.tsx";
 import { CreateEvent } from "./pages/CreateEvent.tsx";
+import { Analytics } from "./pages/Analytics.tsx";
 
 function App() {
 
@@ -17,6 +18,7 @@ function App() {
               <Route path="/events/:id" element={<EventDetail />} />
               <Route path="/my-events" element={<MyEvents />} />
               <Route path="/create-event" element={<CreateEvent />} />
+              <Route path="/analytics" element={<Analytics />} />
           </Routes>
       </div>
   )
