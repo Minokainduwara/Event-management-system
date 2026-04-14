@@ -6,7 +6,7 @@ import AdminAddCatogory from './pages/AdminAddCatogory.tsx'
 import  AdminEditCatogory from './pages/AdminEditCatogory.tsx'
 import ViewStudent from './pages/ViewStudent.tsx'
 import AdminEvents from './pages/AdminEvents.tsx'
-
+import EditAnnoucemet from './pages/EditAnnoucemet.tsx'
 import AdminAddEvent from './pages/AdminAddEvent.tsx'
 import  ManageCatogory from './pages/ManageCatogory.tsx'
 import {
@@ -15,6 +15,8 @@ import {
 } from "react-router-dom";
 import  AdminEditEvent from './pages/AdminEditEvent.tsx'
 import AdminEventRegistration from './pages/AdminEventRegistration.tsx'
+import AdminAddAnnoucement from './pages/AdminAddAnnoucement.tsx'
+import ShowAllAnnoucement from './pages/ShowAllAnnoucement.tsx'
 
 const router = createBrowserRouter([
   {
@@ -52,6 +54,18 @@ const router = createBrowserRouter([
   {
     path: "/registration",
     element: <AdminEventRegistration/>,
+  },
+  {
+    path: "/announcement",
+    element: <AdminAddAnnoucement/>,
+  },
+  {
+    path: "/showannouncement",
+    element: <ShowAllAnnoucement/>,
+  },
+  {
+    path: "/editannoucement/:id",
+    element: <EditAnnoucemet/>,
   },
 ]);
 

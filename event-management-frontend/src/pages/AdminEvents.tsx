@@ -1,113 +1,115 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../components/Header";
 import Body from "../components/Body";
 import { Link } from "react-router-dom";
 function AdminEvents() {
   const [searchQuery, setSearchQuery] = React.useState("");
   const [categoryFilter, setCategoryFilter] = React.useState("");
+  const [events, setEvents] = React.useState<EventType[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  type EventType = {
+    eventId: number;
+    eventTitle: string;
+    category?: { category_name: string };
+    eventDate: string;
+    location: string;
+    maxParticipants: number;
+    status: string;
+  };
+  type Category = {
+    categoryId: number;
+    categoryName: string;
+  };
+  React.useEffect(() => {
+    fetch("http://localhost:8080/events/allEvents")
+      .then((res) => res.json())
+      .then((data) => {
+        setEvents(data);
+      })
+      .catch((err) => console.log(err));
+  }, []);
 
-  const events = [
-    {
-      id: 1,
-      name: "Annual Tech Conference 2026",
-      category: "Technology",
-      date: "March 25, 2026",
-      time: "10:00 AM",
-      location: "Main Auditorium",
-      registrations: 145,
-      status: "Active",
-    },
-    {
-      id: 2,
-      name: "Sports Day 2026",
-      category: "Sports",
-      date: "March 30, 2026",
-      time: "09:00 AM",
-      location: "University Stadium",
-      registrations: 278,
-      status: "Active",
-    },
-    {
-      id: 3,
-      name: "Cultural Fest",
-      category: "Cultural",
-      date: "April 5, 2026",
-      time: "02:00 PM",
-      location: "Campus Grounds",
-      registrations: 192,
-      status: "Active",
-    },
-    {
-      id: 4,
-      name: "Career Fair 2026",
-      category: "Career",
-      date: "April 10, 2026",
-      time: "11:00 AM",
-      location: "Exhibition Hall",
-      registrations: 321,
-      status: "Active",
-    },
-    {
-      id: 5,
-      name: "Science Exhibition",
-      category: "Academic",
-      date: "March 10, 2026",
-      time: "10:30 AM",
-      location: "Science Block",
-      registrations: 89,
-      status: "Completed",
-    },
-    {
-      id: 6,
-      name: "Alumni Meet 2026",
-      category: "Networking",
-      date: "April 15, 2026",
-      time: "06:00 PM",
-      location: "Conference Center",
-      registrations: 156,
-      status: "Active",
-    },
-    {
-      id: 7,
-      name: "Startup Pitch Competition",
-      category: "Business",
-      date: "April 20, 2026",
-      time: "01:00 PM",
-      location: "Innovation Lab",
-      registrations: 67,
-      status: "Active",
-    },
-    {
-      id: 8,
-      name: "Music Fest",
-      category: "Cultural",
-      date: "April 25, 2026",
-      time: "05:00 PM",
-      location: "Open Theater",
-      registrations: 234,
-      status: "Active",
-    },
-  ];
+  useEffect(() => {
+    fetch("http://localhost:8080/category/getCategories")
+      .then((res) => res.json())
+      .then((data) => setCategories(data));
+  }, []);
 
-  const filteredEvents = events.filter(function (event) {
-    const eventName = event.name.toLowerCase();
-    const searchText = searchQuery.toLowerCase();
-    const matchesSearch = eventName.includes(searchText);
+  const handleSearch = (value: string) => {
+    setSearchQuery(value);
 
-    let matchesCategory;
-    if (categoryFilter === "") {
-      matchesCategory = true;
+    if (value === "") {
+      fetch("http://localhost:8080/events/allEvents")
+        .then((res) => res.json())
+        .then((data) => setEvents(data));
     } else {
-      matchesCategory = event.category === categoryFilter;
+      fetch(`http://localhost:8080/events/searchEvent?keyword=${value}`)
+        .then((res) => res.json())
+        .then((data) => setEvents(data));
     }
+  };
 
-    if (matchesSearch && matchesCategory) {
-      return true;
+  const handleCategoryChange = (value: string) => {
+    setCategoryFilter(value);
+
+    if (value === "") {
+      fetch("http://localhost:8080/events/allEvents")
+        .then((res) => res.json())
+        .then((data) => setEvents(data));
     } else {
-      return false;
+      fetch(`http://localhost:8080/events/filter?categoryId=${value}`)
+        .then((res) => res.json())
+        .then((data) => setEvents(data));
     }
-  });
+  };
 
+  const handleDelete = (id: number) => {
+    console.log("delete id:", id);
+    fetch(`http://localhost:8080/events/deleteEvent/${id}`, {
+      method: "DELETE",
+    })
+      .then(() => {
+        setEvents(events.filter((event) => (event as any).event_id !== id));
+      })
+      .catch((err) => console.log(err));
+  };
+
+  const handleStatusChange = async (id: number, newStatus: string) => {
+    setEvents((prevEvents) =>
+      prevEvents.map((e) =>
+        e.eventId === id ? { ...e, status: newStatus } : e,
+      ),
+    );
+
+    try {
+      const res = await fetch(
+        `http://localhost:8080/events/updateStatus/${id}?status=${newStatus}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+
+      if (!res.ok) {
+        console.error("Failed to update status", res.status);
+
+        setEvents((prevEvents) =>
+          prevEvents.map((e) =>
+            e.eventId === id ? { ...e, status: e.status } : e,
+          ),
+        );
+        return;
+      }
+
+      const updatedEvent = await res.json();
+
+      setEvents((prevEvents) =>
+        prevEvents.map((e) => (e.eventId === id ? updatedEvent : e)),
+      );
+    } catch (err) {
+      console.error("Error updating status:", err);
+    }
+  };
   return (
     <div>
       <Header />
@@ -163,7 +165,7 @@ function AdminEvents() {
                     type="text"
                     placeholder="Search events by name..."
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={(e) => handleSearch(e.target.value)}
                     className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -186,40 +188,41 @@ function AdminEvents() {
                   </svg>
                   <select
                     value={categoryFilter}
-                    onChange={(e) => setCategoryFilter(e.target.value)}
+                    onChange={(e) => handleCategoryChange(e.target.value)}
                     className="pl-12 pr-8 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-white min-w-[200px]"
                   >
                     <option value="">All Categories</option>
-                    <option value="Technology">Technology</option>
-                    <option value="Sports">Sports</option>
-                    <option value="Cultural">Cultural</option>
-                    <option value="Career">Career</option>
-                    <option value="Academic">Academic</option>
-                    <option value="Networking">Networking</option>
-                    <option value="Business">Business</option>
+                    {categories.map((category: any) => (
+                      <option value={category.categoryId}>
+                        {category.category_name}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white shadow-md rounded-lg  overflow-x-auto max-h-[400px]">
+            <div className="bg-white shadow-lg rounded-lg  overflow-x-auto max-h-[400px]">
               <table className="min-w-full border border-gray-200">
-              
-                <thead className="bg-gray-100">
+                <thead className="bg-gray-200">
                   <tr>
+                    <th className="px-4 py-3 text-left">Id</th>
                     <th className="px-4 py-3 text-left">Name</th>
                     <th className="px-4 py-3 text-left">Category</th>
                     <th className="px-4 py-3 text-left">Date</th>
                     <th className="px-4 py-3 text-left">Location</th>
-                    <th className="px-4 py-3 text-left">Registrations</th>
-                    <th className="px-4 py-3 text-left">Status</th>
+                    <th className="px-4 py-3 text-left">
+                      Maximum Participants
+                    </th>
+                    <th className="px-4 py-3 text-left flex justify-center">
+                      Status
+                    </th>
                     <th className="px-4 py-3 text-center">Actions</th>
                   </tr>
                 </thead>
 
-                
                 <tbody>
-                  {filteredEvents.length === 0 ? (
+                  {events.length === 0 ? (
                     <tr>
                       <td
                         colSpan={7}
@@ -229,20 +232,40 @@ function AdminEvents() {
                       </td>
                     </tr>
                   ) : (
-                    filteredEvents.map((event) => (
-                      <tr key={event.id} className=" hover:bg-gray-50">
-                        <td className="px-4 py-3">{event.name}</td>
-                        <td className="px-4 py-3">{event.category}</td>
-                        <td className="px-4 py-3">{event.date}</td>
-                        <td className="px-4 py-3">{event.location}</td>
-                        <td className="px-4 py-3">{event.registrations}</td>
-                        <td className="px-4 py-3">{event.status}</td>
+                    events.map((event: any) => (
+                      <tr key={event.eventId} className=" hover:bg-gray-100">
+                        <td className="px-4 py-3 font-semibold text-md">{event.eventId}</td>
+                        <td className="px-4 py-3 font-semibold text-md">{event.event_title}</td>
+                        <td className="px-4 py-3 font-semibold text-md">
+                          {event.category?.categoryName}
+                        </td>
+                        <td className="px-4 py-3 font-semibold text-md">{event.eventDate}</td>
+                        <td className="px-4 py-3 font-semibold text-md">{event.location}</td>
+                        <td className="px-4 py-3 flex justify-center font-semibold text-md">
+                          {event.maxParticipants}
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-2">
+                            <span
+                              className={`inline-flex px-3 py-1 text-xs font-medium rounded-full bg-yellow-500`}
+                            >
+                              {event.status}
+                            </span>
+                          </div>
+                        </td>
 
-                        
                         <td className="px-4 py-3 text-center space-x-2">
-                          <Link to={`/admin/events/edit/${event.id}`} className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">Edit</Link>
+                          <Link
+                            to={`/admin/events/edit/${event.eventId}`}
+                            className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+                          >
+                            Edit
+                          </Link>
 
-                          <button className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
+                          <button
+                            onClick={() => handleDelete(event.eventId)}
+                            className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                          >
                             Delete
                           </button>
                         </td>
