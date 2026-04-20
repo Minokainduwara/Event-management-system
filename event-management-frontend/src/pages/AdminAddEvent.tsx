@@ -7,10 +7,13 @@ function AdminAddEvent() {
   const [banner, setBanner] = React.useState<string | null>(null);
   const navigate = useNavigate();
   const [category, setCategories] = useState([]);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [noLimit, setNoLimit] = useState(false);
   const handleBannerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setBanner(URL.createObjectURL(file));
+      setImageFile(file);
     }
   };
 
@@ -29,35 +32,103 @@ function AdminAddEvent() {
     location: "",
     status: "Upcoming",
     maxParticipants: "",
-    category: { id: "" },
+    category: { categoryId: "" },
   });
   const handleChange = (e: any) => {
     const { name, value } = e.target;
     if (name === "category") {
-      setEventData({ ...eventData, category: { id: value } });
+      setEventData({ ...eventData, category: { categoryId: value } });
     } else if (name === "maxParticipants") {
       setEventData({ ...eventData, maxParticipants: value });
     } else {
       setEventData({ ...eventData, [name]: value });
     }
   };
-  const handleSubmit = (e: any) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const max = Number(eventData.maxParticipants);
+    if (!noLimit && max < 1) {
+      alert("Maximum participants must be at least 1 or select no limit");
+      return;
+    }
 
+    if (
+      !eventData.event_title ||
+      !eventData.description ||
+      !eventData.eventDate ||
+      !eventData.eventTime ||
+      !eventData.location ||
+      !eventData.category.categoryId
+    ) {
+      alert("Please fill all required fields");
+      return;
+    }
+    const selectedDateTime = new Date(
+      `${eventData.eventDate}T${eventData.eventTime}`,
+    );
+    const now = new Date();
+
+    if (selectedDateTime < now) {
+      alert("Event date and time cannot be in the past");
+      return;
+    }
+
+    let fileName = "";
+    if (imageFile) {
+      try {
+        fileName = await uploadImage();
+      } catch (err) {
+        console.error("Error uploading image:", err);
+        return;
+      }
+    }
     const eventToSend = {
-      ...eventData,
-      category: {
-        categoryId: Number(eventData.category.id),
-      },
-    };
+      event_title: eventData.event_title,
+      description: eventData.description,
+      eventDate: `${eventData.eventDate}T${eventData.eventTime}:00`,
+      location: eventData.location,
+      status: eventData.status,
+      maxParticipants: noLimit
+        ? null
+        : eventData.maxParticipants
+          ? Number(eventData.maxParticipants)
+          : null,
 
-    fetch("http://localhost:8080/events/saveEvent", {
+      category: {
+        categoryId: Number(eventData.category.categoryId || 0),
+      },
+
+      image: fileName,
+    };
+    console.log("Event to send:", eventToSend);
+    const res = await fetch("http://localhost:8080/events/saveEvent", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+
       body: JSON.stringify(eventToSend),
-    })
-      .then(() => navigate("/events"))
-      .catch((err) => console.error(err));
+    });
+
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error("Save failed:", errorText);
+      return;
+    }
+
+    navigate("/events");
+  };
+
+  const uploadImage = async () => {
+    const formData = new FormData();
+    if (!imageFile) return "";
+    formData.append("file", imageFile);
+
+    const res = await fetch("http://localhost:8080/events/uploadImage", {
+      method: "POST",
+      body: formData,
+    });
+
+    const fileName = await res.text();
+    return fileName;
   };
 
   return (
@@ -113,6 +184,7 @@ function AdminAddEvent() {
               </label>
               <input
                 type="date"
+                required
                 name="eventDate"
                 value={eventData.eventDate}
                 onChange={handleChange}
@@ -127,6 +199,7 @@ function AdminAddEvent() {
               <input
                 type="time"
                 name="eventTime"
+                required
                 value={eventData.eventTime}
                 onChange={handleChange}
                 className="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -140,6 +213,7 @@ function AdminAddEvent() {
               <input
                 type="text"
                 name="location"
+                required
                 value={eventData.location}
                 onChange={handleChange}
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -167,13 +241,26 @@ function AdminAddEvent() {
               <div className="relative">
                 <input
                   type="number"
+                  required
+                  min={1}
                   name="maxParticipants"
                   value={eventData.maxParticipants}
                   onChange={handleChange}
+                  disabled={noLimit}
                   placeholder="Enter maximum number of participants (optional)"
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
+            </div>
+            <div className="mb-2">
+              <label className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+                <input
+                  type="checkbox"
+                  checked={noLimit}
+                  onChange={(e) => setNoLimit(e.target.checked)}
+                />
+                No participant limit
+              </label>
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700">
@@ -181,13 +268,14 @@ function AdminAddEvent() {
               </label>
               <select
                 name="category"
-                value={eventData.category.id}
+                required
+                value={eventData.category.categoryId}
                 onChange={handleChange}
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 {category.map((cat: any) => (
                   <option key={cat.categoryId} value={cat.categoryId}>
-                    {cat.category_name}
+                    {cat.categoryName}
                   </option>
                 ))}
               </select>

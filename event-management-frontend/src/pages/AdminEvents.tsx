@@ -10,7 +10,7 @@ function AdminEvents() {
   type EventType = {
     eventId: number;
     eventTitle: string;
-    category?: { category_name: string };
+    category?: { categoryName: string };
     eventDate: string;
     location: string;
     maxParticipants: number;
@@ -55,6 +55,7 @@ function AdminEvents() {
     if (value === "") {
       fetch("http://localhost:8080/events/allEvents")
         .then((res) => res.json())
+
         .then((data) => setEvents(data));
     } else {
       fetch(`http://localhost:8080/events/filter?categoryId=${value}`)
@@ -194,7 +195,7 @@ function AdminEvents() {
                     <option value="">All Categories</option>
                     {categories.map((category: any) => (
                       <option value={category.categoryId}>
-                        {category.category_name}
+                        {category.categoryName}
                       </option>
                     ))}
                   </select>
@@ -234,15 +235,23 @@ function AdminEvents() {
                   ) : (
                     events.map((event: any) => (
                       <tr key={event.eventId} className=" hover:bg-gray-100">
-                        <td className="px-4 py-3 font-semibold text-md">{event.eventId}</td>
-                        <td className="px-4 py-3 font-semibold text-md">{event.event_title}</td>
                         <td className="px-4 py-3 font-semibold text-md">
-                          {event.category?.categoryName}
+                          {event.eventId}
                         </td>
-                        <td className="px-4 py-3 font-semibold text-md">{event.eventDate}</td>
-                        <td className="px-4 py-3 font-semibold text-md">{event.location}</td>
+                        <td className="px-4 py-3 font-semibold text-md">
+                          {event.event_title}
+                        </td>
+                        <td className="px-4 py-3 font-semibold text-md">
+                          {event.category?.categoryName || event.category?.category_name}
+                        </td>
+                        <td className="px-4 py-3 font-semibold text-md">
+                          {new Date(event.eventDate).toLocaleString()}
+                        </td>
+                        <td className="px-4 py-3 font-semibold text-md">
+                          {event.location}
+                        </td>
                         <td className="px-4 py-3 flex justify-center font-semibold text-md">
-                          {event.maxParticipants}
+                          {event.maxParticipants ?? "Unlimited"}
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-2">

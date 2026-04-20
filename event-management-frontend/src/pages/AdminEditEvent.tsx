@@ -2,8 +2,11 @@ import React, { useState, useEffect } from "react";
 import Header from "../components/Header";
 import Body from "../components/Body";
 import { Input } from "postcss";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, data } from "react-router-dom";
 function AdminEditEvent() {
+  const [banner, setBanner] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [existingImage, setExistingImage] = useState("");
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -15,9 +18,19 @@ function AdminEditEvent() {
     eventTime: "",
     status: "upcoming",
     category: { id: "" },
-    maxParticipants: 0,
+    maxParticipants: "",
+    unlimited: false,
   });
 
+  const formatDate = (dateString: string) => {
+    if (!dateString) return "";
+    return dateString.split("T")[0];
+  };
+
+  const formatTime = (dateString: string) => {
+    if (!dateString) return "";
+    return dateString.split("T")[1]?.substring(0, 5);
+  };
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
@@ -28,13 +41,31 @@ function AdminEditEvent() {
   useEffect(() => {
     fetch(`http://localhost:8080/events/getEvent/${id}`)
       .then((res) => res.json())
-      .then((data) =>
+      .then((data) => {
         setEvent({
-          ...data,
-          category: { id: String(data.category?.categoryId) },
-        }),
-      );
+          event_title: data.event_title || "",
+          description: data.description || "",
+          location: data.location || "",
+          eventDate: formatDate(data.eventDate),
+          eventTime: formatTime(data.eventDate),
+          status: data.status || "upcoming",
+          category: { id: String(data.category?.categoryId || "") },
+          maxParticipants: data.maxParticipants || "",
+          unlimited: data.maxParticipants === null,
+        });
+
+        setExistingImage(data.image);
+        setBanner(`http://localhost:8080/uploads/${data.image}`);
+      });
   }, [id]);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      setBanner(URL.createObjectURL(file));
+    }
+  };
 
   const handleChange = (e: any) => {
     const { name, value } = e.target;
@@ -44,12 +75,59 @@ function AdminEditEvent() {
       setEvent({ ...event, [name]: value });
     }
   };
+  const uploadImage = async () => {
+    if (!imageFile) return existingImage;
 
-  const handleSubmit = (e: any) => {
+    const formData = new FormData();
+    formData.append("file", imageFile);
+
+    try {
+      const res = await fetch("http://localhost:8080/events/uploadImage", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        throw new Error("Upload failed");
+      }
+
+      return await res.text();
+    } catch (err) {
+      console.error("Image upload error:", err);
+      return existingImage;
+    }
+  };
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
+    if (!event.event_title || !event.description || !event.location) {
+      alert("Please fill all required fields");
+      return;
+    }
 
+    if (!event.eventDate || !event.eventTime) {
+      alert("Please select date and time");
+      return;
+    }
+
+    if (!event.category.id) {
+      alert("Please select a category");
+      return;
+    }
+    const selectedDateTime = new Date(`${event.eventDate}T${event.eventTime}`);
+    const now = new Date();
+
+    if (selectedDateTime < now) {
+      alert("Event date and time cannot be in the past");
+      return;
+    }
+    let fileName = existingImage;
+    if (imageFile) {
+      fileName = await uploadImage();
+    }
     const eventToSend = {
       ...event,
+      image: fileName,
+      maxParticipants: event.unlimited ? null : Number(event.maxParticipants),
       category: {
         categoryId: Number(event.category.id),
       },
@@ -202,7 +280,24 @@ function AdminEditEvent() {
                       />
                     </div>
                   </div>
-
+                  <div className="mb-4">
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={event.unlimited}
+                        onChange={(e) =>
+                          setEvent({
+                            ...event,
+                            unlimited: e.target.checked,
+                            maxParticipants: e.target.checked
+                              ? ""
+                              : event.maxParticipants,
+                          })
+                        }
+                      />
+                      Unlimited Participants
+                    </label>
+                  </div>
                   <div className="mb-8">
                     <label className="block text-sm font-semibold text-gray-700 mb-2">
                       Maximum Participants
@@ -211,13 +306,33 @@ function AdminEditEvent() {
                       <input
                         type="number"
                         name="maxParticipants"
-                        min="0"
-                        value={event.maxParticipants}
+                        min={1}
+                        disabled={event.unlimited}
+                        value={event.maxParticipants || ""}
                         onChange={(e) => handleChange(e)}
                         placeholder="Enter maximum number of participants (optional)"
                         className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
                     </div>
+                  </div>
+                  <div className="mb-6">
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Event Image
+                    </label>
+
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      className="w-full border p-2 rounded"
+                    />
+
+                    {banner && (
+                      <img
+                        src={banner}
+                        className="mt-3 w-full max-h-64 object-cover rounded-lg"
+                      />
+                    )}
                   </div>
 
                   <div className="flex gap-4 justify-end pt-6 border-t border-gray-200">
