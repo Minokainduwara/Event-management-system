@@ -1,15 +1,40 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { CalendarDays, MapPin, Search } from "lucide-react";
 import { StudentLayout } from "../components/StudentLayout";
-import { getAllEvents, getRegistrationForEvent, getStudentProfile, registerForEvent } from "../services/studentData";
+import {
+    getAllEvents,
+    getStudentProfile,
+    getRegistrations,
+    refreshEventsFromApi,
+    refreshRegistrationsFromApi,
+    registerForEvent,
+} from "../services/studentData";
+import type { EventItem, StudentRegistration } from "../../../shared/types/student";
 
 export function EventsPage() {
     const [searchText, setSearchText] = useState("");
     const [categoryFilter, setCategoryFilter] = useState("all");
     const [toastMessage, setToastMessage] = useState("");
+    const [events, setEvents] = useState<EventItem[]>([]);
+    const [registrations, setRegistrations] = useState<StudentRegistration[]>([]);
 
-    const events = getAllEvents();
     const categories = Array.from(new Set(events.map((eventItem) => eventItem.category)));
+
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                const [eventsFromApi, registrationsFromApi] = await Promise.all([refreshEventsFromApi(), refreshRegistrationsFromApi()]);
+                setEvents(eventsFromApi);
+                setRegistrations(registrationsFromApi);
+            } catch {
+                setEvents(getAllEvents());
+                setRegistrations(getRegistrations());
+                setToastMessage("Could not refresh events/registrations from backend.");
+            }
+        };
+
+        void loadData();
+    }, []);
 
     const filteredEvents = useMemo(() => {
         const normalizedSearch = searchText.trim().toLowerCase();
@@ -25,10 +50,14 @@ export function EventsPage() {
         });
     }, [categoryFilter, events, searchText]);
 
-    const handleRegister = (eventId: number) => {
+    const handleRegister = async (eventId: number) => {
         const profile = getStudentProfile();
-        const result = registerForEvent(eventId, profile);
+        const result = await registerForEvent(eventId, profile);
         setToastMessage(result.message);
+
+        if (result.ok) {
+            setRegistrations(getRegistrations());
+        }
     };
 
     return (
@@ -66,7 +95,7 @@ export function EventsPage() {
 
                 <section className="grid gap-4 md:grid-cols-2">
                     {filteredEvents.map((eventItem) => {
-                        const registration = getRegistrationForEvent(eventItem.id);
+                        const registration = registrations.find((item) => item.eventId === eventItem.id);
 
                         return (
                             <article
@@ -93,7 +122,9 @@ export function EventsPage() {
 
                                 <button
                                     type="button"
-                                    onClick={() => handleRegister(eventItem.id)}
+                                    onClick={() => {
+                                        void handleRegister(eventItem.id);
+                                    }}
                                     disabled={Boolean(registration)}
                                     className="mt-5 w-full rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-300"
                                 >
