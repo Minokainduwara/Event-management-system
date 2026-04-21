@@ -8,4 +8,7 @@ import java.util.List;
 public interface EventRepository extends JpaRepository<Event,Integer> {
 
     List<Event> findByEventTitleContainingIgnoreCase(String name);
+    List<Event> findByCategory_CategoryId(int categoryId);
+
+    int countByCategoryCategoryId(int categoryId);
 }

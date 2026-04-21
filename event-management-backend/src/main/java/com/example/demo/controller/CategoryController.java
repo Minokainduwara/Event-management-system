@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/category")
 @CrossOrigin("*")
 public class CategoryController {
@@ -17,8 +17,8 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
-@PostMapping("/addCategory")
-    public EventCategory createCategory(EventCategory eventCategory)
+    @PostMapping("/addCategory")
+    public EventCategory createCategory(@RequestBody EventCategory eventCategory)
     {
         return categoryService.createCategory(eventCategory);
 
@@ -27,15 +27,15 @@ public class CategoryController {
     public List<EventCategory> getAllCategory(){
         return categoryService.getAllCategory();
     }
-    @GetMapping("/getCategory")
+    @GetMapping("/getCategory/{id}")
     public EventCategory getCategoryById(@PathVariable int id){
          return categoryService.getCategoryById(id);
     }
-    @PutMapping("/updateCategory")
+    @PutMapping("/updateCategory/{id}")
     public EventCategory updateCategory(@PathVariable int id, @RequestBody EventCategory eventCategory){
         return categoryService.updateCategory(id,eventCategory);
     }
-    @DeleteMapping("/deleteCategory")
+    @DeleteMapping("/deleteCategory/{id}")
     public String deleteCategory(@PathVariable int id){
         categoryService.deleteCategory(id);
         return  "Category Deleted Successfully";

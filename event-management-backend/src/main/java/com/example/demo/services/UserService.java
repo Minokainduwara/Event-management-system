@@ -24,9 +24,9 @@ public class UserService {
         return userRepository.findAll();
     }
     public List<User> getAllStudents(){
-        List<User> students=userRepository.findByRole("student");
+        List<User> students=userRepository.findByRole(User.Role.STUDENT);
         for(User user:students){
-            int count= eventRegistrationRepository.CountByUserId(user.getUser_id());
+            int count= eventRegistrationRepository.countByUser_UserId(user.getUserId());
             user.setEventsRegistered(count);
         }
         return students;
@@ -41,7 +41,7 @@ public class UserService {
             u.setEmail(user.getEmail());
             u.setPassword(user.getPassword());
             u.setRole(user.getRole());
-            u.setUniversity_id(user.getUniversity_id());
+            u.setUniversityId(user.getUniversityId());
             u.setDepartment(user.getDepartment());
             u.setYear(user.getYear());
             u.setPhone(user.getPhone());
@@ -69,7 +69,7 @@ public class UserService {
     }
     public long getStudentCount()
     {
-        return userRepository.countByRole("student");
+        return userRepository.countByRole(User.Role.STUDENT);
     }
 
 }

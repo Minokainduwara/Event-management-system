@@ -15,13 +15,19 @@ import java.util.List;
 public class CategoryService {
     @Autowired
     private CategoryRepository categoryRepository;
-
+    @Autowired
+    private EventRepository eventRepository;
     public EventCategory createCategory(EventCategory eventCategory)
     {
         return categoryRepository.save(eventCategory);
     }
     public List<EventCategory> getAllCategory()
     {
+        List<EventCategory> categories=categoryRepository.findAll();
+        for(EventCategory cat:categories){
+            int count=eventRepository.countByCategoryCategoryId(cat.getCategoryId());
+            cat.setEventCount(count);
+        }
         return  categoryRepository.findAll();
     }
     public EventCategory getCategoryById(Integer id ){
@@ -30,7 +36,7 @@ public class CategoryService {
     public EventCategory updateCategory(Integer id ,EventCategory eventCategory){
         EventCategory c=categoryRepository.findById(id).orElse(null);
         if(c!=null){
-            c.setCategory_name(eventCategory.getCategory_name());
+            c.setCategoryName(eventCategory.getCategoryName());
             c.setDescription(eventCategory.getDescription());
             return categoryRepository.save(eventCategory);
         }

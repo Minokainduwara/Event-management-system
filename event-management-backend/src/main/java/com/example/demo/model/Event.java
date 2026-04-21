@@ -1,9 +1,10 @@
 package com.example.demo.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Entity
@@ -11,38 +12,51 @@ import java.time.LocalTime;
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int event_id;
-    private String event_title;
+    private int eventId;
+    @Column(name = "event_title")
+    private String eventTitle;
     private String description;
-    private LocalDate event_date;
-    private LocalTime event_time;
+    private LocalDateTime eventDate;
+    private LocalTime eventTime;
     private String location;
-    private Integer max_participants;
+    @Column(nullable = true)
+    private Integer maxParticipants;
     private  String status;
 
-    @ManyToOne
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    private String image;
+
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id")
     private EventCategory category;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "created_by")
 
     private User user;
 
-    public int getEvent_id() {
-        return event_id;
+    public int getEventId() {
+        return eventId;
     }
 
-    public void setEvent_id(int event_id) {
-        this.event_id = event_id;
+    public void setEventId(int eventId) {
+        this.eventId = eventId;
     }
 
-    public String getEvent_title() {
-        return event_title;
+    public String getEventTitle() {
+        return eventTitle;
     }
 
-    public void setEvent_title(String event_title) {
-        this.event_title = event_title;
+    public void setEventTitle(String eventTitle) {
+        this.eventTitle = eventTitle;
     }
 
     public String getDescription() {
@@ -53,21 +67,7 @@ public class Event {
         this.description = description;
     }
 
-    public LocalDate getEvent_date() {
-        return event_date;
-    }
 
-    public void setEvent_date(LocalDate event_date) {
-        this.event_date = event_date;
-    }
-
-    public LocalTime getEvent_time() {
-        return event_time;
-    }
-
-    public void setEvent_time(LocalTime event_time) {
-        this.event_time = event_time;
-    }
 
     public String getLocation() {
         return location;
@@ -77,13 +77,7 @@ public class Event {
         this.location = location;
     }
 
-    public Integer getMax_participants() {
-        return max_participants;
-    }
 
-    public void setMax_participants(Integer max_participants) {
-        this.max_participants = max_participants;
-    }
 
     public String getStatus() {
         return status;
@@ -107,5 +101,29 @@ public class Event {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public LocalDateTime getEventDate() {
+        return eventDate;
+    }
+
+    public void setEventDate(LocalDateTime eventDate) {
+        this.eventDate = eventDate;
+    }
+
+    public LocalTime getEventTime() {
+        return eventTime;
+    }
+
+    public void setEventTime(LocalTime eventTime) {
+        this.eventTime = eventTime;
+    }
+
+    public Integer getMaxParticipants() {
+        return maxParticipants;
+    }
+
+    public void setMaxParticipants(Integer maxParticipants) {
+        this.maxParticipants = maxParticipants;
     }
 }

@@ -1,11 +1,16 @@
 package com.example.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "event_category")
@@ -13,41 +18,54 @@ public class EventCategory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int category_id;
+    @Column(name = "category_id")
+    private Integer categoryId;
     @Column(nullable = false,unique = true)
-    private  String category_name;
+    private  String categoryName;
     private String description;
     @CreationTimestamp
-    @Column(updatable = false,insertable = false)
+    @Column(updatable = false)
     private Timestamp created_at;
     @UpdateTimestamp
     private Timestamp updated_at;
-
+    @Transient
+    private int eventCount;
+    @OneToMany(mappedBy = "category")
+    @JsonIgnore
+    private List<Event> events;
     public EventCategory() {
     }
 
-    public EventCategory(int category_id, String category_name, String description, Timestamp created_at, Timestamp updated_at) {
-        this.category_id = category_id;
-        this.category_name = category_name;
+    public EventCategory(Integer categoryId, String categoryName, String description, Timestamp created_at, Timestamp updated_at) {
+        this.categoryId = categoryId;
+        this.categoryName = categoryName;
         this.description = description;
         this.created_at = created_at;
         this.updated_at = updated_at;
     }
 
-    public int getCategory_id() {
-        return category_id;
+    public int getEventCount() {
+        return eventCount;
     }
 
-    public void setCategory_id(int category_id) {
-        this.category_id = category_id;
+    public void setEventCount(int eventCount) {
+        this.eventCount = eventCount;
     }
 
-    public String getCategory_name() {
-        return category_name;
+    public Integer getCategoryId() {
+        return categoryId;
     }
 
-    public void setCategory_name(String category_name) {
-        this.category_name = category_name;
+    public void setCategoryId(Integer categoryId) {
+        this.categoryId = categoryId;
+    }
+    @JsonProperty("categoryName")
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
     }
 
     public String getDescription() {

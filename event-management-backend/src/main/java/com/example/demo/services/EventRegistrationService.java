@@ -21,37 +21,9 @@ public class EventRegistrationService {
     @Autowired
     private EventRepository eventRepository;
 
-    public List<EventRegistrationDTO> getAllRegistrations(){
+    public List<EventRegistration> getAllRegistrations(){
 
-        List<EventRegistration> list=eventRegistrationRepository.findAll();
-        List<EventRegistrationDTO> dtoList=new ArrayList<>();
-
-        for (EventRegistration er : list) {
-
-            User user = userRepository.findById(er.getUser_id()).orElse(null);
-            Event event = eventRepository.findById(er.getEvent_id()).orElse(null);
-
-            EventRegistrationDTO dto =new EventRegistrationDTO();
-
-            dto.setRegistrationId(er.getRegistration_id());
-            dto.setRegistrationDate(er.getRegistration_date().toString());
-            dto.setStatus(er.getStatus());
-
-            if (user != null) {
-                dto.setStudentName(user.getName());
-                dto.setUniversityId(user.getUniversity_id());
-                dto.setEmail(user.getEmail());
-            }
-
-            if (event != null) {
-                dto.setEventName(event.getEvent_title());
-                dto.setEventDate(event.getEvent_date().toString());
-            }
-
-            dtoList.add(dto);
-        }
-
-        return dtoList;
+        return  eventRegistrationRepository.findAll();
     }
 
 public RegistrationSummary getRegistrationSummary()
@@ -65,11 +37,37 @@ public RegistrationSummary getRegistrationSummary()
     registrationSummary.setCancelled(eventRegistrationRepository.countByStatus("cancelled"));
     return registrationSummary;
 }
-public List<EventRegistration> searchRegisteredStudent(Integer eventId,String keyword)
+public List<EventRegistration> searchRegisteredStudent(String keyword)
 {
-    return eventRegistrationRepository.findByEventIdAndNameContainingIgnoreCaseOrEventIdAndUniversityIdContainingIgnoreCase(eventId,keyword,eventId,keyword);
+    return eventRegistrationRepository.findByUser_NameContainingIgnoreCaseOrUser_UniversityIdContainingIgnoreCase(keyword,keyword);
+
+
+
+
 }
-    public List<EventRegistration> searchRegisteredStudents(Long eventId, String keyword, String status) {
-        return eventRegistrationRepository.findByEventIdAndStatusAndNameContainingIgnoreCaseOrEventIdAndStatusAndUniversityIdContainingIgnoreCase(eventId, status, keyword, eventId, status, keyword);
+    public List<EventRegistration> searchRegisteredStudents(String status) {
+
+        return  eventRegistrationRepository.findByStatus( status);
+
+
+    }
+
+
+    public EventRegistration updateStatus(int id, String status) {
+        EventRegistration eventRegistration=eventRegistrationRepository.findById(id).orElse(null);
+        if (eventRegistration != null)
+        {
+            eventRegistration.setStatus(status);
+            return eventRegistrationRepository.save(eventRegistration);
+        }
+        return null ;
+    }
+
+    public void deleteRegistration(int id) {
+        eventRegistrationRepository.deleteById(id);
+    }
+    public int getConfirmedCount(int eventId) {
+        return eventRegistrationRepository
+                .countByEvent_EventIdAndStatus(eventId, "confirmed");
     }
 }

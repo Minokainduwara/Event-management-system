@@ -6,11 +6,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface EventRegistrationRepository extends JpaRepository<EventRegistration,Integer> {
-    int CountByUserId(int userId);
+    int countByUser_UserId(int userId);
     List<EventRegistration> findAll();
     long count();
     long countByStatus(String status);
-    List<EventRegistration> findByEventIdAndNameContainingIgnoreCaseOrEventIdAndUniversityIdContainingIgnoreCase(Integer eventId1,String name,Integer eventId2,String university_id);
-    List<EventRegistration> findByEventIdAndStatusAndNameContainingIgnoreCaseOrEventIdAndStatusAndUniversityIdContainingIgnoreCase(Long eventId1, String status, String name, Long eventId2, String status2, String universityId);
 
+    List<EventRegistration> findByUser_NameContainingIgnoreCaseOrUser_UniversityIdContainingIgnoreCase(String name, String universityId);
+    List<EventRegistration> findByStatus(  String status);
+    int countByEvent_EventIdAndStatus(int eventId, String status);
 }

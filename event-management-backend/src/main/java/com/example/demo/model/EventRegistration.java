@@ -1,5 +1,7 @@
 package com.example.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -10,11 +12,41 @@ public class EventRegistration {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int registration_id;
-    private int user_id;
-    private int event_id;
+
     private LocalDateTime registration_date;
     private String status;
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "event_id")
+    private Event event;
+    @JsonProperty("studentName")
+    public String getStudentName() {
+        return user != null ? user.getName() : null;
+    }
+    @JsonProperty("universityId")
+    public String getUniversityId() {
+        return user != null ? user.getUniversityId() : null;
+    }
+
+    @JsonProperty("email")
+    public String getEmail() {
+        return user != null ? user.getEmail() : null;
+    }
+
+    @JsonProperty("eventName")
+    public String getEventName() {
+        return event != null ? event.getEventTitle() : null;
+    }
+
+    @JsonProperty("eventDate")
+    public LocalDateTime getEventDate() {
+        return event != null ? event.getEventDate() : null;
+    }
     public int getRegistration_id() {
         return registration_id;
     }
@@ -23,20 +55,20 @@ public class EventRegistration {
         this.registration_id = registration_id;
     }
 
-    public int getUser_id() {
-        return user_id;
+    public User getUser() {
+        return user;
     }
 
-    public void setUser_id(int user_id) {
-        this.user_id = user_id;
+    public void setUser(User user) {
+        this.user = user;
     }
 
-    public long getEvent_id() {
-        return event_id;
+    public Event getEvent() {
+        return event;
     }
 
-    public void setEvent_id(int event_id) {
-        this.event_id = event_id;
+    public void setEvent(Event event) {
+        this.event = event;
     }
 
     public LocalDateTime getRegistration_date() {

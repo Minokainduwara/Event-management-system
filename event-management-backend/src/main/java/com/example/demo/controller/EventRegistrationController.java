@@ -17,7 +17,7 @@ public class EventRegistrationController {
     private EventRegistrationService eventRegistrationService;
 
     @GetMapping("/registration")
-    public List<EventRegistrationDTO> getAllRegistrations()
+    public List<EventRegistration> getAllRegistrations()
     {
         return eventRegistrationService.getAllRegistrations();
     }
@@ -26,12 +26,28 @@ public class EventRegistrationController {
     {
         return eventRegistrationService.getRegistrationSummary();
     }
-    @GetMapping("/{eventId}/search")
-    public List<EventRegistration> searchRegisteredStudent(@PathVariable Integer eventId,@RequestParam String keyword){
-        return eventRegistrationService.searchRegisteredStudent(eventId,keyword);
+    @GetMapping("/search")
+    public List<EventRegistration> searchRegisteredStudent(@RequestParam String keyword){
+        return eventRegistrationService.searchRegisteredStudent(keyword);
     }
-    @GetMapping("/{eventId}/search")
-    public List<EventRegistration> searchRegisteredStudents(@PathVariable Long eventId, @RequestParam String keyword, @RequestParam(required = false) String status) {
-        return eventRegistrationService.searchRegisteredStudents(eventId, keyword, status);
+    @GetMapping("/filter")
+    public List<EventRegistration> searchRegisteredStudents(  @RequestParam(required = false) String status) {
+        return eventRegistrationService.searchRegisteredStudents( status);
+    }
+    @PutMapping("/{id}/status")
+    public EventRegistration updateStatus(
+            @PathVariable int id,
+            @RequestParam String status
+    ) {
+        return eventRegistrationService.updateStatus(id, status);
+    }
+    @DeleteMapping("/{id}")
+    public void deleteRegistration(@PathVariable int id) {
+        eventRegistrationService.deleteRegistration(id);
+    }
+
+    @GetMapping("/count/{eventId}")
+    public int getCount(@PathVariable int eventId) {
+        return eventRegistrationService.getConfirmedCount(eventId);
     }
 }

@@ -9,9 +9,9 @@ import java.time.LocalDateTime;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private  int user_id;
+    private  int userId;
     @Column(nullable = false,unique = true)
-    private String university_id;
+    private String universityId;
     private String name;
     @Column(unique = true)
     private String email;
@@ -29,17 +29,17 @@ public class User {
     private int eventsRegistered;
 
     public enum Role{
-        admin,
-        student
+        ADMIN,
+        STUDENT
 
     }
 
     public User() {
     }
 
-    public User(int user_id, String university_id, String name, String email, String password, Role role, String department, String year, String phone, LocalDateTime created_at) {
-        this.user_id = user_id;
-        this.university_id = university_id;
+    public User(int userId, String universityId, String name, String email, String password, Role role, String department, String year, String phone, LocalDateTime created_at) {
+        this.userId = userId;
+        this.universityId = universityId;
         this.name = name;
         this.email = email;
         this.password = password;
@@ -58,20 +58,20 @@ public class User {
         this.eventsRegistered = eventsRegistered;
     }
 
-    public int getUser_id() {
-        return user_id;
+    public int getUserId() {
+        return userId;
     }
 
-    public void setUser_id(int user_id) {
-        this.user_id = user_id;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
-    public String getUniversity_id() {
-        return university_id;
+    public String getUniversityId() {
+        return universityId;
     }
 
-    public void setUniversity_id(String university_id) {
-        this.university_id = university_id;
+    public void setUniversityId(String universityId) {
+        this.universityId = universityId;
     }
 
     public String getName() {
