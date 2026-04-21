@@ -11,7 +11,7 @@ function AdminEditEvent() {
   const navigate = useNavigate();
 
   const [event, setEvent] = useState({
-    event_title: "",
+    eventTitle: "",
     description: "",
     location: "",
     eventDate: "",
@@ -43,7 +43,7 @@ function AdminEditEvent() {
       .then((res) => res.json())
       .then((data) => {
         setEvent({
-          event_title: data.event_title || "",
+          eventTitle: data.eventTitle || "",
           description: data.description || "",
           location: data.location || "",
           eventDate: formatDate(data.eventDate),
@@ -99,7 +99,7 @@ function AdminEditEvent() {
   };
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-    if (!event.event_title || !event.description || !event.location) {
+    if (!event.eventTitle || !event.description || !event.location) {
       alert("Please fill all required fields");
       return;
     }
@@ -126,6 +126,7 @@ function AdminEditEvent() {
     }
     const eventToSend = {
       ...event,
+      eventDate: `${event.eventDate}T${event.eventTime}:00`,
       image: fileName,
       maxParticipants: event.unlimited ? null : Number(event.maxParticipants),
       category: {
@@ -137,8 +138,14 @@ function AdminEditEvent() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(eventToSend),
     })
-      .then(() => navigate("/events"))
-      .catch((err) => console.error(err));
+      .then(() => {
+        alert("Event Updated Successfully!");
+        navigate("/events");
+      })
+      .catch((err) => {
+        alert("Error updating event");
+        console.error(err);
+      });
   };
   return (
     <div>
@@ -160,10 +167,10 @@ function AdminEditEvent() {
                     <div className="relative">
                       <input
                         type="text"
-                        name="event_title"
+                        name="eventTitle"
                         required
                         placeholder="event title"
-                        value={event.event_title}
+                        value={event.eventTitle}
                         onChange={(e) => handleChange(e)}
                         className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />

@@ -22,7 +22,10 @@ function AdminAddCatogory() {
   };
   const handleSubmit = (e: any) => {
     e.preventDefault();
-
+    if (!category.categoryName || !category.description) {
+      alert("Please fill in all fields");
+      return;
+    }
     fetch("http://localhost:8080/category/addCategory", {
       method: "POST",
       headers: {
@@ -85,6 +88,7 @@ function AdminAddCatogory() {
                 </label>
                 <textarea
                   rows={6}
+                  required 
                   placeholder="Enter description"
                   name="description"
                   value={category.description}

@@ -111,9 +111,10 @@ function AdminAddEvent() {
     if (!res.ok) {
       const errorText = await res.text();
       console.error("Save failed:", errorText);
+      alert("Error creating event: ");
       return;
-    }
-
+    } 
+    alert("Event created successfully!");
     navigate("/events");
   };
 

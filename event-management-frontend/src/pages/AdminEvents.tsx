@@ -7,6 +7,7 @@ function AdminEvents() {
   const [categoryFilter, setCategoryFilter] = React.useState("");
   const [events, setEvents] = React.useState<EventType[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [eventCounts, setEventCounts] = useState<Record<number, number>>({});
   type EventType = {
     eventId: number;
     eventTitle: string;
@@ -20,13 +21,25 @@ function AdminEvents() {
     categoryId: number;
     categoryName: string;
   };
-  React.useEffect(() => {
+  useEffect(() => {
     fetch("http://localhost:8080/events/allEvents")
       .then((res) => res.json())
       .then((data) => {
         setEvents(data);
-      })
-      .catch((err) => console.log(err));
+
+        data.forEach((event: any) => {
+          fetch(
+            `http://localhost:8080/eventRegistrations/count/${event.eventId}`,
+          )
+            .then((res) => res.json())
+            .then((count) => {
+              setEventCounts((prev) => ({
+                ...prev,
+                [event.eventId]: count,
+              }));
+            });
+        });
+      });
   }, []);
 
   useEffect(() => {
@@ -233,53 +246,86 @@ function AdminEvents() {
                       </td>
                     </tr>
                   ) : (
-                    events.map((event: any) => (
-                      <tr key={event.eventId} className=" hover:bg-gray-100">
-                        <td className="px-4 py-3 font-semibold text-md">
-                          {event.eventId}
-                        </td>
-                        <td className="px-4 py-3 font-semibold text-md">
-                          {event.event_title}
-                        </td>
-                        <td className="px-4 py-3 font-semibold text-md">
-                          {event.category?.categoryName || event.category?.category_name}
-                        </td>
-                        <td className="px-4 py-3 font-semibold text-md">
-                          {new Date(event.eventDate).toLocaleString()}
-                        </td>
-                        <td className="px-4 py-3 font-semibold text-md">
-                          {event.location}
-                        </td>
-                        <td className="px-4 py-3 flex justify-center font-semibold text-md">
-                          {event.maxParticipants ?? "Unlimited"}
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-2">
-                            <span
-                              className={`inline-flex px-3 py-1 text-xs font-medium rounded-full bg-yellow-500`}
+                    events.map((event: any) => {
+                      const confirmed = eventCounts[event.eventId] || 0;
+                      const max = event.maxParticipants;
+                      const isUnlimited = event.unlimited || max === null;
+
+                      const isFull =
+                        !isUnlimited && max !== null && confirmed >= max;
+
+                      return (
+                        <tr key={event.eventId} className="hover:bg-gray-100">
+                          <td className="px-4 py-3 font-semibold text-md">
+                            {event.eventId}
+                          </td>
+
+                          <td className="px-4 py-3 font-semibold text-md">
+                            {event.eventTitle}
+                          </td>
+
+                          <td className="px-4 py-3 font-semibold text-md">
+                            {event.category?.categoryName ||
+                              event.category?.category_name}
+                          </td>
+
+                          <td className="px-4 py-3 font-semibold text-md">
+                            {new Date(event.eventDate).toLocaleString()}
+                          </td>
+
+                          <td className="px-4 py-3 font-semibold text-md">
+                            {event.location}
+                          </td>
+
+                          <td className="px-4 py-3 flex flex-col items-center font-semibold text-md">
+                            {event.unlimited ||
+                            event.maxParticipants === null ? (
+                              <span className="text-green-600 font-semibold">
+                                No limit
+                              </span>
+                            ) : (
+                              <>
+                                <span>{event.maxParticipants}</span>
+
+                                <span className="text-xs text-gray-500">
+                                  {confirmed} filled
+                                </span>
+
+                                {isFull && (
+                                  <span className="text-red-600 text-xs font-bold">
+                                    FULL
+                                  </span>
+                                )}
+                              </>
+                            )}
+                          </td>
+
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-2">
+                              <span className="inline-flex px-3 py-1 text-xs font-medium rounded-full bg-yellow-500">
+                                {event.status}
+                              </span>
+                            </div>
+                          </td>
+
+                          <td className="px-4 py-3 text-center space-x-2">
+                            <Link
+                              to={`/admin/events/edit/${event.eventId}`}
+                              className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 "
                             >
-                              {event.status}
-                            </span>
-                          </div>
-                        </td>
+                              Edit
+                            </Link>
 
-                        <td className="px-4 py-3 text-center space-x-2">
-                          <Link
-                            to={`/admin/events/edit/${event.eventId}`}
-                            className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
-                          >
-                            Edit
-                          </Link>
-
-                          <button
-                            onClick={() => handleDelete(event.eventId)}
-                            className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                          >
-                            Delete
-                          </button>
-                        </td>
-                      </tr>
-                    ))
+                            <button
+                              onClick={() => handleDelete(event.eventId)}
+                              className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 mt-3"
+                            >
+                              Delete
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })
                   )}
                 </tbody>
               </table>

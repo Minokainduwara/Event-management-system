@@ -110,6 +110,7 @@ function AdminEditCatogory() {
                 </label>
                 <select
                   name="category"
+                  required
                   value={category.categoryId}
                   onChange={handleChange}
                   className="w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -132,6 +133,7 @@ function AdminEditCatogory() {
                 </label>
                 <textarea
                   rows={6}
+                  required 
                   name="description"
                   value={category.description}
                   onChange={handleChange}
