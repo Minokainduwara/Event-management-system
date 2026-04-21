@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { NavLink, useNavigate } from "react-router";
 import { CalendarDays, LayoutDashboard, ListChecks, LogOut, GraduationCap, User } from "lucide-react";
+import { clearAuthSession } from "../../../shared/types/auth";
 
 interface StudentLayoutProps {
     title: string;
@@ -13,8 +14,7 @@ export function StudentLayout({ title, subtitle, children }: StudentLayoutProps)
     const studentName = localStorage.getItem("userName") || "Student";
 
     const handleLogout = () => {
-        localStorage.removeItem("userRole");
-        localStorage.removeItem("userId");
+        clearAuthSession();
         navigate("/login");
     };
 
