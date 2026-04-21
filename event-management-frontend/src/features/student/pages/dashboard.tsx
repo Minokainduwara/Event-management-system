@@ -1,6 +1,16 @@
+import { useEffect, useState } from "react";
 import { CalendarDays, CalendarPlus2, Check, ListChecks } from "lucide-react";
 import { StudentLayout } from "../components/StudentLayout";
-import { getAllEvents, getDashboardStats, getRegistrations, getStudentProfile } from "../services/studentData";
+import {
+    getAllEvents,
+    getDashboardStats,
+    getRegistrations,
+    getStudentProfile,
+    refreshDashboardStatsFromApi,
+    refreshEventsFromApi,
+    refreshRegistrationsFromApi,
+} from "../services/studentData";
+import type { DashboardStats, EventItem, StudentRegistration } from "../../../shared/types/student";
 
 type ActivityItem = {
     id: number;
@@ -23,9 +33,31 @@ function getFallbackActivity(registrationDate: string): string {
 
 export function Dashboard() {
     const profile = getStudentProfile();
-    const stats = getDashboardStats();
-    const allEvents = getAllEvents();
-    const registrations = getRegistrations();
+    const [stats, setStats] = useState<DashboardStats>(getDashboardStats());
+    const [allEvents, setAllEvents] = useState<EventItem[]>(getAllEvents());
+    const [registrations, setRegistrations] = useState<StudentRegistration[]>(getRegistrations());
+
+    useEffect(() => {
+        const loadDashboardData = async () => {
+            try {
+                const [statsFromApi, eventsFromApi, registrationsFromApi] = await Promise.all([
+                    refreshDashboardStatsFromApi(),
+                    refreshEventsFromApi(),
+                    refreshRegistrationsFromApi(),
+                ]);
+
+                setStats(statsFromApi);
+                setAllEvents(eventsFromApi);
+                setRegistrations(registrationsFromApi);
+            } catch {
+                setStats(getDashboardStats());
+                setAllEvents(getAllEvents());
+                setRegistrations(getRegistrations());
+            }
+        };
+
+        void loadDashboardData();
+    }, []);
 
     const upcomingEvents = [
         allEvents.find((eventItem) => eventItem.title === "Annual Tech Conference 2026"),
