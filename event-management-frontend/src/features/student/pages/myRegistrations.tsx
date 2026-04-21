@@ -1,6 +1,8 @@
+import { useEffect, useState } from "react";
 import { CalendarDays, MapPin } from "lucide-react";
 import { StudentLayout } from "../components/StudentLayout";
-import { getAllEvents, getRegistrations } from "../services/studentData";
+import { getAllEvents, getRegistrations, refreshEventsFromApi, refreshRegistrationsFromApi } from "../services/studentData";
+import type { EventItem, StudentRegistration } from "../../../shared/types/student";
 
 type RegistrationView = {
     eventId: number;
@@ -44,8 +46,26 @@ function getStatusLabel(status: RegistrationView["status"]): string {
 }
 
 export function MyRegistrationsPage() {
-    const registrations = getRegistrations();
-    const allEvents = getAllEvents();
+    const [registrations, setRegistrations] = useState<StudentRegistration[]>([]);
+    const [allEvents, setAllEvents] = useState<EventItem[]>([]);
+
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                const [eventsFromApi, registrationsFromApi] = await Promise.all([
+                    refreshEventsFromApi(),
+                    refreshRegistrationsFromApi(),
+                ]);
+                setAllEvents(eventsFromApi);
+                setRegistrations(registrationsFromApi);
+            } catch {
+                setAllEvents(getAllEvents());
+                setRegistrations(getRegistrations());
+            }
+        };
+
+        void loadData();
+    }, []);
 
     const mappedRegistrations: RegistrationView[] = registrations
         .map((registration) => {
