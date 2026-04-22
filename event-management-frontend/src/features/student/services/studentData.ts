@@ -6,128 +6,28 @@ import {
     type StudentProfile,
     type StudentRegistration,
 } from "../../../shared/types/student";
+import api from "../../../shared/api/api";
+
+interface ApiResponse<T> {
+    success: boolean;
+    message: string;
+    data: T;
+}
 
 const PROFILE_KEY = "studentProfile";
+const EVENTS_KEY = "studentEvents";
 const REGISTRATIONS_KEY = "studentRegistrations";
+const DASHBOARD_STATS_KEY = "studentDashboardStats";
 
-const defaultProfile: StudentProfile = {
-    fullName: "John Smith",
-    registrationNumber: "RUH/2022/CS/145",
-    email: "john.smith@ruh.ac.lk",
-};
-
-const mockEvents: EventItem[] = [
-    {
-        id: 1,
-        title: "Annual Tech Conference 2026",
-        category: "Technology",
-        date: "March 25, 2026",
-        time: "9:30 AM",
-        location: "Main Auditorium",
-        organizer: "Computing Society",
-        description: "Join us for an exciting day of technology talks, workshops, and networking opportunities.",
-        seatsAvailable: 120,
-    },
-    {
-        id: 2,
-        title: "Sports Day 2026",
-        category: "Sports",
-        date: "March 30, 2026",
-        time: "8:00 AM",
-        location: "University Stadium",
-        organizer: "Department of Physical Education",
-        description: "Participate in various sports activities and competitions. Show your team spirit and athletic skills.",
-        seatsAvailable: 120,
-    },
-    {
-        id: 3,
-        title: "Cultural Fest",
-        category: "Cultural",
-        date: "April 5, 2026",
-        time: "4:30 PM",
-        location: "Campus Grounds",
-        organizer: "Arts Circle",
-        description: "Celebrate diversity through music, dance, and art performances from students across all departments.",
-        seatsAvailable: 80,
-    },
-    {
-        id: 4,
-        title: "Career Fair 2026",
-        category: "Career",
-        date: "April 10, 2026",
-        time: "10:00 AM",
-        location: "Exhibition Hall",
-        organizer: "Career Guidance Unit",
-        description: "Meet top recruiters and explore career opportunities. Bring your resume and professional attire.",
-        seatsAvailable: 200,
-    },
-    {
-        id: 5,
-        title: "Startup Pitch Competition",
-        category: "Business",
-        date: "April 20, 2026",
-        time: "1:30 PM",
-        location: "Innovation Lab",
-        organizer: "Entrepreneurship Cell",
-        description: "Present your innovative business ideas to investors and win funding for your startup dreams.",
-        seatsAvailable: 60,
-    },
-    {
-        id: 6,
-        title: "Music Fest",
-        category: "Cultural",
-        date: "April 25, 2026",
-        time: "6:00 PM",
-        location: "Open Theater",
-        organizer: "Music Club",
-        description: "An evening of live music performances featuring student bands and special guest artists.",
-        seatsAvailable: 320,
-    },
-    {
-        id: 7,
-        title: "Science Exhibition",
-        category: "Science",
-        date: "March 10, 2026",
-        time: "10:30 AM",
-        location: "Science Block",
-        organizer: "Faculty of Science",
-        description: "Showcase of student-led research projects and practical demonstrations from multiple departments.",
-        seatsAvailable: 140,
-    },
-];
-
-const defaultRegistrations: StudentRegistration[] = [
-    {
-        eventId: 1,
-        status: "confirmed",
-        requestedAt: "2026-03-14T08:30:00.000Z",
-    },
-    {
-        eventId: 4,
-        status: "confirmed",
-        requestedAt: "2026-03-11T10:15:00.000Z",
-    },
-    {
-        eventId: 2,
-        status: "confirmed",
-        requestedAt: "2026-03-15T09:45:00.000Z",
-    },
-    {
-        eventId: 3,
-        status: "pending",
-        requestedAt: "2026-03-12T11:00:00.000Z",
-    },
-    {
-        eventId: 7,
-        status: "attended",
-        requestedAt: "2026-03-01T07:20:00.000Z",
-    },
-];
+interface RegistrationDetailResponse {
+    eventId: number;
+    status: string;
+    requestedAt: string;
+    event?: EventItem;
+}
 
 function safeParse<T>(rawValue: string | null, fallback: T): T {
-    if (!rawValue) {
-        return fallback;
-    }
+    if (!rawValue) return fallback;
 
     try {
         return JSON.parse(rawValue) as T;
@@ -140,29 +40,17 @@ function normalizeRegistrationStatus(status: string): StudentRegistration["statu
     if (status === "confirmed" || status === "pending" || status === "attended") {
         return status;
     }
-
     if (status === "registered") {
         return "confirmed";
     }
-
     return "pending";
 }
 
-export function getStudentProfile(): StudentProfile {
-    const profile = safeParse<StudentProfile | null>(localStorage.getItem(PROFILE_KEY), null);
-
-    if (profile) {
-        return profile;
-    }
-
-    const seededProfile: StudentProfile = {
-        fullName: localStorage.getItem("userName") || defaultProfile.fullName,
-        registrationNumber: localStorage.getItem("registrationNumber") || defaultProfile.registrationNumber,
-        email: localStorage.getItem("userEmail") || defaultProfile.email,
-    };
-
-    localStorage.setItem(PROFILE_KEY, JSON.stringify(seededProfile));
-    return seededProfile;
+export function getStudentProfile(): StudentProfile | null {
+    return safeParse<StudentProfile | null>(
+        localStorage.getItem(PROFILE_KEY),
+        null
+    );
 }
 
 export function saveStudentProfile(profile: StudentProfile): void {
@@ -172,34 +60,82 @@ export function saveStudentProfile(profile: StudentProfile): void {
     localStorage.setItem("userEmail", profile.email);
 }
 
+export async function refreshStudentProfileFromApi(): Promise<StudentProfile> {
+    const response = await api
+        .get("students/profile")
+        .json<ApiResponse<StudentProfile>>();
+
+    if (!response.success || !response.data) {
+        throw new Error(response.message || "Failed to fetch profile");
+    }
+
+    saveStudentProfile(response.data);
+    return response.data;
+}
+
+export async function saveStudentProfileToApi(profile: StudentProfile): Promise<void> {
+    const response = await api
+        .put("students/profile", { json: profile })
+        .json<ApiResponse<null>>();
+
+    if (!response.success) {
+        throw new Error(response.message || "Failed to update profile");
+    }
+
+    saveStudentProfile(profile);
+}
+
+export async function refreshEventsFromApi(): Promise<EventItem[]> {
+    const response = await api.get("events").json<EventItem[]>();
+    localStorage.setItem(EVENTS_KEY, JSON.stringify(response));
+    return response;
+}
+
 export function getAllEvents(): EventItem[] {
-    return mockEvents;
+    return safeParse<EventItem[]>(localStorage.getItem(EVENTS_KEY), []);
 }
 
 export function getEventsByCategory(category: EventCategory): EventItem[] {
-    return mockEvents.filter((eventItem) => eventItem.category === category);
+    return getAllEvents().filter((eventItem) => eventItem.category === category);
+}
+
+export async function refreshRegistrationsFromApi(): Promise<StudentRegistration[]> {
+    const response = await api
+        .get("registrations/me")
+        .json<RegistrationDetailResponse[]>();
+
+    const normalized = response.map((registration) => ({
+        ...registration,
+        status: normalizeRegistrationStatus(registration.status),
+        event: undefined,
+    }));
+
+    localStorage.setItem(REGISTRATIONS_KEY, JSON.stringify(normalized));
+    return normalized;
 }
 
 export function getRegistrations(): StudentRegistration[] {
-    const rawRegistrations = localStorage.getItem(REGISTRATIONS_KEY);
+    const parsed = safeParse<StudentRegistration[]>(
+        localStorage.getItem(REGISTRATIONS_KEY),
+        []
+    );
 
-    if (rawRegistrations === null) {
-        localStorage.setItem(REGISTRATIONS_KEY, JSON.stringify(defaultRegistrations));
-        return defaultRegistrations;
-    }
-
-    const parsedRegistrations = safeParse<StudentRegistration[]>(rawRegistrations, []);
-    return parsedRegistrations.map((registration) => ({
+    return parsed.map((registration) => ({
         ...registration,
         status: normalizeRegistrationStatus(registration.status),
     }));
 }
 
-export function getRegistrationForEvent(eventId: number): StudentRegistration | undefined {
-    return getRegistrations().find((registration) => registration.eventId === eventId);
+export function getRegistrationForEvent(
+    eventId: number
+): StudentRegistration | undefined {
+    return getRegistrations().find((r) => r.eventId === eventId);
 }
 
-export function registerForEvent(eventId: number, profile: StudentProfile): RegisterEventResult {
+export async function registerForEvent(
+    eventId: number,
+    profile: StudentProfile
+): Promise<RegisterEventResult> {
     const existing = getRegistrationForEvent(eventId);
     if (existing) {
         return {
@@ -208,7 +144,7 @@ export function registerForEvent(eventId: number, profile: StudentProfile): Regi
         };
     }
 
-    const eventItem = mockEvents.find((item) => item.id === eventId);
+    const eventItem = getAllEvents().find((item) => item.id === eventId);
     if (!eventItem) {
         return {
             ok: false,
@@ -216,29 +152,46 @@ export function registerForEvent(eventId: number, profile: StudentProfile): Regi
         };
     }
 
-    const updated = [
-        ...getRegistrations(),
-        {
-            eventId,
-            status: "pending",
-            requestedAt: new Date().toISOString(),
-        } satisfies StudentRegistration,
-    ];
+    const response = await api
+        .post(`students/register/${eventId}`, { throwHttpErrors: false })
+        .json<ApiResponse<null>>();
 
-    localStorage.setItem(REGISTRATIONS_KEY, JSON.stringify(updated));
+    if (!response.success) {
+        return {
+            ok: false,
+            message: response.message || "Registration failed.",
+        };
+    }
+
+    await refreshRegistrationsFromApi();
 
     return {
         ok: true,
-        message: `Registration request sent for ${eventItem.title}. Submitted as ${profile.fullName} (${profile.registrationNumber}).`,
+        message: `Registered for ${eventItem.title} as ${profile.fullName} (${profile.registrationNumber}).`,
     };
 }
 
 export function getDashboardStats(): DashboardStats {
+    const cached = safeParse<DashboardStats | null>(
+        localStorage.getItem(DASHBOARD_STATS_KEY),
+        null
+    );
+
+    if (cached) return cached;
+
     const registrations = getRegistrations();
 
     return {
         availableEvents: getAllEvents().length,
         myRegistrations: registrations.length,
-        attendedEvents: registrations.filter((item) => item.status === "attended").length,
+        attendedEvents: registrations.filter(
+            (item) => item.status === "attended"
+        ).length,
     };
+}
+
+export async function refreshDashboardStatsFromApi(): Promise<DashboardStats> {
+    const response = await api.get("dashboard/stats").json<DashboardStats>();
+    localStorage.setItem(DASHBOARD_STATS_KEY, JSON.stringify(response));
+    return response;
 }
