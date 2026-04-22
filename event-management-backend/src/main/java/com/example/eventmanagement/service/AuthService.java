@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import com.example.eventmanagement.dto.LoginRequest;
 import com.example.eventmanagement.dto.LoginResponse;
 import com.example.eventmanagement.model.User;
-import com.example.eventmanagement.model.UserRole;
 import com.example.eventmanagement.repository.UserRepository;
 import com.example.eventmanagement.security.JwtTokenProvider;
 

@@ -1,7 +1,7 @@
 package com.example.eventmanagement.model;
 
-public enum UserRole {
-    STUDENT,
+public enum Role {
     ADMIN,
+    STUDENT,
     FACULTY
 }
