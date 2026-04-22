@@ -1,6 +1,6 @@
 package com.example.eventmanagement.model;
 
-public class RegistrationSummary {
+public class ADRegistrationSummary {
 
     private long total;
     private long confirmed;

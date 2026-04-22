@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "event_registration")
-public class EventRegistration {
+public class ADEventRegistration {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int registration_id;
@@ -18,24 +18,24 @@ public class EventRegistration {
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private ADUser ADUser;
 
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "event_id")
-    private Event event;
+    private ADEvent event;
     @JsonProperty("studentName")
     public String getStudentName() {
-        return user != null ? user.getName() : null;
+        return ADUser != null ? ADUser.getName() : null;
     }
     @JsonProperty("universityId")
     public String getUniversityId() {
-        return user != null ? user.getUniversityId() : null;
+        return ADUser != null ? ADUser.getUniversityId() : null;
     }
 
     @JsonProperty("email")
     public String getEmail() {
-        return user != null ? user.getEmail() : null;
+        return ADUser != null ? ADUser.getEmail() : null;
     }
 
     @JsonProperty("eventName")
@@ -55,19 +55,19 @@ public class EventRegistration {
         this.registration_id = registration_id;
     }
 
-    public User getUser() {
-        return user;
+    public ADUser getUser() {
+        return ADUser;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUser(ADUser ADUser) {
+        this.ADUser = ADUser;
     }
 
-    public Event getEvent() {
+    public ADEvent getEvent() {
         return event;
     }
 
-    public void setEvent(Event event) {
+    public void setEvent(ADEvent event) {
         this.event = event;
     }
 

@@ -1,6 +1,6 @@
 package com.example.eventmanagement.model;
 
-public class EventRegistrationDTO {
+public class ADEventRegistrationDTO {
     private int registrationId;
     private String studentName;
     private String universityId;

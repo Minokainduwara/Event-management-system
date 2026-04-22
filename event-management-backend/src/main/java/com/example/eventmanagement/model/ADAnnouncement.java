@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "announcement")
-public class Announcement {
+public class ADAnnouncement {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,13 +22,13 @@ public class Announcement {
 
     @ManyToOne
     @JoinColumn(name = "created_by", nullable = false)
-    private User createdBy;
+    private ADUser createdBy;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    public Announcement() {}
+    public ADAnnouncement() {}
 
 
 
@@ -56,11 +56,11 @@ public class Announcement {
         this.message = message;
     }
 
-    public User getCreatedBy() {
+    public ADUser getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(User createdBy) {
+    public void setCreatedBy(ADUser createdBy) {
         this.createdBy = createdBy;
     }
 

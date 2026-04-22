@@ -1,9 +1,9 @@
 package com.example.eventmanagement.controller;
 
-import com.example.eventmanagement.model.Event;
-import com.example.eventmanagement.model.EventCategory;
-import com.example.eventmanagement.repository.CategoryRepository;
-import com.example.eventmanagement.services.EventService;
+import com.example.eventmanagement.model.ADEvent;
+import com.example.eventmanagement.model.ADEventCategory;
+import com.example.eventmanagement.repository.ADCategoryRepository;
+import com.example.eventmanagement.services.ADEventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,48 +21,48 @@ import java.util.List;
 @CrossOrigin("http://localhost:5173")
 public class ADEventController {
     @Autowired
-    private EventService eventService;
+    private ADEventService ADEventService;
 
     @Autowired
-    private CategoryRepository categoryRepository;
+    private ADCategoryRepository ADCategoryRepository;
 
     @PostMapping("/saveEvent")
-    public Event  saveEvent(@RequestBody Event event)
+    public ADEvent saveEvent(@RequestBody ADEvent event)
     {
-        return eventService.saveEvent(event);
+        return ADEventService.saveEvent(event);
     }
     @GetMapping("/allEvents")
-    public List<Event> getAllEvent()
+    public List<ADEvent> getAllEvent()
     {
-        return eventService.getAllEvent();
+        return ADEventService.getAllEvent();
     }
     @GetMapping("/getEvent/{id}")
-    public Event getEventById(@PathVariable Integer id ){
-        return eventService.getEventById(id);
+    public ADEvent getEventById(@PathVariable Integer id ){
+        return ADEventService.getEventById(id);
     }
     @DeleteMapping("/deleteEvent/{id}")
    public String deleteEvent(@PathVariable Integer id)
    {
-       eventService.deleteEvent(id);
+       ADEventService.deleteEvent(id);
        return "Event Delete Successfully";
    }
    @PutMapping("updateEvent/{id}")
-   public Event updateEvent(@PathVariable  Integer id,@RequestBody Event event){
-        return eventService.updateEvent(id,event);
+   public ADEvent updateEvent(@PathVariable  Integer id, @RequestBody ADEvent event){
+        return ADEventService.updateEvent(id,event);
 
    }
    @GetMapping("/searchEvent")
-   public List<Event> getEventByName(@RequestParam String keyword){
-        return eventService.getEventByName(keyword);
+   public List<ADEvent> getEventByName(@RequestParam String keyword){
+        return ADEventService.getEventByName(keyword);
    }
 @GetMapping("/filter")
-   public List<Event> getEventByCategory(@RequestParam Integer categoryId){
-        EventCategory category=categoryRepository.findById(categoryId).orElse(null);
-        return  eventService.getEventByCategory(categoryId);
+   public List<ADEvent> getEventByCategory(@RequestParam Integer categoryId){
+        ADEventCategory category= ADCategoryRepository.findById(categoryId).orElse(null);
+        return  ADEventService.getEventByCategory(categoryId);
    }
     @PutMapping("/updateStatus/{id}")
-    public ResponseEntity<Event> updateEventStatus(@PathVariable Integer id, @RequestParam String status) {
-        Event event=eventService.updateEventStatus(id, status);
+    public ResponseEntity<ADEvent> updateEventStatus(@PathVariable Integer id, @RequestParam String status) {
+        ADEvent event= ADEventService.updateEventStatus(id, status);
         if(event==null){
             return  ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }

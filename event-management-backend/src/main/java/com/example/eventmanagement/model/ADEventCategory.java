@@ -11,7 +11,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "event_category")
-public class EventCategory {
+public class ADEventCategory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,11 +29,11 @@ public class EventCategory {
     private int eventCount;
     @OneToMany(mappedBy = "category")
     @JsonIgnore
-    private List<Event> events;
-    public EventCategory() {
+    private List<ADEvent> events;
+    public ADEventCategory() {
     }
 
-    public EventCategory(Integer categoryId, String categoryName, String description, Timestamp created_at, Timestamp updated_at) {
+    public ADEventCategory(Integer categoryId, String categoryName, String description, Timestamp created_at, Timestamp updated_at) {
         this.categoryId = categoryId;
         this.categoryName = categoryName;
         this.description = description;

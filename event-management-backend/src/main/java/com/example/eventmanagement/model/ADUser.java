@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "user")
-public class User {
+public class ADUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private  int userId;
@@ -34,10 +34,10 @@ public class User {
 
     }
 
-    public User() {
+    public ADUser() {
     }
 
-    public User(int userId, String universityId, String name, String email, String password, Role role, String department, String year, String phone, LocalDateTime created_at) {
+    public ADUser(int userId, String universityId, String name, String email, String password, Role role, String department, String year, String phone, LocalDateTime created_at) {
         this.userId = userId;
         this.universityId = universityId;
         this.name = name;

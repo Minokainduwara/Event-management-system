@@ -9,7 +9,7 @@ import java.time.LocalTime;
 
 @Entity
 @Table(name = "event")
-public class Event {
+public class ADEvent {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int eventId;
@@ -35,13 +35,13 @@ public class Event {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id")
-    private EventCategory category;
+    private ADEventCategory category;
 
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "created_by")
 
-    private User user;
+    private ADUser ADUser;
 
     public int getEventId() {
         return eventId;
@@ -87,20 +87,20 @@ public class Event {
         this.status = status;
     }
 
-    public EventCategory getCategory() {
+    public ADEventCategory getCategory() {
         return category;
     }
 
-    public void setCategory(EventCategory category) {
+    public void setCategory(ADEventCategory category) {
         this.category = category;
     }
 
-    public User getUser() {
-        return user;
+    public ADUser getUser() {
+        return ADUser;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUser(ADUser ADUser) {
+        this.ADUser = ADUser;
     }
 
     public LocalDateTime getEventDate() {
