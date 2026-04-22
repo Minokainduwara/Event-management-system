@@ -1,5 +1,5 @@
-export type EventCategory = "open" | "restricted";
-export type RegistrationStatus = "none" | "pending" | "registered";
+export type EventCategory = "Technology" | "Sports" | "Cultural" | "Career" | "Business" | "Science";
+export type RegistrationStatus = "pending" | "confirmed" | "attended";
 
 export interface StudentProfile {
     fullName: string;
@@ -26,8 +26,9 @@ export interface StudentRegistration {
 }
 
 export interface DashboardStats {
-    totalRegistered: number;
-    pendingApprovals: number;
+    availableEvents: number;
+    myRegistrations: number;
+    attendedEvents: number;
 }
 
 export interface RegisterEventResult {
