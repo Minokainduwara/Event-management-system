@@ -1,6 +1,9 @@
 package com.example.eventmanagement.services;
 
 import com.example.eventmanagement.model.ADAnnouncement;
+
+import static com.example.eventmanagement.model.ADUser.Role.ADMIN;
+
 import com.example.eventmanagement.model.ADUser;
 import com.example.eventmanagement.repository.ADAnnouncementRepository;
 import com.example.eventmanagement.repository.ADUserRepository;
@@ -8,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
 
 import java.util.List;
 
@@ -31,7 +35,7 @@ public class ADAnnouncementService {
                     "Admin ID not found"
             );
         }
-        if (ADUser.getRole() != ADUser.Role.ADMIN) {
+        if (ADUser.getRole() != ADMIN) {
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN,
                     "Only ADMIN can create announcement"
