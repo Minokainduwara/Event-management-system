@@ -1,5 +1,14 @@
 import './App.css'
 import './index.css'
+import { Navigate, Route, Routes } from "react-router";
+import { Login } from "./pages/login.tsx";
+import { AdminDashboardPage } from "./features/admin/pages/dashboard.tsx";
+import { FacultyDashboardPage } from "./features/faculty/pages/dashboard.tsx";
+import { Dashboard } from "./features/student/pages/dashboard.tsx";
+import { EventsPage } from "./features/student/pages/events.tsx";
+import { MyRegistrationsPage } from "./features/student/pages/myRegistrations.tsx";
+import { ProfilePage } from "./features/student/pages/profile.tsx";
+import { RoleGuard } from "./shared/ui/RoleGuard.tsx";
 import { Routes, Route, Navigate } from "react-router";
 import { Login } from "./pages/login.tsx";
 import { Home } from "./pages/Home.tsx";
@@ -16,15 +25,19 @@ import { EventsPage } from "./pages/events.tsx";
 import { MyRegistrationsPage } from "./pages/myRegistrations.tsx";
 import { ProfilePage } from "./pages/profile.tsx";
 
-function StudentRoute() {
-    const isStudent = localStorage.getItem("userRole") === "student";
+function App() {
 
-    if (!isStudent) {
-        return <Navigate to="/login" replace />;
-    }
+  return (
+      <Routes>
+          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="/login" element={<Login />} />
 
-    return <Outlet />;
-}
+          <Route element={<RoleGuard allowedRoles={["student"]} />}>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/events" element={<EventsPage />} />
+              <Route path="/my-registrations" element={<MyRegistrationsPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
+          </Route>
 
 function App() {
   return (

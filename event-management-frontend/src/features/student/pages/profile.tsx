@@ -1,7 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { StudentLayout } from "../components/StudentLayout";
-import { getStudentProfile, saveStudentProfile } from "../services/studentData";
-import type { StudentProfile } from "../types/student";
+import {
+    getStudentProfile,
+    refreshStudentProfileFromApi,
+    saveStudentProfileToApi,
+} from "../services/studentData";
+import type { StudentProfile } from "../../../shared/types/student";
 
 interface ProfileErrors {
     fullName?: string;
@@ -28,17 +32,33 @@ function validateProfile(profile: StudentProfile): ProfileErrors {
 }
 
 export function ProfilePage() {
-    const initialProfile = getStudentProfile();
-    const [profile, setProfile] = useState<StudentProfile>(initialProfile);
+    const cachedProfile = getStudentProfile();
+    const [initialProfile, setInitialProfile] = useState<StudentProfile>(cachedProfile);
+    const [profile, setProfile] = useState<StudentProfile>(cachedProfile);
     const [errors, setErrors] = useState<ProfileErrors>({});
     const [toastMessage, setToastMessage] = useState<string>("");
+    const [isSaving, setIsSaving] = useState(false);
+
+    useEffect(() => {
+        const loadProfile = async () => {
+            try {
+                const serverProfile = await refreshStudentProfileFromApi();
+                setInitialProfile(serverProfile);
+                setProfile(serverProfile);
+            } catch {
+                setToastMessage("Using cached profile. Login may be required to sync with server.");
+            }
+        };
+
+        void loadProfile();
+    }, []);
 
     const isDirty =
         profile.fullName !== initialProfile.fullName ||
         profile.registrationNumber !== initialProfile.registrationNumber ||
         profile.email !== initialProfile.email;
 
-    const handleSave = () => {
+    const handleSave = async () => {
         const validationErrors = validateProfile(profile);
         setErrors(validationErrors);
 
@@ -47,8 +67,16 @@ export function ProfilePage() {
             return;
         }
 
-        saveStudentProfile(profile);
-        setToastMessage("Profile updated successfully.");
+        try {
+            setIsSaving(true);
+            await saveStudentProfileToApi(profile);
+            setInitialProfile(profile);
+            setToastMessage("Profile updated successfully.");
+        } catch {
+            setToastMessage("Could not update profile in database. Please login again and retry.");
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     const handleCancel = () => {
@@ -71,8 +99,9 @@ export function ProfilePage() {
             <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
                 <div className="grid gap-4 md:grid-cols-2">
                     <div>
-                        <label className="mb-1 block text-sm text-slate-600">Full Name</label>
+                        <label htmlFor="profile-full-name" className="mb-1 block text-sm text-slate-600">Full Name</label>
                         <input
+                            id="profile-full-name"
                             value={profile.fullName}
                             onChange={(event) => setProfile({ ...profile, fullName: event.target.value })}
                             className="w-full rounded-lg border border-slate-300 px-3 py-2"
@@ -81,8 +110,9 @@ export function ProfilePage() {
                     </div>
 
                     <div>
-                        <label className="mb-1 block text-sm text-slate-600">Registration Number</label>
+                        <label htmlFor="profile-registration-number" className="mb-1 block text-sm text-slate-600">Registration Number</label>
                         <input
+                            id="profile-registration-number"
                             value={profile.registrationNumber}
                             onChange={(event) => setProfile({ ...profile, registrationNumber: event.target.value })}
                             className="w-full rounded-lg border border-slate-300 px-3 py-2"
@@ -93,8 +123,9 @@ export function ProfilePage() {
                     </div>
 
                     <div className="md:col-span-2">
-                        <label className="mb-1 block text-sm text-slate-600">Email</label>
+                        <label htmlFor="profile-email" className="mb-1 block text-sm text-slate-600">Email</label>
                         <input
+                            id="profile-email"
                             value={profile.email}
                             onChange={(event) => setProfile({ ...profile, email: event.target.value })}
                             className="w-full rounded-lg border border-slate-300 px-3 py-2"
@@ -106,11 +137,13 @@ export function ProfilePage() {
                 <div className="mt-6 flex gap-2">
                     <button
                         type="button"
-                        onClick={handleSave}
-                        disabled={!isDirty}
+                        onClick={() => {
+                            void handleSave();
+                        }}
+                        disabled={!isDirty || isSaving}
                         className="rounded-lg bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-500 disabled:cursor-not-allowed disabled:bg-blue-300"
                     >
-                        Save Changes
+                        {isSaving ? "Saving..." : "Save Changes"}
                     </button>
                     <button
                         type="button"
