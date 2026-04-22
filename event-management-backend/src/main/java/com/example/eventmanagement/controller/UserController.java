@@ -1,9 +1,8 @@
-package com.example.demo.controller;
+package com.example.eventmanagement.controller;
 
-import com.example.demo.model.User;
-import com.example.demo.services.UserService;
+import com.example.eventmanagement.model.User;
+import com.example.eventmanagement.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

@@ -1,9 +1,8 @@
-package com.example.demo.controller;
+package com.example.eventmanagement.controller;
 
-import com.example.demo.model.EventRegistration;
-import com.example.demo.model.EventRegistrationDTO;
-import com.example.demo.model.RegistrationSummary;
-import com.example.demo.services.EventRegistrationService;
+import com.example.eventmanagement.model.EventRegistration;
+import com.example.eventmanagement.model.RegistrationSummary;
+import com.example.eventmanagement.services.EventRegistrationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -49,5 +48,9 @@ public class EventRegistrationController {
     @GetMapping("/count/{eventId}")
     public int getCount(@PathVariable int eventId) {
         return eventRegistrationService.getConfirmedCount(eventId);
+    }
+    @GetMapping("/event/{eventId}")
+    public List<EventRegistration> getRegistrationsByEvent(@PathVariable int eventId) {
+        return eventRegistrationService.getRegistrationsByEventId(eventId);
     }
 }

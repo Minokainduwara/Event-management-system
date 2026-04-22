@@ -1,13 +1,12 @@
-package com.example.demo.services;
+package com.example.eventmanagement.services;
 
-import com.example.demo.model.*;
-import com.example.demo.repository.EventRegistrationRepository;
-import com.example.demo.repository.EventRepository;
-import com.example.demo.repository.UserRepository;
+import com.example.eventmanagement.model.*;
+import com.example.eventmanagement.repository.EventRegistrationRepository;
+import com.example.eventmanagement.repository.EventRepository;
+import com.example.eventmanagement.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -69,5 +68,8 @@ public List<EventRegistration> searchRegisteredStudent(String keyword)
     public int getConfirmedCount(int eventId) {
         return eventRegistrationRepository
                 .countByEvent_EventIdAndStatus(eventId, "confirmed");
+    }
+    public List<EventRegistration> getRegistrationsByEventId(int eventId) {
+        return eventRegistrationRepository.findByEvent_EventId(eventId);
     }
 }

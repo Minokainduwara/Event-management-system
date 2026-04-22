@@ -1,31 +1,29 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import AdminDashboard from './pages/AdminDashboard.tsx'
-import AdminAddCatogory from './pages/AdminAddCatogory.tsx'
-import  AdminEditCatogory from './pages/AdminEditCatogory.tsx'
-import ViewStudent from './pages/ViewStudent.tsx'
-import AdminEvents from './pages/AdminEvents.tsx'
-import EditAnnoucemet from './pages/EditAnnoucemet.tsx'
-import AdminAddEvent from './pages/AdminAddEvent.tsx'
-import  ManageCatogory from './pages/ManageCatogory.tsx'
-import {
-  createBrowserRouter,
-  RouterProvider,
-} from "react-router-dom";
-import  AdminEditEvent from './pages/AdminEditEvent.tsx'
-import AdminEventRegistration from './pages/AdminEventRegistration.tsx'
-import AdminAddAnnoucement from './pages/AdminAddAnnoucement.tsx'
-import ShowAllAnnoucement from './pages/ShowAllAnnoucement.tsx'
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import "./index.css";
+import AdminDashboard from "./pages/AdminDashboard.tsx";
+import AdminAddCatogory from "./pages/AdminAddCatogory.tsx";
+import AdminEditCatogory from "./pages/AdminEditCatogory.tsx";
+import ViewStudent from "./pages/ViewStudent.tsx";
+import AdminEvents from "./pages/AdminEvents.tsx";
+import EditAnnoucemet from "./pages/EditAnnoucemet.tsx";
+import AdminAddEvent from "./pages/AdminAddEvent.tsx";
+import ManageCatogory from "./pages/ManageCatogory.tsx";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import AdminEditEvent from "./pages/AdminEditEvent.tsx";
+import AdminEventRegistration from "./pages/AdminEventRegistration.tsx";
+import AdminAddAnnoucement from "./pages/AdminAddAnnoucement.tsx";
+import ShowAllAnnoucement from "./pages/ShowAllAnnoucement.tsx";
+import AdminEventStudent from "./pages/AdminEventStudent.tsx";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <AdminDashboard/>,
-  },  
+    element: <AdminDashboard />,
+  },
   {
     path: "/events",
-    element: <AdminEvents/>,
+    element: <AdminEvents />,
   },
   {
     path: "/admin/events/add",
@@ -33,47 +31,48 @@ const router = createBrowserRouter([
   },
   {
     path: "/catogory",
-    element: <ManageCatogory/>,
+    element: <ManageCatogory />,
   },
   {
     path: "/admin/catogory/add",
-    element: <AdminAddCatogory/>,
+    element: <AdminAddCatogory />,
   },
   {
     path: "/admin/catogory/edit/:id",
-    element: <AdminEditCatogory/>,
+    element: <AdminEditCatogory />,
   },
-   {
+  {
     path: "/viewstudents",
-    element: <ViewStudent/>,
+    element: <ViewStudent />,
   },
   {
     path: "/admin/events/edit/:id",
-    element: <AdminEditEvent/>,
+    element: <AdminEditEvent />,
   },
   {
     path: "/registration",
-    element: <AdminEventRegistration/>,
+    element: <AdminEventRegistration />,
   },
   {
     path: "/announcement",
-    element: <AdminAddAnnoucement/>,
+    element: <AdminAddAnnoucement />,
   },
   {
     path: "/showannouncement",
-    element: <ShowAllAnnoucement/>,
+    element: <ShowAllAnnoucement />,
   },
   {
     path: "/editannoucement/:id",
-    element: <EditAnnoucemet/>,
+    element: <EditAnnoucemet />,
+  },
+  {
+    path: "/admin/events/students/:eventId",
+    element: <AdminEventStudent />,
   },
 ]);
 
-createRoot(document.getElementById('root')!).render(
-    
-        <StrictMode>
-            <RouterProvider router={router} />
-        </StrictMode>
-    
-)
-
+createRoot(document.getElementById("root")!).render(
+  <StrictMode>
+    <RouterProvider router={router} />
+  </StrictMode>,
+);

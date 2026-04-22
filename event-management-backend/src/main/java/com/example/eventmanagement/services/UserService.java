@@ -1,8 +1,8 @@
-package com.example.demo.services;
+package com.example.eventmanagement.services;
 
-import com.example.demo.model.User;
-import com.example.demo.repository.EventRegistrationRepository;
-import com.example.demo.repository.UserRepository;
+import com.example.eventmanagement.model.User;
+import com.example.eventmanagement.repository.EventRegistrationRepository;
+import com.example.eventmanagement.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

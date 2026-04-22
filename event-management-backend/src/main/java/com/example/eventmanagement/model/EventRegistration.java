@@ -1,4 +1,4 @@
-package com.example.demo.model;
+package com.example.eventmanagement.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;

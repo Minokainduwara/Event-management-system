@@ -1,8 +1,8 @@
-package com.example.demo.controller;
+package com.example.eventmanagement.controller;
 
-import com.example.demo.model.Announcement;
-import com.example.demo.repository.AnnouncementRepository;
-import com.example.demo.services.AnnouncementService;
+import com.example.eventmanagement.model.Announcement;
+import com.example.eventmanagement.repository.AnnouncementRepository;
+import com.example.eventmanagement.services.AnnouncementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

@@ -1,6 +1,6 @@
-package com.example.demo.repository;
+package com.example.eventmanagement.repository;
 
-import com.example.demo.model.Event;
+import com.example.eventmanagement.model.Event;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

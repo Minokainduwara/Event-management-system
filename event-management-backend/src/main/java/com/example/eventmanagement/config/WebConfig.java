@@ -1,4 +1,4 @@
-package com.example.demo.config;
+package com.example.eventmanagement.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;

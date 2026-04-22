@@ -1,13 +1,11 @@
-package com.example.demo.services;
+package com.example.eventmanagement.services;
 
-import com.example.demo.model.Event;
-import com.example.demo.model.EventCategory;
-import com.example.demo.repository.CategoryRepository;
-import com.example.demo.repository.EventRepository;
+import com.example.eventmanagement.model.EventCategory;
+import com.example.eventmanagement.repository.CategoryRepository;
+import com.example.eventmanagement.repository.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 

@@ -308,7 +308,13 @@ function AdminEvents() {
                             </div>
                           </td>
 
-                          <td className="px-4 py-3 text-center space-x-2">
+                          <td className="px-4 py-3 text-center space-x-2 flex justify-between">
+                            <Link
+                              to={`/admin/events/students/${event.eventId}`}
+                              className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
+                            >
+                              View 
+                            </Link>
                             <Link
                               to={`/admin/events/edit/${event.eventId}`}
                               className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 "
@@ -318,7 +324,7 @@ function AdminEvents() {
 
                             <button
                               onClick={() => handleDelete(event.eventId)}
-                              className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 mt-3"
+                              className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 "
                             >
                               Delete
                             </button>

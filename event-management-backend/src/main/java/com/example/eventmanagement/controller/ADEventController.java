@@ -1,13 +1,12 @@
-package com.example.demo.controller;
+package com.example.eventmanagement.controller;
 
-import com.example.demo.model.Event;
-import com.example.demo.model.EventCategory;
-import com.example.demo.repository.CategoryRepository;
-import com.example.demo.services.EventService;
+import com.example.eventmanagement.model.Event;
+import com.example.eventmanagement.model.EventCategory;
+import com.example.eventmanagement.repository.CategoryRepository;
+import com.example.eventmanagement.services.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,7 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/events")
 @CrossOrigin("http://localhost:5173")
-public class EventController {
+public class ADEventController {
     @Autowired
     private EventService eventService;
 

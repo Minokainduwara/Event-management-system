@@ -1,4 +1,4 @@
-package com.example.demo.model;
+package com.example.eventmanagement.model;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
