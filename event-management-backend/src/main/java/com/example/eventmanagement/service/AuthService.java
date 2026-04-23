@@ -1,79 +1,49 @@
 package com.example.eventmanagement.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.eventmanagement.dto.*;
+import com.example.eventmanagement.model.*;
+import com.example.eventmanagement.repository.UserRepository;
+import com.example.eventmanagement.security.JwtUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.example.eventmanagement.dto.LoginRequest;
-import com.example.eventmanagement.dto.LoginResponse;
-import com.example.eventmanagement.model.User;
-import com.example.eventmanagement.model.UserRole;
-import com.example.eventmanagement.repository.UserRepository;
-import com.example.eventmanagement.security.JwtTokenProvider;
-
 @Service
+@RequiredArgsConstructor
 public class AuthService {
-    @Autowired
-    private UserRepository userRepository;
 
-    @Autowired
-    private JwtTokenProvider tokenProvider;
+    private final UserRepository repo;
+    private final PasswordEncoder encoder;
+    private final JwtUtil jwtUtil;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    public LoginResponse login(LoginRequest request) throws Exception {
-        String normalizedEmail = request.getEmail() == null
-            ? ""
-            : request.getEmail().trim().toLowerCase();
-
-        User user = userRepository.findByEmail(normalizedEmail)
-                .orElseThrow(() -> new Exception("User not found"));
-
-        if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
-            throw new Exception("Invalid password");
-        }
-
-        if (!user.getActive()) {
-            throw new Exception("User account is inactive");
-        }
-
-        String token = tokenProvider.generateToken(user.getId(), user.getEmail(), user.getRole().toString());
-
-        return LoginResponse.builder()
-                .token(token)
-            .user(LoginResponse.UserInfo.builder()
-                .id(user.getId())
-                .fullName(user.getFullName())
-                .email(user.getEmail())
-                .role(user.getRole().toString())
-                .registrationNumber(user.getRegistrationNumber())
-                .build())
-                .build();
-    }
-
-    public void register(String email, String password, String fullName, String registrationNumber, UserRole role) throws Exception {
-        String normalizedEmail = email == null
-                ? ""
-                : email.trim().toLowerCase();
-
-        if (normalizedEmail.isBlank()) {
-            throw new Exception("Email is required");
-        }
-
-        if (userRepository.findByEmail(normalizedEmail).isPresent()) {
-            throw new Exception("Email already registered");
-        }
+    public String signup(SignupRequest req) {
 
         User user = User.builder()
-                .email(normalizedEmail)
-            .passwordHash(passwordEncoder.encode(password))
-                .fullName(fullName)
-                .registrationNumber(registrationNumber)
-                .role(role)
-                .active(true)
+                .name(req.getName())
+                .email(req.getEmail())
+                .password(encoder.encode(req.getPassword()))
+                .role(Role.valueOf(req.getRole()))
                 .build();
 
-        userRepository.save(user);
+        repo.save(user);
+        return "User registered successfully";
+    }
+
+    public AuthResponse login(LoginRequest req) {
+
+        User user = repo.findByEmail(req.getEmail())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!encoder.matches(req.getPassword(), user.getPassword())) {
+            throw new RuntimeException("Invalid credentials");
+        }
+
+        String token = jwtUtil.generateToken(user.getEmail(), user.getRole().name());
+
+        return AuthResponse.builder()
+                .token(token)
+                .email(user.getEmail())
+                .role(user.getRole().name())
+                .build();
     }
 }
