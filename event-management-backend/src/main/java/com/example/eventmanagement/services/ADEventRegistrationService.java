@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.stream.Collectors;
 
 @Service
 public class ADEventRegistrationService {
@@ -71,5 +74,46 @@ public List<ADEventRegistration> searchRegisteredStudent(String keyword)
     }
     public List<ADEventRegistration> getRegistrationsByEventId(int eventId) {
         return ADEventRegistrationRepository.findByEvent_EventId(eventId);
+    }
+
+    public List<ADEventRegistration> getRegistrationsByUserEmail(String email, String keyword, String status) {
+        List<ADEventRegistration> registrations = ADEventRegistrationRepository.findByUser_Email(email);
+
+        if (status != null && !status.isEmpty()) {
+            registrations = registrations.stream()
+                    .filter(reg -> status.equalsIgnoreCase(reg.getStatus()))
+                    .collect(Collectors.toList());
+        }
+
+        if (keyword != null && !keyword.isEmpty()) {
+            String lowerKeyword = keyword.toLowerCase();
+            registrations = registrations.stream()
+                    .filter(reg -> 
+                        (reg.getEventName() != null && reg.getEventName().toLowerCase().contains(lowerKeyword)) ||
+                        (reg.getLocation() != null && reg.getLocation().toLowerCase().contains(lowerKeyword)) ||
+                        (reg.getCategory() != null && reg.getCategory().toLowerCase().contains(lowerKeyword))
+                    )
+                    .collect(Collectors.toList());
+        }
+
+        return registrations;
+    }
+
+    public Map<String, Long> getMyRegistrationStats(String email) {
+        Map<String, Long> stats = new HashMap<>();
+        
+        long totalRegistrations = ADEventRegistrationRepository.countByUser_Email(email);
+        long confirmed = ADEventRegistrationRepository.countByUser_EmailAndStatus(email, "confirmed");
+        long pending = ADEventRegistrationRepository.countByUser_EmailAndStatus(email, "pending");
+        long attended = ADEventRegistrationRepository.countByUser_EmailAndStatus(email, "attended");
+        long cancelled = ADEventRegistrationRepository.countByUser_EmailAndStatus(email, "cancelled");
+
+        stats.put("totalRegistrations", totalRegistrations);
+        stats.put("confirmed", confirmed);
+        stats.put("pending", pending);
+        stats.put("attended", attended);
+        stats.put("cancelled", cancelled);
+
+        return stats;
     }
 }

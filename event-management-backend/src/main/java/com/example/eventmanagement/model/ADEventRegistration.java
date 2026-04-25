@@ -13,7 +13,8 @@ public class ADEventRegistration {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int registration_id;
 
-    private LocalDateTime registration_date;
+    @Column(name = "registration_date")
+    private LocalDateTime registrationDate;
     private String status;
     @JsonIgnore
     @ManyToOne
@@ -47,6 +48,36 @@ public class ADEventRegistration {
     public LocalDateTime getEventDate() {
         return event != null ? event.getEventDate() : null;
     }
+
+    @JsonProperty("event_name")
+    public String getEventNameSnakeCase() {
+        return getEventName();
+    }
+
+    @JsonProperty("event_date")
+    public LocalDateTime getEventDateSnakeCase() {
+        return getEventDate();
+    }
+
+    @JsonProperty("location")
+    public String getLocation() {
+        return event != null ? event.getLocation() : null;
+    }
+
+    @JsonProperty("category")
+    public String getCategory() {
+        return (event != null && event.getCategory() != null) ? event.getCategory().getCategoryName() : null;
+    }
+
+    @JsonProperty("event_time")
+    public java.time.LocalTime getEventTime() {
+        return event != null ? event.getEventTime() : null;
+    }
+
+    @JsonProperty("event_id")
+    public Integer getEventId() {
+        return event != null ? event.getEventId() : null;
+    }
     public int getRegistration_id() {
         return registration_id;
     }
@@ -72,11 +103,11 @@ public class ADEventRegistration {
     }
 
     public LocalDateTime getRegistration_date() {
-        return registration_date;
+        return registrationDate;
     }
 
     public void setRegistration_date(LocalDateTime registration_date) {
-        this.registration_date = registration_date;
+        this.registrationDate = registration_date;
     }
 
     public String getStatus() {

@@ -1,6 +1,7 @@
 package com.example.eventmanagement.model;
 
 
+import com.example.eventmanagement.ADenum.EventStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
@@ -21,7 +22,7 @@ public class ADEvent {
     private String location;
     @Column(nullable = true)
     private Integer maxParticipants;
-    private  String status;
+
 
     public String getImage() {
         return image;
@@ -42,7 +43,8 @@ public class ADEvent {
     @JoinColumn(name = "created_by")
 
     private ADUser ADUser;
-
+    @Enumerated(EnumType.STRING)
+    private EventStatus status;
     public int getEventId() {
         return eventId;
     }
@@ -79,11 +81,11 @@ public class ADEvent {
 
 
 
-    public String getStatus() {
+    public EventStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(EventStatus status) {
         this.status = status;
     }
 

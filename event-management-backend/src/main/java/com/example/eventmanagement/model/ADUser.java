@@ -30,8 +30,8 @@ public class ADUser {
 
     public enum Role{
         ADMIN,
-        STUDENT
-
+        STUDENT,
+        FACULTY
     }
 
 

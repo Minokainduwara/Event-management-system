@@ -1,5 +1,7 @@
 package com.example.eventmanagement.controller;
 
+import com.example.eventmanagement.ADenum.EventStatus;
+import com.example.eventmanagement.dto.CategoryCountDTO;
 import com.example.eventmanagement.model.ADEvent;
 import com.example.eventmanagement.model.ADEventCategory;
 import com.example.eventmanagement.repository.ADCategoryRepository;
@@ -15,6 +17,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/events")
@@ -61,8 +64,8 @@ public class ADEventController {
         return  ADEventService.getEventByCategory(categoryId);
    }
     @PutMapping("/updateStatus/{id}")
-    public ResponseEntity<ADEvent> updateEventStatus(@PathVariable Integer id, @RequestParam String status) {
-        ADEvent event= ADEventService.updateEventStatus(id, status);
+    public ResponseEntity<ADEvent> updateEventStatus(@PathVariable Integer id, @RequestParam EventStatus status) {
+        ADEvent event= ADEventService.updateStatus(id, status);
         if(event==null){
             return  ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
@@ -84,5 +87,15 @@ public class ADEventController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Upload failed");
         }
     }
-
+    @PutMapping("/events/{id}/status")
+    public ADEvent updateStatus(
+            @PathVariable int id,
+            @RequestParam EventStatus status
+    ) {
+        return ADEventService.updateStatus(id, status);
+    }
+    @GetMapping("/category-counts")
+    public List<CategoryCountDTO> getCategoryCounts() {
+        return ADEventService.getCategoryCounts();
+    }
 }

@@ -1,8 +1,13 @@
 package com.example.eventmanagement.controller;
 
+import com.example.eventmanagement.dto.ChangePasswordDTO;
+import com.example.eventmanagement.dto.StudentProfileDTO;
 import com.example.eventmanagement.model.ADUser;
+import com.example.eventmanagement.repository.ADUserRepository;
 import com.example.eventmanagement.services.ADUserService;
+import org.springframework.security.core.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,7 +18,8 @@ import java.util.List;
 public class ADUserController {
     @Autowired
     private ADUserService ADUserService;
-
+@Autowired
+private ADUserRepository ADUserRepository;
     @PostMapping("/saveUser")
     public ADUser saveUser(@RequestBody ADUser ADUser){
         return ADUserService.saveUser(ADUser);
@@ -53,5 +59,39 @@ public class ADUserController {
     public long getStudentCount()
     {
         return ADUserService.getStudentCount();
+    }
+
+    @GetMapping("/profile")
+    public ResponseEntity<StudentProfileDTO> getProfile(Authentication authentication) {
+
+        String email = authentication.getName(); // usually username/email
+
+        return ResponseEntity.ok(
+                ADUserService.getProfileByEmail(email)
+        );
+    }
+
+    // UPDATE PROFILE BY ID
+    @PutMapping("/profile")
+    public ResponseEntity<StudentProfileDTO> updateProfile(
+            @RequestBody StudentProfileDTO dto,
+            Authentication auth) {
+
+        String email = auth.getName();
+
+        return ResponseEntity.ok(
+                ADUserService.updateProfileByEmail(email, dto)
+        );
+    }
+    @PutMapping("/change-password")
+    public ResponseEntity<?> changePassword(
+            @RequestBody ChangePasswordDTO dto,
+            Authentication auth) {
+
+        String email = auth.getName();
+
+        ADUserService.changePasswordByEmail(email, dto);
+
+        return ResponseEntity.ok("Password updated");
     }
 }

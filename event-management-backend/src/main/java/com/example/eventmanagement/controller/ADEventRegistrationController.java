@@ -4,9 +4,11 @@ import com.example.eventmanagement.model.ADEventRegistration;
 import com.example.eventmanagement.model.ADRegistrationSummary;
 import com.example.eventmanagement.services.ADEventRegistrationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/eventRegistrations")
@@ -52,5 +54,22 @@ public class ADEventRegistrationController {
     @GetMapping("/event/{eventId}")
     public List<ADEventRegistration> getRegistrationsByEvent(@PathVariable int eventId) {
         return ADEventRegistrationService.getRegistrationsByEventId(eventId);
+    }
+
+    @GetMapping("/my")
+    public List<ADEventRegistration> getMyRegistrations(
+            Authentication auth,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String status) {
+
+        String email = auth.getName();
+
+        return ADEventRegistrationService.getRegistrationsByUserEmail(email, keyword, status);
+    }
+
+    @GetMapping("/my/stats")
+    public Map<String, Long> getMyRegistrationStats(Authentication auth) {
+        String email = auth.getName();
+        return ADEventRegistrationService.getMyRegistrationStats(email);
     }
 }

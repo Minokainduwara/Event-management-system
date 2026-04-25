@@ -2,12 +2,7 @@ import './App.css'
 import './index.css'
 import { Navigate, Route, Routes } from "react-router";
 import { Login } from "./pages/login.tsx";
-import { AdminDashboardPage } from "./features/admin/pages/dashboard.tsx";
-import { FacultyDashboardPage } from "./features/faculty/pages/dashboard.tsx";
-import { Dashboard } from "./features/student/pages/dashboard.tsx";
-import { EventsPage } from "./features/student/pages/events.tsx";
-import { MyRegistrationsPage } from "./features/student/pages/myRegistrations.tsx";
-import { ProfilePage } from "./features/student/pages/profile.tsx";
+
 import { RoleGuard } from "./shared/ui/RoleGuard.tsx";
 
 function App() {
@@ -18,19 +13,19 @@ function App() {
           <Route path="/login" element={<Login />} />
 
           <Route element={<RoleGuard allowedRoles={["student"]} />}>
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/events" element={<EventsPage />} />
+              {/* <Route path="/dashboard" element={<Dashboard />} /> */}
+              {/* <Route path="/events" element={<EventsPage />} />
               <Route path="/my-registrations" element={<MyRegistrationsPage />} />
-              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/profile" element={<ProfilePage />} /> */}
           </Route>
 
-          <Route element={<RoleGuard allowedRoles={["admin"]} />}>
+          {/* <Route element={<RoleGuard allowedRoles={["admin"]} />}>
               <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
           </Route>
 
           <Route element={<RoleGuard allowedRoles={["faculty"]} />}>
               <Route path="/faculty/dashboard" element={<FacultyDashboardPage />} />
-          </Route>
+          </Route> */}
 
           <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>

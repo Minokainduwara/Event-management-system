@@ -1,6 +1,6 @@
 import React from "react";
 import Menu from "./Menu";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 function Header() {
 
@@ -64,11 +64,14 @@ function Header() {
           <option value="/registration" className="text-black">
             Registrations
           </option>
+           <option value="/announcement" className="text-black">
+            annoucements
+          </option>
           
         </select>
       </div>
       <div className="flex items-center gap-3">
-        <div className="flex items-center gap-2">
+        <Link to="/profile" className="flex items-center gap-2 hover:opacity-80 transition cursor-pointer">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="76"
@@ -92,8 +95,8 @@ function Header() {
               stroke-linejoin="round"
             />
           </svg>
-          <h3 className="font-bold">Admin</h3>
-        </div>
+          <h3 className="font-bold">Admin Profile</h3>
+        </Link>
         <div className="flex items-center hover:bg-white/20 transition p-1 rounded  ml-2">
           <svg
             xmlns="http://www.w3.org/2000/svg"

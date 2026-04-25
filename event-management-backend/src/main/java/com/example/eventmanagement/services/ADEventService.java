@@ -1,13 +1,18 @@
 package com.example.eventmanagement.services;
 
+import com.example.eventmanagement.ADenum.EventStatus;
+import com.example.eventmanagement.dto.CategoryCountDTO;
 import com.example.eventmanagement.model.ADEvent;
 import com.example.eventmanagement.model.ADEventCategory;
 import com.example.eventmanagement.repository.ADCategoryRepository;
 import com.example.eventmanagement.repository.ADEventRepository;
+import com.example.eventmanagement.repository.CategoryCount;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ADEventService {
@@ -15,6 +20,7 @@ public class ADEventService {
     private ADEventRepository ADEventRepository;
     @Autowired
     private ADCategoryRepository ADCategoryRepository;
+
 
     public ADEvent saveEvent(ADEvent event){
         Integer categoryId = event.getCategory().getCategoryId();
@@ -71,13 +77,32 @@ public class ADEventService {
         }
         return ADEventRepository.findByCategory_CategoryId(categoryId);
     }
-    // In EventService.java
-    public ADEvent updateEventStatus(Integer id, String status) {
-        ADEvent event = getEventById(id);
-        if (event == null) {
-            return null;
-        }
-        event.setStatus(status);
-        return saveEvent(event);
+
+
+    public ADEvent createEvent(ADEvent event) {
+
+        event.setStatus(EventStatus.UPCOMING);
+
+        return ADEventRepository.save(event);
     }
+    public ADEvent updateStatus(int id, EventStatus status) {
+
+        ADEvent event = ADEventRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Event not found"));
+
+        event.setStatus(status);
+
+        return ADEventRepository.save(event);
+    }
+    public List<CategoryCountDTO> getCategoryCounts() {
+
+        return ADEventRepository.countEventsByCategory()
+                .stream()
+                .map(obj -> new CategoryCountDTO(
+                        obj.getCategory(),
+                        obj.getCount()
+                ))
+                .toList();
+    }
+
 }
