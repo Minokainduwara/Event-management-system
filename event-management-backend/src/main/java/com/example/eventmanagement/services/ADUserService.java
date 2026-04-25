@@ -114,8 +114,8 @@ public class ADUserService {
         dto.setPhone(user.getPhone());
         dto.setEventsRegistered(user.getEventsRegistered());
 
-        if (user.getCreated_at() != null) {
-            dto.setCreatedAt(user.getCreated_at()
+        if (user.getCreatedAt() != null) {
+            dto.setCreatedAt(user.getCreatedAt()
                     .format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
         }
 
