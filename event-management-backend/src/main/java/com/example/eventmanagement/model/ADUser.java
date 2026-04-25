@@ -1,44 +1,57 @@
 package com.example.eventmanagement.model;
 
 import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "user")
 public class ADUser {
+
+    // 🔴 FIX 1: primary key
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private  int userId;
-    @Column(nullable = false,unique = true)
+    private int userId;
+
+    // 🔴 FIX 2: database column consistency (important for login & constraints)
+    @Column(nullable = false, unique = true)
     private String universityId;
+
     private String name;
+
     @Column(unique = true)
     private String email;
+
     private String password;
 
+    // 🔴 FIX 3: role enum stored as STRING in DB
     @Enumerated(EnumType.STRING)
     private Role role;
+
     private String department;
     private String year;
     private String phone;
 
-    private LocalDateTime created_at;
+    // 🔴 FIX 4: auto timestamp handling
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
 
+    // 🔴 FIX 5: not stored in DB (calculated field)
     @Transient
     private int eventsRegistered;
 
-    public enum Role{
+    public enum Role {
         ADMIN,
         STUDENT,
         FACULTY
     }
 
-
     public ADUser() {
     }
 
-    public ADUser(int userId, String universityId, String name, String email, String password, Role role, String department, String year, String phone, LocalDateTime created_at) {
+    // 🔴 FIX 6: removed created_at from constructor (handled automatically)
+    public ADUser(int userId, String universityId, String name, String email,
+                  String password, Role role, String department,
+                  String year, String phone) {
         this.userId = userId;
         this.universityId = universityId;
         this.name = name;
@@ -48,16 +61,15 @@ public class ADUser {
         this.department = department;
         this.year = year;
         this.phone = phone;
-        this.created_at = created_at;
     }
 
-    public int getEventsRegistered() {
-        return eventsRegistered;
+    // 🔴 FIX 7: auto set createdAt before insert
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
     }
 
-    public void setEventsRegistered(int eventsRegistered) {
-        this.eventsRegistered = eventsRegistered;
-    }
+    // GETTERS + SETTERS (unchanged but clean structure)
 
     public int getUserId() {
         return userId;
@@ -131,11 +143,15 @@ public class ADUser {
         this.phone = phone;
     }
 
-    public LocalDateTime getCreated_at() {
-        return created_at;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreated_at(LocalDateTime created_at) {
-        this.created_at = created_at;
+    public int getEventsRegistered() {
+        return eventsRegistered;
+    }
+
+    public void setEventsRegistered(int eventsRegistered) {
+        this.eventsRegistered = eventsRegistered;
     }
 }
