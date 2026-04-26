@@ -1,7 +1,5 @@
 import {
   Calendar,
-  ListChecks,
-  CheckCircle,
   Clock,
   MapPin,
   Users,
@@ -14,64 +12,12 @@ function StudentDashboard() {
   const [events, setEvents] = useState<any[]>([]);
   const [eventCounts, setEventCounts] = useState<any>({});
   const [stats, setStats] = useState<any>({});
+  const [activities, setActivities] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetch("http://localhost:8080/student/events", {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setEvents(data);
+  const token = localStorage.getItem("token");
 
-        data.forEach((event: any) => {
-          fetch(`http://localhost:8080/student/count/${event.eventId}`, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          })
-            .then((res) => res.json())
-            .then((count) => {
-              setEventCounts((prev: any) => ({
-                ...prev,
-                [event.eventId]: count,
-              }));
-            });
-        });
-      })
-      .catch((err) => console.error(err));
-
-    fetch("http://localhost:8080/student/dashboard", {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => setStats(data))
-      .catch((err) => console.error(err))
-      .finally(() => setLoading(false));
-  }, []);
-
-  const [activities, setActivities] = useState([]);
-
-  useEffect(() => {
-    fetch("http://localhost:8080/student/activity", {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setActivities(data);
-      })
-      .catch((err) => console.log(err));
-  }, []);
-
-
-
-
+  // ---------------- FORMAT DATE ----------------
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
@@ -81,143 +27,208 @@ function StudentDashboard() {
     });
   };
 
+  // ---------------- FETCH EVENTS + STATS ----------------
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+
+        // EVENTS
+        const eventRes = await fetch("http://localhost:8080/student/events", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const eventData = await eventRes.json();
+        const safeEvents = Array.isArray(eventData) ? eventData : [];
+
+        setEvents(safeEvents);
+
+        // EVENT COUNTS
+        safeEvents.forEach(async (event: any) => {
+          try {
+            const res = await fetch(
+              `http://localhost:8080/student/count/${event.eventId}`,
+              {
+                headers: { Authorization: `Bearer ${token}` },
+              }
+            );
+            const count = await res.json();
+
+            setEventCounts((prev: any) => ({
+              ...prev,
+              [event.eventId]: count ?? 0,
+            }));
+          } catch (err) {
+            console.log("Count error:", err);
+          }
+        });
+
+        // DASHBOARD STATS
+        const statsRes = await fetch(
+          "http://localhost:8080/student/dashboard",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        const statsData = await statsRes.json();
+        setStats(statsData ?? {});
+      } catch (err) {
+        console.log("Dashboard error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // ---------------- FETCH ACTIVITY ----------------
+  useEffect(() => {
+    const fetchActivity = async () => {
+      try {
+        const res = await fetch(
+          "http://localhost:8080/student/activity",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        const data = await res.json();
+
+        // 🔥 FIX: ensure array ALWAYS
+        const safeData = Array.isArray(data)
+          ? data
+          : Array.isArray(data?.activities)
+          ? data.activities
+          : [];
+
+        setActivities(safeData);
+      } catch (err) {
+        console.log("Activity error:", err);
+        setActivities([]);
+      }
+    };
+
+    fetchActivity();
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <StudentHeader />
 
+      {/* HEADER */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-6 py-8">
           <h1 className="text-3xl font-bold text-gray-900">
             Student Dashboard
           </h1>
           <p className="text-gray-600 mt-1">
-            Welcome back, Student! Discover and join university events
+            Welcome back! Discover and join university events
           </p>
 
+          {/* STATS */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-            <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+            <div className="bg-blue-50 p-4 rounded-lg border">
               <div className="text-sm text-blue-600">Available Events</div>
-              <div className="text-2xl font-bold text-blue-900 mt-1">
-                {stats.availableEvents}
+              <div className="text-2xl font-bold">
+                {stats.availableEvents ?? 0}
               </div>
             </div>
-            <div className="bg-green-50 rounded-lg p-4 border border-green-200">
+
+            <div className="bg-green-50 p-4 rounded-lg border">
               <div className="text-sm text-green-600">My Registrations</div>
-              <div className="text-2xl font-bold text-green-900 mt-1">
-                {stats.myRegistrations}
+              <div className="text-2xl font-bold">
+                {stats.myRegistrations ?? 0}
               </div>
             </div>
-            <div className="bg-purple-50 rounded-lg p-4 border border-purple-200">
-              <div className="text-sm text-purple-600">Attended Events</div>
-              <div className="text-2xl font-bold text-purple-900 mt-1">
-                {stats.attendedEvents}
+
+            <div className="bg-purple-50 p-4 rounded-lg border">
+              <div className="text-sm text-purple-600">Attended</div>
+              <div className="text-2xl font-bold">
+                {stats.attendedEvents ?? 0}
               </div>
             </div>
-            <div className="bg-orange-50 rounded-lg p-4 border border-orange-200">
-              <div className="text-sm text-orange-600">Upcoming Events</div>
-              <div className="text-2xl font-bold text-orange-900 mt-1">
-                {stats.upcomingEvents}
+
+            <div className="bg-orange-50 p-4 rounded-lg border">
+              <div className="text-sm text-orange-600">Upcoming</div>
+              <div className="text-2xl font-bold">
+                {stats.upcomingEvents ?? 0}
               </div>
             </div>
           </div>
         </div>
       </div>
 
+      {/* EVENTS TABLE */}
       <div className="max-w-7xl mx-auto px-6 py-8">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-8 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900">
-                Upcoming Events
-              </h2>
-              <p className="text-sm text-gray-600 mt-1">
-                Featured events happening soon
-              </p>
-            </div>
+        <div className="bg-white rounded-lg border shadow-sm mb-8">
+          <div className="p-6 border-b flex justify-between">
+            <h2 className="text-lg font-semibold">Upcoming Events</h2>
             <Link
               to="/studentbrowseevent"
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+              className="text-blue-600 font-medium"
             >
-              Browse All Events
+              Browse All
             </Link>
           </div>
+
           <div className="overflow-x-auto">
             {loading ? (
-              <div className="p-6 text-center text-gray-500">Loading...</div>
+              <div className="p-6 text-center">Loading...</div>
             ) : (
               <table className="w-full">
-                <thead className="bg-gray-50 border-b border-gray-200">
+                <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">
-                      Event Name
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase ">
-                      Category
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                      Date & Time
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                      Location
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                      Availability
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                      Status
-                    </th>
+                    <th className="p-4 text-left">Name</th>
+                    <th>Category</th>
+                    <th>Date</th>
+                    <th>Location</th>
+                    <th>Availability</th>
+                    <th>Status</th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+
+                <tbody>
                   {events.map((event) => (
-                    <tr
-                      key={event.eventId}
-                      className="hover:bg-gray-50 transition-colors"
-                    >
-                      <td className="px-6 py-4">
-                        <div className="text-sm font-medium text-gray-900">
-                          {event.name}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="inline-flex px-3 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                    <tr key={event.eventId} className="border-t">
+                      <td className="p-4">{event.name}</td>
+
+                      <td>
+                        <span className="bg-blue-100 px-2 py-1 rounded">
                           {event.category}
                         </span>
                       </td>
-                      <td className="px-6 py-4">
-                        <div className="text-sm text-gray-600 flex items-center gap-1">
-                          <Calendar className="w-4 h-4 text-gray-400" />
-                          {formatDate(event.date)}
-                        </div>
-                        <div className="text-xs text-gray-500 flex items-center gap-1 mt-1">
-                          <Clock className="w-3 h-3" />
+
+                      <td>
+                        <Calendar className="inline w-4 h-4 mr-1" />
+                        {formatDate(event.date)}
+                        <div className="text-xs text-gray-500">
+                          <Clock className="inline w-3 h-3 mr-1" />
                           {event.time}
                         </div>
                       </td>
-                      <td className="px-6 py-4">
-                        <div className="text-sm text-gray-600 flex items-center gap-1">
-                          <MapPin className="w-4 h-4 text-gray-400" />
-                          {event.location}
-                        </div>
+
+                      <td>
+                        <MapPin className="inline w-4 h-4 mr-1" />
+                        {event.location}
                       </td>
-                      <td className="px-6 py-4">
-                        <div className="text-sm text-gray-600 flex items-center gap-1">
-                          <Users className="w-4 h-4 text-gray-400" />
-                          {eventCounts[event.eventId] ?? 0}/
-                          {event.maxParticipants === null
-                            ? "Unlimited"
-                            : event.maxParticipants}
-                        </div>
+
+                      <td>
+                        <Users className="inline w-4 h-4 mr-1" />
+                        {eventCounts[event.eventId] ?? 0}/
+                        {event.maxParticipants ?? "Unlimited"}
                       </td>
-                      <td className="px-6 py-4">
+
+                      <td>
                         {event.isRegistered ? (
-                          <span className="inline-flex px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                          <span className="text-green-600 font-medium">
                             Registered
                           </span>
                         ) : (
                           <Link
                             to={`/student/events/${event.eventId}`}
-                            className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors text-sm font-medium"
+                            className="text-blue-600"
                           >
                             Register
                           </Link>
@@ -231,32 +242,25 @@ function StudentDashboard() {
           </div>
         </div>
 
-
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">
-              Recent Activity
-            </h2>
-            <p className="text-sm text-gray-600 mt-1">
-              Your latest event interactions
-            </p>
+        {/* ACTIVITY */}
+        <div className="bg-white border rounded-lg">
+          <div className="p-4 border-b">
+            <h2 className="font-semibold">Recent Activity</h2>
           </div>
-          <div className="bg-white p-4 rounded shadow">
 
-
+          <div className="p-4">
             {activities.length === 0 ? (
-              <p className="text-gray-500 text-center">No activity found</p>
+              <p className="text-gray-500 text-center">
+                No activity found
+              </p>
             ) : (
-              activities.map((item: any) => (
+              activities.map((item: any, index: number) => (
                 <div
-                  key={item.registration_id}
+                  key={item.registration_id ?? index}
                   className="border-b py-2 flex justify-between"
                 >
                   <div>
-                    <p className="text-sm font-semibold">
-                      {item.eventName}
-                    </p>
-
+                    <p className="font-medium">{item.eventName}</p>
                     <p className="text-xs text-gray-500">
                       Status: {item.status}
                     </p>
@@ -274,4 +278,5 @@ function StudentDashboard() {
     </div>
   );
 }
+
 export default StudentDashboard;

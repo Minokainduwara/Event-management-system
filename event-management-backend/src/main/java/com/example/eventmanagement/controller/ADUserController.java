@@ -1,8 +1,6 @@
 package com.example.eventmanagement.controller;
 
-import com.example.eventmanagement.dto.ChangePasswordDTO;
-import com.example.eventmanagement.dto.LoginDTO;
-import com.example.eventmanagement.dto.StudentProfileDTO;
+import com.example.eventmanagement.dto.*;
 import com.example.eventmanagement.model.ADUser;
 import com.example.eventmanagement.repository.ADUserRepository;
 import com.example.eventmanagement.services.ADUserService;
@@ -14,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/users")
-@CrossOrigin(origins = "http://localhost:5173") // React Vite
+@CrossOrigin(origins = "http://localhost:5173")
 public class ADUserController {
 
     @Autowired
@@ -23,14 +21,39 @@ public class ADUserController {
     @Autowired
     private ADUserRepository userRepository;
 
+    // ================= REGISTER (FIXED - DTO BASED) =================
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody RegisterDTO dto) {
+
+        if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
+            return ResponseEntity.badRequest().body("Email already exists");
+        }
+
+        ADUser user = new ADUser();
+        user.setName(dto.getName());
+        user.setEmail(dto.getEmail());
+        user.setPassword(dto.getPassword());
+        user.setUniversityId(dto.getUniversityId());
+
+        // DEFAULT ROLE
+        user.setRole(ADUser.Role.STUDENT);
+
+        ADUser savedUser = userService.saveUser(user);
+
+        return ResponseEntity.ok(savedUser);
+    }
+
     // ================= LOGIN =================
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginDTO dto) {
 
         ADUser user = userRepository.findByEmail(dto.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElse(null);
 
-        // ⚠️ plain password check (NO JWT yet)
+        if (user == null) {
+            return ResponseEntity.status(404).body("User not found");
+        }
+
         if (!user.getPassword().equals(dto.getPassword())) {
             return ResponseEntity.status(401).body("Invalid credentials");
         }
@@ -39,7 +62,6 @@ public class ADUserController {
     }
 
     // ================= CRUD =================
-
     @PostMapping("/saveUser")
     public ADUser saveUser(@RequestBody ADUser user) {
         return userService.saveUser(user);
@@ -51,23 +73,22 @@ public class ADUserController {
     }
 
     @GetMapping("/getUser/{id}")
-    public ADUser getUserById(@PathVariable int id) {
+    public ADUser getUserById(@PathVariable Integer id) {
         return userService.getUserById(id);
     }
 
     @PutMapping("/updateUser/{id}")
-    public ADUser updateUser(@PathVariable int id, @RequestBody ADUser user) {
+    public ADUser updateUser(@PathVariable Integer id, @RequestBody ADUser user) {
         return userService.updateUser(id, user);
     }
 
     @DeleteMapping("/deleteUser/{id}")
-    public String deleteUser(@PathVariable int id) {
+    public String deleteUser(@PathVariable Integer id) {
         userService.deleteUser(id);
         return "User Deleted Successfully";
     }
 
     // ================= STUDENTS =================
-
     @GetMapping("/getAllStudents")
     public List<ADUser> getAllStudents() {
         return userService.getAllStudents();
@@ -89,7 +110,6 @@ public class ADUserController {
     }
 
     // ================= PROFILE =================
-
     @GetMapping("/profile")
     public StudentProfileDTO profile(@RequestParam String email) {
         return userService.getProfileByEmail(email);
@@ -101,6 +121,7 @@ public class ADUserController {
         return userService.updateProfileByEmail(email, dto);
     }
 
+    // ================= PASSWORD =================
     @PutMapping("/change-password")
     public String changePassword(@RequestParam String email,
                                  @RequestBody ChangePasswordDTO dto) {

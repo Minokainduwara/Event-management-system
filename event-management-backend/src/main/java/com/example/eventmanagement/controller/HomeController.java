@@ -53,7 +53,7 @@ public class HomeController {
     @GetMapping("/featured-events")
     public List<ADEvent> getFeaturedEvents() {
         // Returns all events sorted by eventDate descending, limited to 6
-        
+
         return eventRepository.findTop6ByOrderByEventDateDesc();
 
     }
