@@ -1,6 +1,6 @@
 package com.example.eventmanagement.controller;
 
-import com.example.eventmanagement.entity.OGUser;
+import com.example.eventmanagement.model.OGUser;
 import com.example.eventmanagement.dto.OGChangePasswordDto;
 import com.example.eventmanagement.services.OGUserService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,6 +1,6 @@
 package com.example.eventmanagement.security;
 
-import com.example.eventmanagement.entity.OGUser;
+import com.example.eventmanagement.model.OGUser;
 import com.example.eventmanagement.repository.OGUserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

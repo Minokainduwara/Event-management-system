@@ -14,10 +14,10 @@ public class ADAnnouncement {
     @Column(name = "announcement_id")
     private int announcementId;
 
-    @Column(nullable = false)
+    @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(name = "message", nullable = false, columnDefinition = "TEXT")
     private String message;
 
     @ManyToOne

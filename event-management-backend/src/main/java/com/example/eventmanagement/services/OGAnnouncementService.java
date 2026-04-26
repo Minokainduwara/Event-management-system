@@ -1,6 +1,6 @@
 package com.example.eventmanagement.services;
 
-import com.example.eventmanagement.entity.OGAnnouncement;
+import com.example.eventmanagement.model.OGAnnouncement;
 import com.example.eventmanagement.repository.OGAnnouncementRepository;
 import com.example.eventmanagement.dto.OGCreateAnnouncementDto;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,7 +1,7 @@
-package com.example.eventmanagement.entity;
+package com.example.eventmanagement.model;
 
 import jakarta.persistence.*;
-import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -13,14 +13,17 @@ public class OGAnnouncement {
     @Column(name = "announcement_id")
     private int announcementId;
 
+    @Column(name = "title")
     private String title;
+
+    @Column(name = "message")
     private String message;
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
 
-    @Column(name = "created_By")
+    @Column(name = "created_by")
     private int createdBy; // user ID
 
     @PrePersist

@@ -1,6 +1,6 @@
 package com.example.eventmanagement.services;
 
-import com.example.eventmanagement.entity.OGEvent;
+import com.example.eventmanagement.model.OGEvent;
 import com.example.eventmanagement.repository.OGEventRepository;
 import com.example.eventmanagement.dto.OGCreateEventDto;
 import org.springframework.beans.factory.annotation.Autowired;

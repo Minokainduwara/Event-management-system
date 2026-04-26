@@ -1,4 +1,4 @@
-package com.example.eventmanagement.entity;
+package com.example.eventmanagement.model;
 
 import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -11,20 +11,23 @@ public class OGRegistration {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonProperty("registration_id")
+    @Column(name = "registration_id")
     private int registrationId;
 
     @JsonProperty("registration_date")
+    @Column(name = "registration_date")
     private LocalDateTime registrationDate;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "status")
     private Status status;
 
     @ManyToOne
-    @JoinColumn(name = "eventId")
+    @JoinColumn(name = "event_id")
     private OGEvent event;
 
     @ManyToOne
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "user_id")
     private OGUser user;
 
     public enum Status {

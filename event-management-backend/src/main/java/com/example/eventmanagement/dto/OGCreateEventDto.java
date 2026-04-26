@@ -3,7 +3,7 @@ package com.example.eventmanagement.dto;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.example.eventmanagement.entity.OGEvent.Status;
+import com.example.eventmanagement.model.OGEvent.Status;
 
 public class OGCreateEventDto {
     @JsonProperty("event_title")

@@ -1,6 +1,6 @@
 package com.example.eventmanagement.services;
 
-import com.example.eventmanagement.entity.OGRegistration;
+import com.example.eventmanagement.model.OGRegistration;
 import com.example.eventmanagement.repository.OGRegistrationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

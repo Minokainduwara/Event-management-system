@@ -1,4 +1,4 @@
-package com.example.eventmanagement.entity;
+package com.example.eventmanagement.model;
 
 import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -10,11 +10,14 @@ public class OGCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonProperty("category_id")
+    @Column(name = "category_id")
     private int categoryId;
 
     @JsonProperty("category_name")
+    @Column(name = "category_name")
     private String categoryName;
 
+    @Column(name = "description")
     private String description;
 
     public int getCategoryId() { return categoryId; }

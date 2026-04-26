@@ -1,4 +1,4 @@
-package com.example.eventmanagement.entity;
+package com.example.eventmanagement.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
