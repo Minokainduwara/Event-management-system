@@ -19,6 +19,7 @@ function AdminDashboard() {
     apiFetch("http://localhost:8080/events/allEvents")
       .then((res) => res.json())
       .then((data) => {
+        console.log("EVENT DATA:", data);
         setEvents(data);
         setLoading(false);
       })

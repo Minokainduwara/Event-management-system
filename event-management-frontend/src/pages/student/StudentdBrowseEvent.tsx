@@ -12,51 +12,77 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import StudentHeader from "../../components/StudentHeader";
 
+type CategoryCount = {
+  category: string;
+  count: number;
+};
+
 function StudentBrowseEvents() {
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [events, setEvents] = useState<any[]>([]);
   const [categoryCounts, setCategoryCounts] = useState<CategoryCount[]>([]);
-  type CategoryCount = {
-    category: string;
-    count: number;
-  };
+
   useEffect(() => {
     authFetch("http://localhost:8080/student/events")
       .then((res) => res.json())
-      .then((data) => setEvents(data))
+      .then((data) => setEvents(Array.isArray(data) ? data : []))
       .catch((err) => console.log(err));
 
     authFetch("http://localhost:8080/events/category-counts")
       .then((res) => res.json())
-      .then((data) => setCategoryCounts(data))
-      .catch((err) => console.log(err));
+      .then((data) => {
+        // ✅ FIX HERE
+        const safeData = Array.isArray(data)
+          ? data
+          : Array.isArray(data?.data)
+          ? data.data
+          : [];
+
+        setCategoryCounts(safeData);
+      })
+      .catch((err) => {
+        console.log(err);
+        setCategoryCounts([]); // fallback
+      });
   }, []);
+
   useEffect(() => {
     if (searchQuery === "") return;
 
-    authFetch(`http://localhost:8080/student/events/search?keyword=${searchQuery}`)
+    authFetch(
+      `http://localhost:8080/student/events/search?keyword=${searchQuery}`
+    )
       .then((res) => res.json())
-      .then((data) => setEvents(data))
+      .then((data) => setEvents(Array.isArray(data) ? data : []))
       .catch((err) => console.log(err));
   }, [searchQuery]);
-
 
   useEffect(() => {
     if (categoryFilter === "") return;
 
-    authFetch(`http://localhost:8080/student/events/filter?categoryId=${categoryFilter}`)
+    authFetch(
+      `http://localhost:8080/student/events/filter?categoryId=${categoryFilter}`
+    )
       .then((res) => res.json())
-      .then((data) => setEvents(data))
+      .then((data) => setEvents(Array.isArray(data) ? data : []))
       .catch((err) => console.log(err));
   }, [categoryFilter]);
-  const categoryMap = categoryCounts.reduce((acc: any, item: any) => {
-    acc[item.category] = item.count;
-    return acc;
-  }, {});
-  const totalEvents = categoryCounts.reduce((sum, item) => sum + item.count, 0);
+
+  // ✅ SAFE REDUCE (this prevents crash)
+  const categoryMap = Array.isArray(categoryCounts)
+    ? categoryCounts.reduce((acc: any, item: any) => {
+        acc[item.category] = item.count;
+        return acc;
+      }, {})
+    : {};
+
+  const totalEvents = Array.isArray(categoryCounts)
+    ? categoryCounts.reduce((sum, item) => sum + item.count, 0)
+    : 0;
+
   const categories = Array.from(
-    new Set(events.map((e) => e.category))
+    new Set(events.map((e) => e.category?.categoryName || e.category))
   );
 
   const formatDate = (dateString: string) => {
@@ -67,6 +93,7 @@ function StudentBrowseEvents() {
       day: "numeric",
     });
   };
+
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -175,7 +202,7 @@ function StudentBrowseEvents() {
                     </td>
                     <td className="px-6 py-4">
                       <span className="inline-flex px-3 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                        {event.category}
+                        {event.category?.categoryName}
                       </span>
                     </td>
                     <td className="px-6 py-4">

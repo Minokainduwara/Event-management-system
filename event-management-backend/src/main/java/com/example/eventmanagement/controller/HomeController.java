@@ -1,5 +1,6 @@
 package com.example.eventmanagement.controller;
 
+import com.example.eventmanagement.enums.Role;
 import com.example.eventmanagement.model.ADEvent;
 import com.example.eventmanagement.model.ADUser;
 import com.example.eventmanagement.repository.ADAnnouncementRepository;
@@ -39,7 +40,7 @@ public class HomeController {
     public Map<String, Long> getHomeStats() {
         Map<String, Long> stats = new HashMap<>();
         stats.put("totalEvents",        eventRepository.count());
-        stats.put("totalStudents",      userRepository.countByRole(ADUser.Role.STUDENT));
+        stats.put("totalStudents",      userRepository.countByRole(Role.STUDENT));
         stats.put("totalCategories",    categoryRepository.count());
         stats.put("totalAnnouncements", announcementRepository.count());
         return stats;
@@ -53,7 +54,7 @@ public class HomeController {
     @GetMapping("/featured-events")
     public List<ADEvent> getFeaturedEvents() {
         // Returns all events sorted by eventDate descending, limited to 6
-        
+
         return eventRepository.findTop6ByOrderByEventDateDesc();
 
     }

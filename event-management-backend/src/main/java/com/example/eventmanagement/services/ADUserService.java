@@ -1,5 +1,5 @@
 package com.example.eventmanagement.services;
-
+import com.example.eventmanagement.enums.Role;
 import com.example.eventmanagement.dto.ChangePasswordDTO;
 import com.example.eventmanagement.dto.StudentProfileDTO;
 import com.example.eventmanagement.model.ADUser;
@@ -28,7 +28,7 @@ public class ADUserService {
         return ADUserRepository.findAll();
     }
     public List<ADUser> getAllStudents(){
-        List<ADUser> students= ADUserRepository.findByRole(ADUser.Role.STUDENT);
+        List<ADUser> students= ADUserRepository.findByRole(Role.STUDENT);
         for(ADUser ADUser :students){
             int count= ADEventRegistrationRepository.countByUser_UserId(ADUser.getUserId());
             ADUser.setEventsRegistered(count);
@@ -73,7 +73,7 @@ public class ADUserService {
     }
     public long getStudentCount()
     {
-        return ADUserRepository.countByRole(ADUser.Role.STUDENT);
+        return ADUserRepository.countByRole(Role.STUDENT);
     }
     public StudentProfileDTO getProfileByEmail(String email) {
 

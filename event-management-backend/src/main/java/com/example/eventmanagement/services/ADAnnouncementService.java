@@ -2,7 +2,7 @@ package com.example.eventmanagement.services;
 
 import com.example.eventmanagement.model.ADAnnouncement;
 
-import static com.example.eventmanagement.model.ADUser.Role.ADMIN;
+import  com.example.eventmanagement.enums.Role;
 
 import com.example.eventmanagement.model.ADUser;
 import com.example.eventmanagement.repository.ADAnnouncementRepository;
@@ -35,7 +35,7 @@ public class ADAnnouncementService {
                     "Admin ID not found"
             );
         }
-        if (ADUser.getRole() != ADMIN) {
+        if (ADUser.getRole() != Role.ADMIN) {
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN,
                     "Only ADMIN can create announcement"

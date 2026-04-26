@@ -1,5 +1,6 @@
 package com.example.eventmanagement.model;
 
+import com.example.eventmanagement.enums.Role;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -39,11 +40,11 @@ public class ADUser {
     @Transient
     private int eventsRegistered;
 
-    public enum Role {
-        ADMIN,
-        STUDENT,
-        FACULTY
-    }
+//    public enum Role {
+//        ADMIN,
+//        STUDENT,
+//        FACULTY
+//    }
 
     public ADUser() {
     }

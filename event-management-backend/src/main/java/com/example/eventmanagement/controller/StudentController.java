@@ -5,6 +5,7 @@ import com.example.eventmanagement.model.ADEvent;
 import com.example.eventmanagement.model.ADEventRegistration;
 import com.example.eventmanagement.services.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,9 +44,16 @@ public class StudentController {
 
 
     @GetMapping("/dashboard")
-    public StudentDashboardDTO dashboard(Authentication auth) {
+    public ResponseEntity<?> dashboard(Authentication auth) {
+
+        if (auth == null) {
+            return ResponseEntity.status(401).body("Unauthorized - No Authentication");
+        }
+
         String email = auth.getName();
-        return service.getDashboard(email);
+        StudentDashboardDTO data = service.getDashboard(email);
+
+        return ResponseEntity.ok(data);
     }
     @GetMapping("/activity/{userId}")
     public List<ADEventRegistration> getStudentActivity(@PathVariable int userId) {

@@ -6,7 +6,13 @@ function StudentHeader() {
   return (
     <header className="bg-blue-600 text-white shadow-md">
 
-      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+            <Link
+              to="/"
+              className={`px-4 py-2 rounded transition 
+              }`}
+            >
+              Home
+            </Link>
 
         
 

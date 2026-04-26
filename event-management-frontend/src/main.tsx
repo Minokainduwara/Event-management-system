@@ -1,167 +1,123 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-
-import "./index.css";
-
-/* ================= ADMIN ================= */
-
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import AdminEvents from "./pages/admin/AdminEvents";
-import AdminAddEvent from "./pages/admin/AdminAddEvent";
-import AdminEditEvent from "./pages/admin/AdminEditEvent";
-
-import ManageCategory from "./pages/admin/ManageCatogory";
-import AdminAddCategory from "./pages/admin/AdminAddCatogory";
-import AdminEditCategory from "./pages/admin/AdminEditCatogory";
-
-import ViewStudent from "./pages/admin/ViewStudent";
-import AdminEventRegistration from "./pages/admin/AdminEventRegistration";
-import AdminEventStudent from "./pages/admin/AdminEventStudent";
-
-import AdminAddAnnouncement from "./pages/admin/AdminAddAnnoucement";
-import ShowAllAnnouncement from "./pages/admin/ShowAllAnnoucement";
-import EditAnnouncement from "./pages/admin/EditAnnoucemet";
-
-import AdminProfile from "./pages/admin/AdminProfile";
-
-/* ================= STUDENT ================= */
-
-import StudentDashboard from "./pages/student/StudentDashboard";
-import StudentBrowseEvents from "./pages/student/StudentdBrowseEvent";
-import StudentRegisteredEvents from "./pages/student/StudentRegisteredEvent";
-import StudentAnnouncements from "./pages/student/StudentAnnoucement";
-import StudentProfile from "./pages/student/StudentProfile";
-import StudentEventDetails from "./pages/student/StudentEventDetails";
-
-/* ================= ORGANIZER (FACULTY) ================= */
-
-import OrganizerHomePage from "./pages/organizer/OrganizerHomePage";
-import MyEventsPage from "./pages/organizer/MyEventsPage";
-import CreateEventPage from "./pages/organizer/CreateEventPage";
-import AnalyticsPage from "./pages/organizer/AnalyticsPage";
-import AnnouncementsPage from "./pages/organizer/AnnoucementsPage";
-import ProfilePage from "./pages/organizer/ProfilePage";
-
-/* ================= AUTH / PUBLIC ================= */
-
-import HomePage from "./pages/Homepage";
-import { Login } from "./pages/login";
-
-/* ================= ROUTES ================= */
-
+import AdminEditEvent from "./pages/admin/AdminEditEvent.tsx";
+import AdminEventRegistration from "./pages/admin/AdminEventRegistration.tsx";
+import AdminAddAnnoucement from "./pages/admin/AdminAddAnnoucement.tsx";
+import ShowAllAnnoucement from "./pages/admin/ShowAllAnnoucement.tsx";
+import AdminEventStudent from "./pages/admin/AdminEventStudent.tsx";
+import { Login } from "./pages/login.tsx";
+import StudentDashboard from "./pages/student/StudentDashboard.tsx";
+import StudentBrowseEvents from "./pages/student/StudentdBrowseEvent.tsx";
+import StudentRegisteredEvents from "./pages/student/StudentRegisteredEvent.tsx";
+import StudentAnnouncements from "./pages/student/StudentAnnoucement.tsx";
+import StudentProfile from "./pages/student/StudentProfile.tsx";
+import StudentEventDetails from "./pages/student/StudentEventDetails.tsx";
+import AdminProfile from "./pages/admin/AdminProfile.tsx";
+import HomePage from "./pages/HomePage.tsx";
+import EventsBrowseHome from "./components/Eventsbrowsehome.tsx";
 const router = createBrowserRouter([
-    /* ---------- PUBLIC ---------- */
+  {
+    path: "/",
+    element: <HomePage/>,
+  },
+  {
+    path: "/home",
+    element: <HomePage/>,
+  },
+  {
+    path: "/admin",
+    element: <AdminDashboard />,
+  },
+  {
+    path: "/events",
+    element: <AdminEvents />,
+  },
+  {
+    path: "/admin/events/add",
+    element: <AdminAddEvent />,
+  },
+  {
+    path: "/catogory",
+    element: <ManageCatogory />,
+  },
+  {
+    path: "/admin/catogory/add",
+    element: <AdminAddCatogory />,
+  },
+  {
+    path: "/admin/catogory/edit/:id",
+    element: <AdminEditCatogory />,
+  },
+  {
+    path: "/viewstudents",
+    element: <ViewStudent />,
+  },
+  {
+    path: "/admin/events/edit/:id",
+    element: <AdminEditEvent />,
+  },
+  {
+    path: "/registration",
+    element: <AdminEventRegistration />,
+  },
+  {
+    path: "/announcement",
+    element: <AdminAddAnnoucement />,
+  },
+  {
+    path: "/showannouncement",
+    element: <ShowAllAnnoucement />,
+  },
+  {
+    path: "/editannoucement/:id",
+    element: <EditAnnoucemet />,
+  },
+  {
+    path: "/admin/events/students/:eventId",
+    element: <AdminEventStudent />,
+  },
+  {
+    path: "/profile",
+    element: <AdminProfile />,
+  },
 
-    {
-        path: "/",
-        element: <HomePage />,
-    },
-    {
-        path: "/home",
-        element: <HomePage />,
-    },
-    {
-        path: "/login",
-        element: <Login />,
-    },
-
-
-    /* ---------- ADMIN ---------- */
-
-    {
-        path: "/admin",
-        element: <AdminDashboard />,
-    },
-    {
-        path: "/admin/events",
-        element: <AdminEvents />,
-    },
-    {
-        path: "/admin/events/add",
-        element: <AdminAddEvent />,
-    },
-    {
-        path: "/admin/events/edit/:id",
-        element: <AdminEditEvent />,
-    },
-    {
-        path: "/admin/events/students/:eventId",
-        element: <AdminEventStudent />,
-    },
-
-    /* CATEGORY */
-
-    {
-        path: "/admin/category",
-        element: <ManageCategory />,
-    },
-    {
-        path: "/admin/category/add",
-        element: <AdminAddCategory />,
-    },
-    {
-        path: "/admin/category/edit/:id",
-        element: <AdminEditCategory />,
-    },
-
-    {
-        path: "/admin/view-students",
-        element: <ViewStudent />,
-    },
-    {
-        path: "/admin/registration",
-        element: <AdminEventRegistration />,
-    },
-
-    /* ANNOUNCEMENTS */
-
-    {
-        path: "/admin/announcements",
-        element: <AdminAddAnnouncement />,
-    },
-    {
-        path: "/admin/announcements/all",
-        element: <ShowAllAnnouncement />,
-    },
-    {
-        path: "/admin/announcements/edit/:id",
-        element: <EditAnnouncement />,
-    },
-
-    {
-        path: "/admin/profile",
-        element: <AdminProfile />,
-    },
-
-    /* ---------- STUDENT ---------- */
-
-    {
-        path: "/student",
-        element: <StudentDashboard />,
-    },
-    {
-        path: "/browse-events",
-        element: <StudentBrowseEvents />,
-    },
-    {
-        path: "/student/registered-events",
-        element: <StudentRegisteredEvents />,
-    },
-    {
-        path: "/student/announcements",
-        element: <StudentAnnouncements />,
-    },
-    {
-        path: "/student/profile",
-        element: <StudentProfile />,
-    },
-    {
-        path: "/student/event/:id",
-        element: <StudentEventDetails />,
-    },
-
-    /* ---------- ORGANIZER (FACULTY) ---------- */
+  {
+    path: "/login",
+    element: <Login />,
+  },
+  {
+    path: "/",
+    element: <Login />,
+  },
+  {
+    path: "/student",
+    element: <StudentDashboard />,
+  },
+  {
+    path: "/studentbrowseevent",
+    element: <StudentBrowseEvents />,
+  },
+  {
+    path: "/studentevents",
+    element: <StudentRegisteredEvents />,
+  },
+  {
+    path: "/studentannoucement",
+    element: <StudentAnnouncements />,
+  },
+  {
+    path: "/studentprofile",
+    element: <StudentProfile />,
+  },
+  {
+    path: "/studenteventdetails/:id",
+    element: <StudentEventDetails />,
+  },
+  {
+    path: "/home-events",
+    element: <EventsBrowseHome />,
+  },
 
     {
         path: "/organizer",

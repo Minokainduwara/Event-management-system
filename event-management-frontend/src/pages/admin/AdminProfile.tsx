@@ -49,6 +49,7 @@ function AdminProfile() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordMsg, setPasswordMsg] = useState("");
+  const [email, setEmail] = useState("");
 
   useEffect(() => {
     fetchProfile();
@@ -56,7 +57,12 @@ function AdminProfile() {
 
   const fetchProfile = async () => {
     try {
-      const data = await apiFetch("/profile");
+      const email = localStorage.getItem("email");
+      if (!email) {
+        console.error("No email found in localStorage");
+        return;
+      }
+      const data = await apiFetch(`http://localhost:8080/users/profile?email=${email}`);
       setProfile(data);
       setForm({
         name: data.name || "",
@@ -259,8 +265,8 @@ function AdminProfile() {
                       onChange={handleChange}
                       disabled={!isEditing}
                       className={`w-full px-4 py-3 border border-gray-300 rounded-lg ${!isEditing
-                          ? "bg-gray-50 text-gray-600 cursor-not-allowed"
-                          : "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        ? "bg-gray-50 text-gray-600 cursor-not-allowed"
+                        : "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         }`}
                     />
                   </div>
@@ -279,8 +285,8 @@ function AdminProfile() {
                       onChange={handleChange}
                       disabled={!isEditing}
                       className={`w-full px-4 py-3 border border-gray-300 rounded-lg ${!isEditing
-                          ? "bg-gray-50 text-gray-600 cursor-not-allowed"
-                          : "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        ? "bg-gray-50 text-gray-600 cursor-not-allowed"
+                        : "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         }`}
                     />
                   </div>
@@ -299,8 +305,8 @@ function AdminProfile() {
                       onChange={handleChange}
                       disabled={!isEditing}
                       className={`w-full px-4 py-3 border border-gray-300 rounded-lg ${!isEditing
-                          ? "bg-gray-50 text-gray-600 cursor-not-allowed"
-                          : "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        ? "bg-gray-50 text-gray-600 cursor-not-allowed"
+                        : "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         }`}
                     />
                   </div>
@@ -319,8 +325,8 @@ function AdminProfile() {
                       onChange={handleChange}
                       disabled={!isEditing}
                       className={`w-full px-4 py-3 border border-gray-300 rounded-lg ${!isEditing
-                          ? "bg-gray-50 text-gray-600 cursor-not-allowed"
-                          : "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        ? "bg-gray-50 text-gray-600 cursor-not-allowed"
+                        : "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         }`}
                     />
                   </div>
@@ -339,8 +345,8 @@ function AdminProfile() {
                       onChange={handleChange}
                       disabled={!isEditing}
                       className={`w-full px-4 py-3 border border-gray-300 rounded-lg ${!isEditing
-                          ? "bg-gray-50 text-gray-600 cursor-not-allowed"
-                          : "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        ? "bg-gray-50 text-gray-600 cursor-not-allowed"
+                        : "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         }`}
                     />
                   </div>
@@ -367,8 +373,8 @@ function AdminProfile() {
                         onChange={handleChange}
                         disabled={!isEditing}
                         className={`w-full px-4 py-3 border border-gray-300 rounded-lg ${!isEditing
-                            ? "bg-gray-50 text-gray-600 cursor-not-allowed"
-                            : "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          ? "bg-gray-50 text-gray-600 cursor-not-allowed"
+                          : "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                           }`}
                       />
                     </div>
