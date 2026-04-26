@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router";
 import { LogOut, User } from "lucide-react";
 
- function StudentHeader() {
+ function HomeHeader() {
 
   const location = useLocation();
 
@@ -53,48 +53,28 @@ import { LogOut, User } from "lucide-react";
             </Link>
 
             <Link
-              to="/studentbrowseevent"
+              to="homebrowseevent"
               className={`px-4 py-2 rounded transition 
               }`}
             >
               Events
             </Link>
 
-            <Link
-              to="/studentevents"
-              className={`px-4 py-2 rounded transition
-              }`}
-            >
-              My Events
-            </Link>
-
-            <Link 
-              to="/studentannoucement"
-              className={`px-4 py-2 rounded transition 
-              }`}
-            >
-              Announcements
-            </Link>
+            
 
           </div>
 
           {/* User Actions */}
           <div className="flex items-center gap-4">
 
-            <Link
-              to="/studentprofile"
-              className="flex items-center gap-2 px-3 py-2 hover:bg-white/10 rounded transition"
-            >
-              <User className="w-5 h-5" />
-              Profile
-            </Link>
+            
 
             <Link
-              to="/"
+              to="/login"
               className="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-4 py-2 rounded transition"
             >
               <LogOut className="w-4 h-4" />
-              Logout
+              Login
             </Link>
 
           </div>
@@ -104,4 +84,4 @@ import { LogOut, User } from "lucide-react";
     </nav>
   );
 }
-export default StudentHeader;
+export default HomeHeader;
