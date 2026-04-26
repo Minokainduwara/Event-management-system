@@ -1,8 +1,18 @@
+
+// src/main.tsx
+
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {
+  createBrowserRouter,
+  RouterProvider,
+} from "react-router-dom";
 
 import "./index.css";
+
+/* ================= PROTECTED ROUTE ================= */
+
+import ProtectedRoute from "./components/ProtectedRoute";
 
 /* ================= ADMIN ================= */
 
@@ -34,124 +44,209 @@ import StudentAnnouncements from "./pages/student/StudentAnnoucement";
 import StudentProfile from "./pages/student/StudentProfile";
 import StudentEventDetails from "./pages/student/StudentEventDetails";
 
-/* ================= AUTH / PUBLIC ================= */
+/* ================= PUBLIC ================= */
 
 import HomePage from "./pages/Homepage";
 import { Login } from "./pages/login";
 
-/* ================= ROUTES ================= */
+/* ================= ROUTER ================= */
 
 const router = createBrowserRouter([
-  /* ---------- PUBLIC ---------- */
+  /* ================= PUBLIC ================= */
 
   {
     path: "/",
     element: <HomePage />,
   },
+
   {
     path: "/home",
     element: <HomePage />,
   },
+
   {
     path: "/login",
     element: <Login />,
   },
 
-  /* ---------- ADMIN ---------- */
-
-  {
-    path: "/admin",
-    element: <AdminDashboard />,
-  },
-  {
-    path: "/admin/events",
-    element: <AdminEvents />,
-  },
-  {
-    path: "/admin/events/add",
-    element: <AdminAddEvent />,
-  },
-  {
-    path: "/admin/events/edit/:id",
-    element: <AdminEditEvent />,
-  },
-  {
-    path: "/admin/events/students/:eventId",
-    element: <AdminEventStudent />,
-  },
-
-  /* CATEGORY (FIXED SPELLING + STRUCTURE) */
-
-  {
-    path: "/admin/category",
-    element: <ManageCategory />,
-  },
-  {
-    path: "/admin/category/add",
-    element: <AdminAddCategory />,
-  },
-  {
-    path: "/admin/category/edit/:id",
-    element: <AdminEditCategory />,
-  },
-
-  {
-    path: "/admin/view-students",
-    element: <ViewStudent />,
-  },
-  {
-    path: "/admin/registration",
-    element: <AdminEventRegistration />,
-  },
-
-  /* ANNOUNCEMENTS */
-
-  {
-    path: "/admin/announcements",
-    element: <AdminAddAnnouncement />,
-  },
-  {
-    path: "/admin/announcements/all",
-    element: <ShowAllAnnouncement />,
-  },
-  {
-    path: "/admin/announcements/edit/:id",
-    element: <EditAnnouncement />,
-  },
-
-  {
-    path: "/admin/profile",
-    element: <AdminProfile />,
-  },
-
-  /* ---------- STUDENT ---------- */
-
-  {
-    path: "/student",
-    element: <StudentDashboard />,
-  },
-
-  /* ✅ FIXED ROUTE (your original bug) */
   {
     path: "/browse-events",
     element: <StudentBrowseEvents />,
   },
 
+  /* ================= ADMIN ================= */
+
+  {
+    path: "/admin",
+    element: (
+      <ProtectedRoute role="ADMIN">
+        <AdminDashboard />
+      </ProtectedRoute>
+    ),
+  },
+
+  {
+    path: "/admin/events",
+    element: (
+      <ProtectedRoute role="ADMIN">
+        <AdminEvents />
+      </ProtectedRoute>
+    ),
+  },
+
+  {
+    path: "/admin/events/add",
+    element: (
+      <ProtectedRoute role="ADMIN">
+        <AdminAddEvent />
+      </ProtectedRoute>
+    ),
+  },
+
+  {
+    path: "/admin/events/edit/:id",
+    element: (
+      <ProtectedRoute role="ADMIN">
+        <AdminEditEvent />
+      </ProtectedRoute>
+    ),
+  },
+
+  {
+    path: "/admin/events/students/:eventId",
+    element: (
+      <ProtectedRoute role="ADMIN">
+        <AdminEventStudent />
+      </ProtectedRoute>
+    ),
+  },
+
+  {
+    path: "/admin/category",
+    element: (
+      <ProtectedRoute role="ADMIN">
+        <ManageCategory />
+      </ProtectedRoute>
+    ),
+  },
+
+  {
+    path: "/admin/category/add",
+    element: (
+      <ProtectedRoute role="ADMIN">
+        <AdminAddCategory />
+      </ProtectedRoute>
+    ),
+  },
+
+  {
+    path: "/admin/category/edit/:id",
+    element: (
+      <ProtectedRoute role="ADMIN">
+        <AdminEditCategory />
+      </ProtectedRoute>
+    ),
+  },
+
+  {
+    path: "/admin/view-students",
+    element: (
+      <ProtectedRoute role="ADMIN">
+        <ViewStudent />
+      </ProtectedRoute>
+    ),
+  },
+
+  {
+    path: "/admin/registration",
+    element: (
+      <ProtectedRoute role="ADMIN">
+        <AdminEventRegistration />
+      </ProtectedRoute>
+    ),
+  },
+
+  {
+    path: "/admin/announcements",
+    element: (
+      <ProtectedRoute role="ADMIN">
+        <AdminAddAnnouncement />
+      </ProtectedRoute>
+    ),
+  },
+
+  {
+    path: "/admin/announcements/all",
+    element: (
+      <ProtectedRoute role="ADMIN">
+        <ShowAllAnnouncement />
+      </ProtectedRoute>
+    ),
+  },
+
+  {
+    path: "/admin/announcements/edit/:id",
+    element: (
+      <ProtectedRoute role="ADMIN">
+        <EditAnnouncement />
+      </ProtectedRoute>
+    ),
+  },
+
+  {
+    path: "/admin/profile",
+    element: (
+      <ProtectedRoute role="ADMIN">
+        <AdminProfile />
+      </ProtectedRoute>
+    ),
+  },
+
+  /* ================= STUDENT ================= */
+
+  {
+    path: "/student",
+    element: (
+      <ProtectedRoute role="STUDENT">
+        <StudentDashboard />
+      </ProtectedRoute>
+    ),
+  },
+
   {
     path: "/student/registered-events",
-    element: <StudentRegisteredEvents />,
+    element: (
+      <ProtectedRoute role="STUDENT">
+        <StudentRegisteredEvents />
+      </ProtectedRoute>
+    ),
   },
+
   {
     path: "/student/announcements",
-    element: <StudentAnnouncements />,
+    element: (
+      <ProtectedRoute role="STUDENT">
+        <StudentAnnouncements />
+      </ProtectedRoute>
+    ),
   },
+
   {
     path: "/student/profile",
-    element: <StudentProfile />,
+    element: (
+      <ProtectedRoute role="STUDENT">
+        <StudentProfile />
+      </ProtectedRoute>
+    ),
   },
+
   {
     path: "/student/event/:id",
-    element: <StudentEventDetails />,
+    element: (
+      <ProtectedRoute role="STUDENT">
+        <StudentEventDetails />
+      </ProtectedRoute>
+    ),
   },
 ]);
 
@@ -160,3 +255,4 @@ createRoot(document.getElementById("root")!).render(
     <RouterProvider router={router} />
   </StrictMode>
 );
+
