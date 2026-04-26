@@ -1,14 +1,5 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import "./index.css";
-import AdminDashboard from "./pages/admin/AdminDashboard.tsx";
-import AdminAddCatogory from "./pages/admin/AdminAddCatogory.tsx";
-import AdminEditCatogory from "./pages/admin/AdminEditCatogory.tsx";
-import ViewStudent from "./pages/admin/ViewStudent.tsx";
-import AdminEvents from "./pages/admin/AdminEvents.tsx";
-import EditAnnoucemet from "./pages/admin/EditAnnoucemet.tsx";
-import AdminAddEvent from "./pages/admin/AdminAddEvent.tsx";
-import ManageCatogory from "./pages/admin/ManageCatogory.tsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import AdminEditEvent from "./pages/admin/AdminEditEvent.tsx";
 import AdminEventRegistration from "./pages/admin/AdminEventRegistration.tsx";
@@ -128,10 +119,34 @@ const router = createBrowserRouter([
     element: <EventsBrowseHome />,
   },
 
+    {
+        path: "/organizer",
+        element: <OrganizerHomePage />,
+    },
+    {
+        path: "/organizer/my-events",
+        element: <MyEventsPage />,
+    },
+    {
+        path: "/organizer/create-event",
+        element: <CreateEventPage />,
+    },
+    {
+        path: "/organizer/analytics",
+        element: <AnalyticsPage />,
+    },
+    {
+        path: "/organizer/announcements",
+        element: <AnnouncementsPage />,
+    },
+    {
+        path: "/organizer/profile",
+        element: <ProfilePage />,
+    },
 ]);
 
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <RouterProvider router={router} />
-  </StrictMode>,
+    <StrictMode>
+        <RouterProvider router={router} />
+    </StrictMode>
 );

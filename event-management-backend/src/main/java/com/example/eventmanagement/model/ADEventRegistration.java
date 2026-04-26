@@ -11,10 +11,12 @@ import java.time.LocalDateTime;
 public class ADEventRegistration {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "registration_id")
     private int registration_id;
 
     @Column(name = "registration_date")
     private LocalDateTime registrationDate;
+    @Column(name = "status")
     private String status;
     @JsonIgnore
     @ManyToOne

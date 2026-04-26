@@ -13,14 +13,19 @@ import java.time.LocalTime;
 public class ADEvent {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "event_id")
     private int eventId;
     @Column(name = "event_title")
     private String eventTitle;
+    @Column(name = "description")
     private String description;
+    @Column(name = "event_date")
     private LocalDateTime eventDate;
+    @Column(name = "event_time")
     private LocalTime eventTime;
+    @Column(name = "location")
     private String location;
-    @Column(nullable = true)
+    @Column(name = "max_participants", nullable = true)
     private Integer maxParticipants;
 
 
@@ -32,6 +37,7 @@ public class ADEvent {
         this.image = image;
     }
 
+    @Column(name = "image")
     private String image;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -44,6 +50,7 @@ public class ADEvent {
 
     private ADUser ADUser;
     @Enumerated(EnumType.STRING)
+    @Column(name = "status")
     private EventStatus status;
     public int getEventId() {
         return eventId;

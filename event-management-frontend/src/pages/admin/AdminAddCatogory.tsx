@@ -2,7 +2,7 @@ import React from "react";
 import { apiFetch } from "../../utils/apiFetch";
 import Header from "../../components/Header";
 import Body from "../../components/Body";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 function AdminAddCatogory() {
   const navigate = useNavigate();

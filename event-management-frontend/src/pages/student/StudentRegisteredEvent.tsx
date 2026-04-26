@@ -1,7 +1,7 @@
 
 import { Calendar, MapPin, Search, Filter, Clock, XCircle, Eye } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 import StudentHeader from "../../components/StudentHeader";
 import { useEffect } from "react";
 

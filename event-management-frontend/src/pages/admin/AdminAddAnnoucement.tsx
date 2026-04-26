@@ -1,8 +1,8 @@
 import React from "react";
 import { apiFetch } from "../../utils/apiFetch";
 import Header from "../../components/Header";
-import { Link } from "react-router";
-import { useNavigate } from "react-router";
+import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 function AdminAddAnnoucement() {

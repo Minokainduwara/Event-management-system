@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { apiFetch } from "../../utils/apiFetch";
 import Header from "../../components/Header";
-import { useNavigate, useParams } from "react-router";
+import { useNavigate, useParams } from "react-router-dom";
 function EditAnnoucemet() {
   const navigate = useNavigate();
   const { id } = useParams();
