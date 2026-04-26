@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { apiFetch } from "../../utils/apiFetch";
 import Header from "../../components/Header";
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 function ShowAllAnnoucement() {
   const [announcements, setAnnouncement] = useState([]);
 

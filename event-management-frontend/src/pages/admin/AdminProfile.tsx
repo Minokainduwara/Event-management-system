@@ -56,7 +56,7 @@ function AdminProfile() {
 
   const fetchProfile = async () => {
     try {
-      const data = await apiFetch("http://localhost:8080/users/profile");
+      const data = await apiFetch("/profile");
       setProfile(data);
       setForm({
         name: data.name || "",
@@ -127,7 +127,7 @@ function AdminProfile() {
     }
 
     try {
-      await apiFetch("http://localhost:8080/users/change-password", {
+      await apiFetch("/change-password", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

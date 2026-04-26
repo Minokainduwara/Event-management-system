@@ -1,4 +1,4 @@
-import { Navigate, Outlet } from "react-router";
+import { Navigate, Outlet } from "react-router-dom";
 import { getStoredUserRole, ROLE_HOME_ROUTE, type UserRole } from "../types/auth";
 
 interface RoleGuardProps {

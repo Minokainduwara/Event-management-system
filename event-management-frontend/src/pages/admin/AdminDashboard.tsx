@@ -3,7 +3,7 @@ import Header from "../../components/Header";
 import Body from "../../components/Body";
 import { useEffect, useState } from "react";
 import { apiFetch } from "../../utils/apiFetch";
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 function AdminDashboard() {
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
