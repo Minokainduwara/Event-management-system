@@ -189,7 +189,7 @@ function PublicNavbar({ role }: { role: string | null }) {
       <div style={{ display: "flex", gap: 4 }}>
         {[
           { label: "Home",   to: "/" },
-          { label: "Events", to: "/browse-events" },
+          { label: "Events", to: "/home-events" },
         ].map(l => (
           <Link key={l.to} to={l.to} style={{
             color: "rgba(255,255,255,0.75)", fontSize: 14, fontWeight: 500,

@@ -24,6 +24,7 @@ import StudentProfile from "./pages/student/StudentProfile.tsx";
 import StudentEventDetails from "./pages/student/StudentEventDetails.tsx";
 import AdminProfile from "./pages/admin/AdminProfile.tsx";
 import HomePage from "./pages/HomePage.tsx";
+import EventsBrowseHome from "./components/Eventsbrowsehome.tsx";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -121,6 +122,10 @@ const router = createBrowserRouter([
   {
     path: "/studenteventdetails/:id",
     element: <StudentEventDetails />,
+  },
+  {
+    path: "/home-events",
+    element: <EventsBrowseHome />,
   },
 
 ]);
