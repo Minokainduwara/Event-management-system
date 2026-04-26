@@ -1,36 +1,40 @@
-export const apiFetch = async (url: string, options: RequestInit = {}) => {
+export const apiFetch = async (
+  url: string,
+  options: RequestInit = {}
+) => {
   const token = localStorage.getItem("token");
 
-  if (!token) {
-    // TEMPORARILY DISABLED FOR PREVIEW
-    // window.location.href = "/login";
-    // throw new Error("No token found. Redirecting to login...");
-    console.warn("Preview Mode: No token found, but allowing request.");
-  }
-
-  // Token presence is verified.
-  // Backend will enforce role-based access returning 401/403 if unauthorized.
-
   const headers = new Headers(options.headers || {});
-  headers.set("Authorization", `Bearer ${token}`);
 
-  // Auto-set Content-Type for JSON payloads if not explicitly set
-  if (
-    !headers.has("Content-Type") &&
-    options.body &&
-    typeof options.body === "string"
-  ) {
+  // Set JSON header automatically when body exists
+  if (options.body && !headers.has("Content-Type")) {
     headers.set("Content-Type", "application/json");
   }
 
-  const response = await fetch(url, { ...options, headers });
+  // Attach token only if available
+  if (token) {
+    headers.set("Authorization", `Bearer ${token}`);
+  }
 
+  const response = await fetch(url, {
+    ...options,
+    headers,
+  });
+
+  // Handle authentication failures
   if (response.status === 401 || response.status === 403) {
-    // TEMPORARILY DISABLED FOR PREVIEW
-    // localStorage.removeItem("token");
+    console.warn("Unauthorized access - clearing session");
+
+    localStorage.removeItem("token");
+
+    // Optional redirect (enable in real app)
     // window.location.href = "/login";
-    // throw new Error("Unauthorized. Redirecting to login...");
-    console.warn("Preview Mode: Ignored 401/403 Unauthorized response.");
+  }
+
+  // Handle non-success responses properly
+  if (!response.ok) {
+    const errorText = await response.text().catch(() => "");
+    throw new Error(errorText || `HTTP Error: ${response.status}`);
   }
 
   return response;

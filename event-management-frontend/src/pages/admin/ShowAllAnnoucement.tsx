@@ -2,112 +2,111 @@ import React, { useEffect, useState } from "react";
 import { apiFetch } from "../../utils/apiFetch";
 import Header from "../../components/Header";
 import { Link } from "react-router-dom";
+
+type Announcement = {
+  announcementId: number;
+  title: string;
+  message: string;
+  createdAt: string;
+  createdBy?: {
+    name: string;
+  };
+};
+
 function ShowAllAnnoucement() {
-  const [announcements, setAnnouncement] = useState([]);
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+
+  const fetchAnnouncements = async () => {
+    try {
+      const res = await apiFetch("http://localhost:8080/announcement/all");
+      const data = await res.json();
+      setAnnouncements(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.log(String(err));
+    }
+  };
 
   useEffect(() => {
-    apiFetch("http://localhost:8080/announcement/all")
-      .then((response) => response.json())
-      .then((data) => setAnnouncement(data))
-      .catch((error) => console.error(String(error)));
+    fetchAnnouncements();
   }, []);
 
   const formatDateTime = (dateString: string) => {
     if (!dateString) return "";
 
     const d = new Date(dateString);
-
-    return (
-      d.getFullYear() +
-      "-" +
-      String(d.getMonth() + 1).padStart(2, "0") +
-      "-" +
-      String(d.getDate()).padStart(2, "0") +
-      " " +
-      String(d.getHours()).padStart(2, "0") +
-      ":" +
-      String(d.getMinutes()).padStart(2, "0")
-    );
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
+      d.getDate()
+    ).padStart(2, "0")} ${String(d.getHours()).padStart(2, "0")}:${String(
+      d.getMinutes()
+    ).padStart(2, "0")}`;
   };
-  const handleDelete = (id: number) => {
-    apiFetch(`http://localhost:8080/announcement/delete/${id}`, {
-      method: "DELETE",
-    })
-      .then((res) => {
-        if (res.ok) {
-          alert("Deleted successfully");
 
-          setAnnouncement((prev: any) =>
-            prev.filter((item: any) => item.announcementId !== id),
-          );
-        } else {
-          alert("Delete failed");
-        }
-      })
-      .catch(() => alert("Error deleting"));
+  const handleDelete = async (id: number) => {
+    try {
+      const res = await apiFetch(
+        `http://localhost:8080/announcement/delete/${id}`,
+        { method: "DELETE" }
+      );
+
+      if (res.ok) {
+        setAnnouncements((prev) =>
+          prev.filter((a) => a.announcementId !== id)
+        );
+      }
+    } catch (err) {
+      console.log(String(err));
+    }
   };
+
   return (
     <div>
       <Header />
-      <div>
-        <div className="bg-white border-b border-gray-200">
-          <div className="flex items-center justify-between p-8">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">
-                Annoucement Management
-              </h1>
-              <p className="text-gray-600 mt-1">
-                Manage all university announcements
-              </p>
-            </div>
-          </div>
-        </div>
+
+      <div className="p-6">
+        <h1 className="text-3xl font-bold">Announcement Management</h1>
+        <p className="text-gray-600">Manage all announcements</p>
       </div>
 
-      <div className="bg-white shadow-md rounded-lg  overflow-x-auto max-h-[400px]">
-        <table className="min-w-full border border-gray-200">
+      <div className="overflow-x-auto p-6">
+        <table className="w-full border">
           <thead className="bg-gray-100">
             <tr>
-              <th className="px-4 py-3 text-left">Annoucement Id</th>
-              <th className="px-4 py-3 text-left">Title</th>
-              <th className="px-4 py-3 text-left">Message</th>
-              <th className="px-4 py-3 text-left">User</th>
-              <th className="px-4 py-3 text-left">Date</th>
-
-              <th className="px-4 py-3 text-center">Actions</th>
+              <th>ID</th>
+              <th>Title</th>
+              <th>Message</th>
+              <th>User</th>
+              <th>Date</th>
+              <th>Actions</th>
             </tr>
           </thead>
 
           <tbody>
             {announcements.length === 0 ? (
               <tr>
-                <td colSpan={6} className="text-center py-4 text-gray-500">
+                <td colSpan={6} className="text-center py-4">
                   No announcements found
                 </td>
               </tr>
             ) : (
-              announcements.map((item: any) => (
-                <tr key={item.announcementId} className=" hover:bg-gray-50">
-                  <td className="px-4 py-3">{item.announcementId}</td>
-                  <td className="px-4 py-3">{item.title}</td>
+              announcements.map((item) => (
+                <tr key={item.announcementId} className="hover:bg-gray-50">
+                  <td>{item.announcementId}</td>
+                  <td>{item.title}</td>
+                  <td>{item.message}</td>
+                  <td>{item.createdBy?.name ?? "Admin"}</td>
+                  <td>{formatDateTime(item.createdAt)}</td>
 
-                  <td className="px-4 py-3">{item.message}</td>
-                  <td className="px-4 py-3">{item.createdBy?.name}</td>
-                  <td className="px-4 py-3 ">
-                    {formatDateTime(item.createdAt)}
-                  </td>
-
-                  <td className="px-4 py-3 text-center space-x-2">
+                  <td className="space-x-2">
                     <Link
                       to={`/editannoucement/${item.announcementId}`}
-                      className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 "
+                      className="bg-blue-500 text-white px-3 py-1 rounded"
                     >
                       Edit
                     </Link>
 
                     <button
                       onClick={() => handleDelete(item.announcementId)}
-                      className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 mt-2"
+                      className="bg-red-500 text-white px-3 py-1 rounded"
                     >
                       Delete
                     </button>

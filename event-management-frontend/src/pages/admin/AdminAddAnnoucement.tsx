@@ -1,151 +1,60 @@
-import React from "react";
-import { apiFetch } from "../../utils/apiFetch";
-import Header from "../../components/Header";
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Header from "../../components/Header";
+import { client } from "../../api/client";
+import type { Announcement } from "../../types";
 
-function AdminAddAnnoucement() {
+function AdminAddAnnouncement() {
+  const navigate = useNavigate();
 
-
-  const [formData, setFormData] = useState({
+  const [form, setForm] = useState<Announcement>({
     title: "",
     message: "",
-    createdBy: "",
+    createdBy: { userId: 0 },
   });
+
   const handleChange = (e: any) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+
+    if (name === "createdBy") {
+      setForm({ ...form, createdBy: { userId: Number(value) } });
+    } else {
+      setForm({ ...form, [name]: value });
+    }
   };
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-    if (!formData.createdBy) {
-      alert("Admin Id is must required");
+
+    if (!form.title || !form.message || !form.createdBy.userId) {
+      alert("Fill all fields");
       return;
     }
 
     try {
-      const response = await apiFetch(`http://localhost:8080/announcement/add`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title: formData.title,
-          message: formData.message,
-          createdBy: {
-            userId: Number(formData.createdBy)
-          }
-        }),
-      });
-
-      if (response.ok) {
-        alert("Announcement added successfully!");
-        navigate("/showannouncement");
-      } else {
-        alert("Failed to add announcement");
-      }
-    } catch (error) {
-      console.error(String(error));
-      alert("Error connecting to server");
+      await client.post("/announcement/add", form);
+      alert("Announcement added");
+      navigate("/admin/showannouncement");
+    } catch {
+      alert("Failed");
     }
   };
-  const navigate = useNavigate();
+
   return (
     <div>
       <Header />
-      <div>
-        <div className="bg-white border-b border-gray-200">
-          <div className="flex items-center justify-between p-8">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">
-                Annoucement Management
-              </h1>
-              <p className="text-gray-600 mt-1">
-                Manage all university announcements
-              </p>
-            </div>
-            <Link
-              to="/showannouncement"
-              className="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
-            >
-              Show All Annoucement
-            </Link>
-          </div>
-        </div>
-        <div className="flex items-center justify-center min-h-screen bg-gray-100 ">
-          <div>
-            <form
-              onSubmit={handleSubmit}
-              className="bg-white w-[420px] p-6 rounded-xl shadow-lg mt-4"
-            >
-              <h2 className="mb-6 text-2xl font-bold text-center text-gray-800">
-                Add Annoucemnent
-              </h2>
-              <div className="mb-4">
-                <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Admin ID *
-                </label>
-                <input
-                  type="number"
-                  name="createdBy"
-                  value={formData.createdBy}
-                  onChange={handleChange}
-                  placeholder="Enter admin ID"
-                  className="w-full px-3 py-2 border rounded-md"
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Title <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  placeholder="Enter title"
-                  name="title"
-                  value={formData.title}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-                />
-              </div>
 
-              <div className="mb-6">
-                <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Message <span className="text-red-500">*</span>
-                </label>
-                <textarea
-                  rows={6}
-                  name="message"
-                  value={formData.message}
-                  onChange={handleChange}
-                  placeholder="Enter message"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-400"
-                ></textarea>
-              </div>
+      <form onSubmit={handleSubmit} className="p-6 max-w-md mx-auto">
+        <input name="createdBy" placeholder="Admin ID" onChange={handleChange} />
+        <input name="title" placeholder="Title" onChange={handleChange} />
+        <textarea name="message" placeholder="Message" onChange={handleChange} />
 
-              <button
-                type="submit"
-                className="w-full mb-2 py-2 text-white transition duration-200 bg-blue-500 rounded-md hover:bg-blue-600"
-              >
-                Add
-              </button>
-              <button
-                type="button"
-                onClick={() => navigate("/")}
-                className="w-full py-2 text-white transition duration-200 bg-red-500 rounded-md hover:bg-red-600"
-              >
-                Cancel
-              </button>
-            </form>
-          </div>
-        </div>
-      </div>
+        <button className="bg-blue-500 text-white px-4 py-2">
+          Add
+        </button>
+      </form>
     </div>
   );
 }
 
-export default AdminAddAnnoucement;
+export default AdminAddAnnouncement;

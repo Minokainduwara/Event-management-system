@@ -1,29 +1,21 @@
-
-// src/main.tsx
-
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import {
-  createBrowserRouter,
-  RouterProvider,
-} from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import "./index.css";
 
-/* ================= PROTECTED ROUTE ================= */
-
+/* ================= PROTECTED ================= */
 import ProtectedRoute from "./components/ProtectedRoute";
 
 /* ================= ADMIN ================= */
-
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminEvents from "./pages/admin/AdminEvents";
 import AdminAddEvent from "./pages/admin/AdminAddEvent";
 import AdminEditEvent from "./pages/admin/AdminEditEvent";
 
-import ManageCategory from "./pages/admin/ManageCatogory";
-import AdminAddCategory from "./pages/admin/AdminAddCatogory";
-import AdminEditCategory from "./pages/admin/AdminEditCatogory";
+import ManageCategory from "./pages/admin/ManageCategory";
+import AdminAddCategory from "./pages/admin/AdminAddCategory";
+import AdminEditCategory from "./pages/admin/AdminEditCategory";
 
 import ViewStudent from "./pages/admin/ViewStudent";
 import AdminEventRegistration from "./pages/admin/AdminEventRegistration";
@@ -31,51 +23,32 @@ import AdminEventStudent from "./pages/admin/AdminEventStudent";
 
 import AdminAddAnnouncement from "./pages/admin/AdminAddAnnoucement";
 import ShowAllAnnouncement from "./pages/admin/ShowAllAnnoucement";
-import EditAnnouncement from "./pages/admin/EditAnnoucemet";
+import EditAnnouncement from "./pages/admin/EditAnnoucement";
 
 import AdminProfile from "./pages/admin/AdminProfile";
 
 /* ================= STUDENT ================= */
-
 import StudentDashboard from "./pages/student/StudentDashboard";
-import StudentBrowseEvents from "./pages/student/StudentdBrowseEvent";
 import StudentRegisteredEvents from "./pages/student/StudentRegisteredEvent";
 import StudentAnnouncements from "./pages/student/StudentAnnoucement";
 import StudentProfile from "./pages/student/StudentProfile";
 import StudentEventDetails from "./pages/student/StudentEventDetails";
 
 /* ================= PUBLIC ================= */
-
 import HomePage from "./pages/Homepage";
 import { Login } from "./pages/login";
 
-/* ================= ROUTER ================= */
+/* ================= ROUTES ================= */
 
 const router = createBrowserRouter([
-  /* ================= PUBLIC ================= */
+  /* PUBLIC */
+  { path: "/", element: <HomePage /> },
+  { path: "/home", element: <HomePage /> },
+  { path: "/login", element: <Login /> },
 
-  {
-    path: "/",
-    element: <HomePage />,
-  },
-
-  {
-    path: "/home",
-    element: <HomePage />,
-  },
-
-  {
-    path: "/login",
-    element: <Login />,
-  },
-
-  {
-    path: "/browse-events",
-    element: <StudentBrowseEvents />,
-  },
+  { path: "/browse-events", element: <StudentEventDetails /> },
 
   /* ================= ADMIN ================= */
-
   {
     path: "/admin",
     element: (
@@ -84,7 +57,6 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
-
   {
     path: "/admin/events",
     element: (
@@ -93,7 +65,6 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
-
   {
     path: "/admin/events/add",
     element: (
@@ -102,7 +73,6 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
-
   {
     path: "/admin/events/edit/:id",
     element: (
@@ -111,7 +81,6 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
-
   {
     path: "/admin/events/students/:eventId",
     element: (
@@ -121,6 +90,7 @@ const router = createBrowserRouter([
     ),
   },
 
+  /* CATEGORY */
   {
     path: "/admin/category",
     element: (
@@ -129,7 +99,6 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
-
   {
     path: "/admin/category/add",
     element: (
@@ -138,7 +107,6 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
-
   {
     path: "/admin/category/edit/:id",
     element: (
@@ -149,7 +117,7 @@ const router = createBrowserRouter([
   },
 
   {
-    path: "/admin/view-students",
+    path: "/admin/viewstudents",
     element: (
       <ProtectedRoute role="ADMIN">
         <ViewStudent />
@@ -174,7 +142,6 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
-
   {
     path: "/admin/announcements/all",
     element: (
@@ -183,7 +150,6 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
-
   {
     path: "/admin/announcements/edit/:id",
     element: (
@@ -203,7 +169,6 @@ const router = createBrowserRouter([
   },
 
   /* ================= STUDENT ================= */
-
   {
     path: "/student",
     element: (
@@ -212,7 +177,6 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
-
   {
     path: "/student/registered-events",
     element: (
@@ -221,7 +185,6 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
-
   {
     path: "/student/announcements",
     element: (
@@ -230,7 +193,6 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
-
   {
     path: "/student/profile",
     element: (
@@ -239,7 +201,6 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
-
   {
     path: "/student/event/:id",
     element: (
@@ -248,6 +209,12 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
+
+  /* ================= 404 ================= */
+  {
+    path: "*",
+    element: <div>404 - Page Not Found</div>,
+  },
 ]);
 
 createRoot(document.getElementById("root")!).render(
@@ -255,4 +222,3 @@ createRoot(document.getElementById("root")!).render(
     <RouterProvider router={router} />
   </StrictMode>
 );
-

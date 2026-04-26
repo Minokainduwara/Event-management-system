@@ -2,12 +2,28 @@ import React, { useEffect, useState } from "react";
 import { apiFetch } from "../../utils/apiFetch";
 import Header from "../../components/Header";
 
-function AdminEventRegistration() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
+interface Registration {
+  registration_id: number;
+  studentName: string;
+  universityId: string;
+  email: string;
+  eventName: string;
+  eventDate: string;
+  registrationDate: string;
+  status: "pending" | "confirmed" | "attended" | "cancelled";
+}
 
+interface Summary {
+  total: number;
+  confirmed: number;
+  attended: number;
+  pending: number;
+  cancelled: number;
+}
+
+function AdminEventRegistration() {
   const [registrations, setRegistrations] = useState<Registration[]>([]);
-  const [summary, setSummary] = useState({
+  const [summary, setSummary] = useState<Summary>({
     total: 0,
     confirmed: 0,
     attended: 0,
@@ -15,263 +31,296 @@ function AdminEventRegistration() {
     cancelled: 0,
   });
 
-  interface Registration {
-    registration_id: number;
-    studentName: string;
-    universityId: string;
-    email: string;
-    eventName: string;
-    eventDate: string;
-    registrationDate: string;
-    status: string;
-  }
-  useEffect(() => {
-    apiFetch("http://localhost:8080/eventRegistrations/summary")
-      .then((res) => res.json())
-      .then((data) => setSummary(data))
-      .catch((err) => console.log(String(err)));
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
 
+  // ─────────────────────────────────────────────
+  // Load initial data
+  // ─────────────────────────────────────────────
+  useEffect(() => {
+    fetchSummary();
     fetchAllRegistrations();
   }, []);
 
-  const searchRegistrations = (keyword: string) => {
-    apiFetch(`http://localhost:8080/eventRegistrations/search?keyword=${keyword}`)
-      .then((res) => res.json())
-      .then((data) => setRegistrations(data))
-      .catch((err) => console.log(String(err)));
-  };
-
-  const fetchAllRegistrations = () => {
-    apiFetch("http://localhost:8080/eventRegistrations/registration")
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data)) {
-          setRegistrations(data);
-        } else {
-          console.log("Unexpected response:", data);
-          setRegistrations([]);
-        }
-      })
-      .catch((err) => console.log(String(err)));
-  };
-
-  const filterByStatus = (status: string) => {
-    if (status === "") {
-      fetchAllRegistrations();
-    } else {
-      apiFetch(`http://localhost:8080/eventRegistrations/filter?status=${status}`)
-        .then((res) => res.json())
-        .then((data) => setRegistrations(data))
-        .catch((err) => console.log(String(err)));
+  const fetchSummary = async () => {
+    try {
+      const res = await apiFetch("http://localhost:8080/eventRegistrations/summary");
+      const data = await res.json();
+      setSummary(data);
+    } catch (err) {
+      console.error("Summary error:", err);
     }
   };
 
-  const handleRemove = (id: number) => {
-    apiFetch(`http://localhost:8080/eventRegistrations/${id}`, {
-      method: "DELETE",
-    })
-      .then(() =>
-        setRegistrations(registrations.filter((r) => r.registration_id !== id)),
-      )
-      .catch((err) => console.log(String(err)));
+  const fetchAllRegistrations = async () => {
+    try {
+      const res = await apiFetch("http://localhost:8080/eventRegistrations/registration");
+      const data = await res.json();
+      setRegistrations(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error("Fetch error:", err);
+    }
   };
+
+  // ─────────────────────────────────────────────
+  // Search
+  // ─────────────────────────────────────────────
+  const searchRegistrations = async (keyword: string) => {
+    try {
+      const res = await apiFetch(
+        `http://localhost:8080/eventRegistrations/search?keyword=${keyword}`
+      );
+      const data = await res.json();
+      setRegistrations(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // ─────────────────────────────────────────────
+  // Filter by status
+  // ─────────────────────────────────────────────
+  const filterByStatus = async (status: string) => {
+    try {
+      if (!status) {
+        fetchAllRegistrations();
+        return;
+      }
+
+      const res = await apiFetch(
+        `http://localhost:8080/eventRegistrations/filter?status=${status}`
+      );
+      const data = await res.json();
+      setRegistrations(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // ─────────────────────────────────────────────
+  // Search handler
+  // ─────────────────────────────────────────────
   const handleSearchChange = (value: string) => {
     setSearchQuery(value);
 
-    if (value === "") {
+    if (value.trim() === "") {
       filterByStatus(statusFilter);
     } else {
       searchRegistrations(value);
     }
   };
 
+  // ─────────────────────────────────────────────
+  // Status filter handler
+  // ─────────────────────────────────────────────
   const handleStatusChange = (status: string) => {
     setStatusFilter(status);
-    filterByStatus(status);
+
+    if (searchQuery.trim() === "") {
+      filterByStatus(status);
+    } else {
+      searchRegistrations(searchQuery);
+    }
   };
 
-  const formatDate = (date: string) => new Date(date).toLocaleDateString();
-  const formatDateTime = (date: string) => new Date(date).toLocaleString();
+  // ─────────────────────────────────────────────
+  // Update status
+  // ─────────────────────────────────────────────
+  const handleStatusUpdate = async (id: number, newStatus: string) => {
+    try {
+      await apiFetch(
+        `http://localhost:8080/eventRegistrations/${id}/status?status=${newStatus}`,
+        { method: "PUT" }
+      );
 
-  const handleStatusTable = (id: number, newStatus: string) => {
-    apiFetch(
-      `http://localhost:8080/eventRegistrations/${id}/status?status=${newStatus}`,
-      {
-        method: "PUT",
-      },
-    )
-      .then((res) => res.json())
-      .then(() => {
-        setRegistrations((prev) =>
-          prev.map((reg) =>
-            reg.registration_id === id ? { ...reg, status: newStatus } : reg,
-          ),
-        );
-      })
-      .catch((err) => console.log(String(err)));
+      setRegistrations((prev) =>
+        prev.map((r) =>
+          r.registration_id === id ? { ...r, status: newStatus as any } : r
+        )
+      );
+    } catch (err) {
+      console.error(err);
+    }
   };
 
+  // ─────────────────────────────────────────────
+  // Delete registration
+  // ─────────────────────────────────────────────
+  const handleRemove = async (id: number) => {
+    try {
+      await apiFetch(`http://localhost:8080/eventRegistrations/${id}`, {
+        method: "DELETE",
+      });
+
+      setRegistrations((prev) =>
+        prev.filter((r) => r.registration_id !== id)
+      );
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // ─────────────────────────────────────────────
+  // Helpers
+  // ─────────────────────────────────────────────
+  const formatDate = (date: string) =>
+    date ? new Date(date).toLocaleDateString() : "-";
+
+  const formatDateTime = (date: string) =>
+    date ? new Date(date).toLocaleString() : "-";
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "confirmed":
+        return "bg-green-500";
+      case "attended":
+        return "bg-blue-500";
+      case "pending":
+        return "bg-yellow-500";
+      case "cancelled":
+        return "bg-red-500";
+      default:
+        return "bg-gray-400";
+    }
+  };
+
+  // ─────────────────────────────────────────────
+  // UI
+  // ─────────────────────────────────────────────
   return (
     <div>
       <Header />
 
+      {/* HEADER + SUMMARY */}
       <div className="h-[300px] flex flex-col pt-8 pl-10 border-b border-gray-200">
-        <h1 className="text-3xl font-bold text-gray-900">
-          Event Registrations
-        </h1>
+        <h1 className="text-3xl font-bold">Event Registrations</h1>
         <p className="text-gray-500">
-          View and manage all student event registrations
+          Manage all student registrations
         </p>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-6 pr-8">
-          <div className="bg-gray-200 rounded-lg p-4 border border-gray-500 flex flex-col items-center">
-            <h4 className="text-lg font-semibold text-gray-700">Total</h4>
-            <h2 className="text-2xl font-bold text-gray-700">
-              {summary.total}
-            </h2>
-          </div>
-
-          <div className="bg-green-200 rounded-lg p-4 border border-green-500 flex flex-col items-center">
-            <h4 className="text-lg font-semibold text-green-700">Confirmed</h4>
-            <h2 className="text-2xl font-bold text-green-700">
-              {summary.confirmed}
-            </h2>
-          </div>
-
-          <div className="bg-blue-200 rounded-lg p-4 border border-blue-500 flex flex-col items-center">
-            <h4 className="text-lg font-semibold text-blue-700">Attended</h4>
-            <h2 className="text-2xl font-bold text-blue-700">
-              {summary.attended}
-            </h2>
-          </div>
-
-          <div className="bg-yellow-200 rounded-lg p-4 border border-yellow-500 flex flex-col items-center">
-            <h4 className="text-lg font-semibold text-yellow-700">Pending</h4>
-            <h2 className="text-2xl font-bold text-yellow-700">
-              {summary.pending}
-            </h2>
-          </div>
-
-          <div className="bg-red-200  rounded-lg p-4 border border-red-500 flex flex-col items-center">
-            <h4 className="text-lg font-semibold text-red-700">Cancelled</h4>
-            <h2 className="text-2xl font-bold text-red-700">
-              {summary.cancelled}
-            </h2>
-          </div>
+        <div className="grid grid-cols-5 gap-4 mt-6 pr-8">
+          <SummaryBox label="Total" value={summary.total} />
+          <SummaryBox label="Confirmed" value={summary.confirmed} color="green" />
+          <SummaryBox label="Attended" value={summary.attended} color="blue" />
+          <SummaryBox label="Pending" value={summary.pending} color="yellow" />
+          <SummaryBox label="Cancelled" value={summary.cancelled} color="red" />
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        <div className="bg-white rounded-lg shadow border border-gray-300 p-6 mb-6 ">
-          <div className="flex gap-4">
-            <input
-              type="text"
-              placeholder="Search by student name..."
-              value={searchQuery}
-              onChange={(e) => {
-                handleSearchChange(e.target.value);
-              }}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg"
-            />
+      {/* FILTERS */}
+      <div className="max-w-7xl mx-auto px-6 py-6">
+        <div className="bg-white p-4 rounded shadow flex gap-4">
+          <input
+            className="border p-2 w-full"
+            placeholder="Search student..."
+            value={searchQuery}
+            onChange={(e) => handleSearchChange(e.target.value)}
+          />
 
-            <select
-              value={statusFilter}
-              onChange={(e) => {
-                handleStatusChange(e.target.value);
-              }}
-              className="px-4 py-3 border border-gray-300 rounded-lg"
-            >
-              <option value="">All Status</option>
-              <option value="pending">Pending</option>
-              <option value="confirmed">Confirmed</option>
-              <option value="attended">Attended</option>
-              <option value="cancelled">Cancelled</option>
-            </select>
-          </div>
+          <select
+            className="border p-2"
+            value={statusFilter}
+            onChange={(e) => handleStatusChange(e.target.value)}
+          >
+            <option value="">All</option>
+            <option value="pending">Pending</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="attended">Attended</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
         </div>
 
-        <div className="bg-white rounded-lg shadow border border-gray-300 overflow-hidden">
-          <div className="overflow-x-auto max-h-[600px] overflow-y-auto">
-            <table className="w-full">
-              <thead className="bg-gray-200 sticky top-0">
-                <tr>
-                  <th className="px-6 py-4 text-left text-md">Reg ID</th>
-                  <th className="px-6 py-4 text-left text-md">Student Name</th>
-                  <th className="px-6 py-4 text-left text-md">University ID</th>
-                  <th className="px-6 py-4 text-left text-md">Email</th>
-                  <th className="px-6 py-4 text-left text-md">Event</th>
-                  <th className="px-6 py-4 text-left text-md">Event Date</th>
-                  <th className="px-6 py-4 text-left text-md">Registered</th>
-                  <th className="px-6 py-4 text-left text-md">Status</th>
-                  <th className="px-6 py-4 text-left text-md">Actions</th>
+        {/* TABLE */}
+        <div className="mt-6 bg-white shadow rounded overflow-hidden">
+          <table className="w-full">
+            <thead className="bg-gray-200">
+              <tr>
+                <th>ID</th>
+                <th>Student</th>
+                <th>Uni ID</th>
+                <th>Email</th>
+                <th>Event</th>
+                <th>Event Date</th>
+                <th>Registered</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {registrations.map((r) => (
+                <tr key={r.registration_id} className="border-t">
+                  <td>#{r.registration_id}</td>
+                  <td>{r.studentName}</td>
+                  <td>{r.universityId}</td>
+                  <td>{r.email}</td>
+                  <td>{r.eventName}</td>
+                  <td>{formatDate(r.eventDate)}</td>
+                  <td>{formatDateTime(r.registrationDate)}</td>
+
+                  <td>
+                    <span
+                      className={`text-white px-2 py-1 rounded ${getStatusColor(
+                        r.status
+                      )}`}
+                    >
+                      {r.status}
+                    </span>
+
+                    <select
+                      value={r.status}
+                      onChange={(e) =>
+                        handleStatusUpdate(r.registration_id, e.target.value)
+                      }
+                      className="block mt-2 border"
+                    >
+                      <option value="pending">Pending</option>
+                      <option value="confirmed">Confirmed</option>
+                      <option value="attended">Attended</option>
+                      <option value="cancelled">Cancelled</option>
+                    </select>
+                  </td>
+
+                  <td>
+                    <button
+                      onClick={() => handleRemove(r.registration_id)}
+                      className="bg-red-500 text-white px-2 py-1 rounded"
+                    >
+                      Remove
+                    </button>
+                  </td>
                 </tr>
-              </thead>
-
-              <tbody>
-                {registrations.map((registration: any) => (
-                  <tr
-                    key={registration.registration_id}
-                    className="bg-gray-50 hover:bg-gray-100"
-                  >
-                    <td className="px-6 py-4">
-                      #{registration.registration_id}
-                    </td>
-                    <td className="px-6 py-4">{registration.studentName}</td>
-                    <td className="px-6 py-4">{registration.universityId}</td>
-                    <td className="px-6 py-4">{registration.email}</td>
-                    <td className="px-6 py-4">{registration.eventName}</td>
-                    <td className="px-6 py-4">
-                      {formatDate(registration.eventDate)}
-                    </td>
-                    <td className="px-6 py-4">
-                      {formatDateTime(registration.registration_date)}
-                    </td>
-
-                    <td className="px-6 py-4">
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs bg-yellow-500 `}
-                      >
-                        {registration.status}
-                      </span>
-
-                      <select
-                        value={registration.status}
-                        onChange={(e) =>
-                          handleStatusTable(
-                            registration.registration_id,
-                            e.target.value,
-                          )
-                        }
-                        className="block mt-2 text-xs border rounded"
-                      >
-                        <option value="pending">Pending</option>
-                        <option value="confirmed">Confirmed</option>
-                        <option value="attended">Attended</option>
-                        <option value="cancelled">Cancelled</option>
-                      </select>
-                    </td>
-
-                    <td className="px-6 py-4">
-                      <button
-                        onClick={() =>
-                          handleRemove(registration.registration_id)
-                        }
-                        className="text-white bg-red-500 p-1 rounded"
-                      >
-                        Remove
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+              ))}
+            </tbody>
+          </table>
 
           {registrations.length === 0 && (
-            <div className="text-center py-10">No registrations found</div>
+            <div className="text-center p-6 text-gray-500">
+              No registrations found
+            </div>
           )}
         </div>
       </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────
+// Summary Box Component
+// ─────────────────────────────────────────────
+function SummaryBox({
+  label,
+  value,
+  color = "gray",
+}: {
+  label: string;
+  value: number;
+  color?: string;
+}) {
+  return (
+    <div className={`bg-${color}-100 p-4 rounded text-center`}>
+      <h4 className="font-semibold">{label}</h4>
+      <h2 className="text-xl font-bold">{value}</h2>
     </div>
   );
 }
