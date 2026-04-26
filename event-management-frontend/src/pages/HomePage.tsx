@@ -189,7 +189,7 @@ function PublicNavbar({ role }: { role: string | null }) {
       <div style={{ display: "flex", gap: 4 }}>
         {[
           { label: "Home",   to: "/" },
-          { label: "Events", to: "/home-events" },
+          { label: "Events", to: "/browse-events" },
         ].map(l => (
           <Link key={l.to} to={l.to} style={{
             color: "rgba(255,255,255,0.75)", fontSize: 14, fontWeight: 500,
@@ -259,11 +259,8 @@ export default function HomePage() {
     Promise.all([
       fetch(`${base}/home/stats`).then(r => r.json()),
       fetch(`${base}/home/featured-events`).then(r => r.json()),
-    ]).then(([s, e]) => {
-        setStats(s);
-        setEvents(Array.isArray(e) ? e : []);
-        setLoading(false);
-      })
+    ]).then(([s, e]) => { setStats(s); setEvents(e); setLoading(false); })
+      .catch(() => setLoading(false));
   }, []);
 
   const statCards = [

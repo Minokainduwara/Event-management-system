@@ -5,7 +5,7 @@ import Navbar from "./Navbar";
 function StudentHeader() {
   return (
     <header className="bg-blue-600 text-white shadow-md">
-
+      <div>
             <Link
               to="/"
               className={`px-4 py-2 rounded transition 
