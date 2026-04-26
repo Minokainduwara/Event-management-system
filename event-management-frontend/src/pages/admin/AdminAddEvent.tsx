@@ -4,6 +4,7 @@ import Header from "../../components/Header";
 import Body from "../../components/Body";
 import { useNavigate } from "react-router-dom";
 import { useSearchParams } from "react-router-dom";
+
 function AdminAddEvent() {
   const [banner, setBanner] = React.useState<string | null>(null);
   const navigate = useNavigate();

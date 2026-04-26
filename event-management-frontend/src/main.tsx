@@ -16,6 +16,20 @@ import StudentEventDetails from "./pages/student/StudentEventDetails.tsx";
 import AdminProfile from "./pages/admin/AdminProfile.tsx";
 import HomePage from "./pages/HomePage.tsx";
 import EventsBrowseHome from "./components/Eventsbrowsehome.tsx";
+import OrganizerHomePage from "./pages/organizer/OrganizerHomePage.tsx";
+import MyEventsPage from "./pages/organizer/MyEventsPage.tsx";
+import CreateEventPage from "./pages/organizer/CreateEventPage.tsx";
+import AnalyticsPage from "./pages/organizer/AnalyticsPage.tsx";
+import AnnouncementsPage from "./pages/organizer/AnnoucementsPage.tsx";
+import ProfilePage from "./pages/organizer/ProfilePage.tsx";
+import AdminDashboard from "./pages/admin/AdminDashboard.tsx";
+import AdminEvents from "./pages/admin/AdminEvents.tsx";
+import AdminAddEvent from "./pages/admin/AdminAddEvent.tsx";
+import ManageCatogory from "./pages/admin/ManageCatogory.tsx";
+import AdminAddCatogory from "./pages/admin/AdminAddCatogory.tsx";
+import AdminEditCatogory from "./pages/admin/AdminEditCatogory.tsx";
+import ViewStudent from "./pages/admin/ViewStudent.tsx";
+import EditAnnoucemet from "./pages/admin/EditAnnoucemet.tsx";
 const router = createBrowserRouter([
   {
     path: "/",

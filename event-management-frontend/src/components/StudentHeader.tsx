@@ -1,20 +1,19 @@
 import { Link } from "react-router-dom";
-import { LogOut } from "lucide-react";
 import Navbar from "./Navbar";
 
 function StudentHeader() {
   return (
     <header className="bg-blue-600 text-white shadow-md">
-
-            <Link
-              to="/"
-              className={`px-4 py-2 rounded transition 
-              }`}
-            >
-              Home
-            </Link>
-
+      
+      {/* LEFT - Home Link */}
+      <div className="flex items-center justify-between px-4 py-2">
         
+        <Link
+          to="/"
+          className="px-4 py-2 rounded transition hover:bg-blue-700"
+        >
+          Home
+        </Link>
 
         {/* CENTER - Reusable Navbar */}
         <Navbar
@@ -27,9 +26,8 @@ function StudentHeader() {
           ]}
         />
 
-        
-
       </div>
+
     </header>
   );
 }
