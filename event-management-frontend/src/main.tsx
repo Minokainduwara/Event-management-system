@@ -11,17 +11,17 @@ import AdminEvents from "./pages/admin/AdminEvents";
 import AdminAddEvent from "./pages/admin/AdminAddEvent";
 import AdminEditEvent from "./pages/admin/AdminEditEvent";
 
-import ManageCatogory from "./pages/admin/ManageCatogory";
-import AdminAddCatogory from "./pages/admin/AdminAddCatogory";
-import AdminEditCatogory from "./pages/admin/AdminEditCatogory";
+import ManageCategory from "./pages/admin/ManageCatogory";
+import AdminAddCategory from "./pages/admin/AdminAddCatogory";
+import AdminEditCategory from "./pages/admin/AdminEditCatogory";
 
 import ViewStudent from "./pages/admin/ViewStudent";
 import AdminEventRegistration from "./pages/admin/AdminEventRegistration";
 import AdminEventStudent from "./pages/admin/AdminEventStudent";
 
-import AdminAddAnnoucement from "./pages/admin/AdminAddAnnoucement";
-import ShowAllAnnoucement from "./pages/admin/ShowAllAnnoucement";
-import EditAnnoucemet from "./pages/admin/EditAnnoucemet";
+import AdminAddAnnouncement from "./pages/admin/AdminAddAnnoucement";
+import ShowAllAnnouncement from "./pages/admin/ShowAllAnnoucement";
+import EditAnnouncement from "./pages/admin/EditAnnoucemet";
 
 import AdminProfile from "./pages/admin/AdminProfile";
 
@@ -34,21 +34,24 @@ import StudentAnnouncements from "./pages/student/StudentAnnoucement";
 import StudentProfile from "./pages/student/StudentProfile";
 import StudentEventDetails from "./pages/student/StudentEventDetails";
 
-/* ================= AUTH ================= */
+/* ================= AUTH / PUBLIC ================= */
 
+import HomePage from "./pages/Homepage";
 import { Login } from "./pages/login";
 
 /* ================= ROUTES ================= */
 
 const router = createBrowserRouter([
-
-  /* ---------- AUTH ---------- */
+  /* ---------- PUBLIC ---------- */
 
   {
     path: "/",
-    element: <Login />,
+    element: <HomePage />,
   },
-
+  {
+    path: "/home",
+    element: <HomePage />,
+  },
   {
     path: "/login",
     element: <Login />,
@@ -60,69 +63,64 @@ const router = createBrowserRouter([
     path: "/admin",
     element: <AdminDashboard />,
   },
-
   {
-    path: "/events",
+    path: "/admin/events",
     element: <AdminEvents />,
   },
-
   {
     path: "/admin/events/add",
     element: <AdminAddEvent />,
   },
-
   {
     path: "/admin/events/edit/:id",
     element: <AdminEditEvent />,
   },
-
   {
     path: "/admin/events/students/:eventId",
     element: <AdminEventStudent />,
   },
 
+  /* CATEGORY (FIXED SPELLING + STRUCTURE) */
+
   {
-    path: "/catogory",
-    element: <ManageCatogory />,
+    path: "/admin/category",
+    element: <ManageCategory />,
+  },
+  {
+    path: "/admin/category/add",
+    element: <AdminAddCategory />,
+  },
+  {
+    path: "/admin/category/edit/:id",
+    element: <AdminEditCategory />,
   },
 
   {
-    path: "/admin/catogory/add",
-    element: <AdminAddCatogory />,
-  },
-
-  {
-    path: "/admin/catogory/edit/:id",
-    element: <AdminEditCatogory />,
-  },
-
-  {
-    path: "/viewstudents",
+    path: "/admin/view-students",
     element: <ViewStudent />,
   },
-
   {
-    path: "/registration",
+    path: "/admin/registration",
     element: <AdminEventRegistration />,
   },
 
+  /* ANNOUNCEMENTS */
+
   {
-    path: "/announcement",
-    element: <AdminAddAnnoucement />,
+    path: "/admin/announcements",
+    element: <AdminAddAnnouncement />,
+  },
+  {
+    path: "/admin/announcements/all",
+    element: <ShowAllAnnouncement />,
+  },
+  {
+    path: "/admin/announcements/edit/:id",
+    element: <EditAnnouncement />,
   },
 
   {
-    path: "/showannouncement",
-    element: <ShowAllAnnoucement />,
-  },
-
-  {
-    path: "/editannoucement/:id",
-    element: <EditAnnoucemet />,
-  },
-
-  {
-    path: "/profile",
+    path: "/admin/profile",
     element: <AdminProfile />,
   },
 
@@ -133,31 +131,28 @@ const router = createBrowserRouter([
     element: <StudentDashboard />,
   },
 
+  /* ✅ FIXED ROUTE (your original bug) */
   {
-    path: "/studentbrowseevent",
+    path: "/browse-events",
     element: <StudentBrowseEvents />,
   },
 
   {
-    path: "/studentevents",
+    path: "/student/registered-events",
     element: <StudentRegisteredEvents />,
   },
-
   {
-    path: "/studentannoucement",
+    path: "/student/announcements",
     element: <StudentAnnouncements />,
   },
-
   {
-    path: "/studentprofile",
+    path: "/student/profile",
     element: <StudentProfile />,
   },
-
   {
-    path: "/studenteventdetails/:id",
+    path: "/student/event/:id",
     element: <StudentEventDetails />,
   },
-
 ]);
 
 createRoot(document.getElementById("root")!).render(
