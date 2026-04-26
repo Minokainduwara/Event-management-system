@@ -1,7 +1,26 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import OrganizerLayout from "../../shared/ui/OrganizerLayout";
-import { eventsApi, type Event } from "../../shared/api/organizerApi";
+import { apiFetch } from "../../utils/apiFetch";
+
+export interface Category {
+    category_id: number;
+    category_name: string;
+}
+
+export interface Event {
+    event_id: number;
+    event_title: string;
+    description: string;
+    event_date: string;
+    event_time: string;
+    location: string;
+    status: string;
+    max_participants: number;
+    image?: string;
+    category?: Category;
+    category_id?: number;
+}
 
 type Tab = "all" | "upcoming" | "completed";
 
@@ -91,9 +110,23 @@ function EditEventModal({ event, onClose, onSave }: {
     const handleSave = async () => {
         setSaving(true);
         try {
-            await eventsApi.update(event.event_id, form as any);
-            onSave({ ...event, ...form });
-        } catch {
+            const res = await apiFetch(`http://localhost:8080/api/events/updateEvent/${event.event_id}`, {
+                method: "PUT",
+                body: JSON.stringify({
+                    event_title: form.event_title,
+                    description: form.description,
+                    event_date: form.event_date,
+                    event_time: form.event_time,
+                    location: form.location,
+                    max_participants: Number(form.max_participants),
+                    status: form.status,
+                    // Note: category_id might need to be passed if the backend expects it in the DTO
+                }),
+            });
+            if (!res.ok) throw new Error("Update failed");
+            const updatedData = await res.json();
+            onSave(updatedData);
+        } catch (err) {
             alert("Failed to update event.");
         } finally {
             setSaving(false);
@@ -215,12 +248,18 @@ export default function MyEventsPage() {
     const [deleteConfirm, setDeleteConfirm] = useState<Event | null>(null);
     const [deleting, setDeleting] = useState(false);
 
-    const load = useCallback(() => {
+    const load = useCallback(async () => {
         setLoading(true);
-        eventsApi.getAll()
-            .then(setEvents)
-            .catch(() => {})
-            .finally(() => setLoading(false));
+        try {
+            const res = await apiFetch("http://localhost:8080/api/events/allEvents");
+            if (!res.ok) throw new Error("Failed to fetch");
+            const data = await res.json();
+            setEvents(data);
+        } catch (err) {
+            console.error("Failed to load events", err);
+        } finally {
+            setLoading(false);
+        }
     }, []);
 
     useEffect(() => { load(); }, [load]);
@@ -253,10 +292,13 @@ export default function MyEventsPage() {
         if (!deleteConfirm) return;
         setDeleting(true);
         try {
-            await eventsApi.delete(deleteConfirm.event_id);
+            const res = await apiFetch(`http://localhost:8080/api/events/deleteEvent/${deleteConfirm.event_id}`, {
+                method: "DELETE",
+            });
+            if (!res.ok) throw new Error("Delete failed");
             setEvents(prev => prev.filter(e => e.event_id !== deleteConfirm.event_id));
             setDeleteConfirm(null);
-        } catch {
+        } catch (err) {
             alert("Failed to delete event.");
         } finally {
             setDeleting(false);

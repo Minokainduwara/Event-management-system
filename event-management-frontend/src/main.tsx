@@ -21,7 +21,7 @@ import MyEventsPage from "./pages/organizer/MyEventsPage.tsx";
 import CreateEventPage from "./pages/organizer/CreateEventPage.tsx";
 import AnalyticsPage from "./pages/organizer/AnalyticsPage.tsx";
 import AnnouncementsPage from "./pages/organizer/AnnoucementsPage.tsx";
-import ProfilePage from "./pages/organizer/ProfilePage.tsx";
+// import ProfilePage from "./pages/organizer/ProfilePage.tsx";
 import AdminDashboard from "./pages/admin/AdminDashboard.tsx";
 import AdminEvents from "./pages/admin/AdminEvents.tsx";
 import AdminAddEvent from "./pages/admin/AdminAddEvent.tsx";
@@ -153,10 +153,10 @@ const router = createBrowserRouter([
         path: "/organizer/announcements",
         element: <AnnouncementsPage />,
     },
-    {
-        path: "/organizer/profile",
-        element: <ProfilePage />,
-    },
+    // {
+    //     path: "/organizer/profile",
+    //     element: <ProfilePage />,
+    // },
 ]);
 
 createRoot(document.getElementById("root")!).render(

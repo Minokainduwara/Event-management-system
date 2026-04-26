@@ -18,6 +18,7 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -27,9 +28,15 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> {})
+
+                // ✅ IMPORTANT FIX HERE
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+
                 .authorizeHttpRequests(auth -> auth
+                        // ✅ allow preflight requests
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                        // ✅ allow everything (DEV ONLY)
                         .requestMatchers("/**").permitAll()
                 );
 
@@ -41,11 +48,13 @@ public class SecurityConfig {
 
         CorsConfiguration config = new CorsConfiguration();
 
-        // ✅ DO NOT USE "*"
-        config.setAllowedOrigins(List.of("http://localhost:5173"));
+        // ✅ IMPORTANT: allow BOTH ports
+        config.setAllowedOriginPatterns(List.of("http://localhost:*"));
 
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
+
+        // ⚠️ must be true if using cookies/tokens
         config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

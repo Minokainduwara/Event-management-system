@@ -13,7 +13,9 @@ function AdminAddAnnoucement() {
     message: "",
     createdBy: "",
   });
-  const handleChange = (e: any) => {
+  const handleChange = (
+  e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+) => {
     const { name, value } = e.target;
 
     if (name === "createdBy") {
@@ -35,7 +37,7 @@ function AdminAddAnnoucement() {
       [name]: value,
     });
   };
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!formData.createdBy) {
       alert("Admin Id is must required");

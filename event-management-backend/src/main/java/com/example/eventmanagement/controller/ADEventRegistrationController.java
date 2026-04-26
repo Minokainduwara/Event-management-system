@@ -12,7 +12,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/eventRegistrations")
-@CrossOrigin("*")
+@CrossOrigin(origins = "http://localhost:5173")
 public class ADEventRegistrationController {
     @Autowired
     private ADEventRegistrationService ADEventRegistrationService;

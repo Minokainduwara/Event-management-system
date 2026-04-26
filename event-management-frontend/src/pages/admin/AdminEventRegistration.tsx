@@ -25,14 +25,7 @@ function AdminEventRegistration() {
     registrationDate: string;
     status: string;
   }
-  useEffect(() => {
-    apiFetch("http://localhost:8080/eventRegistrations/summary")
-      .then((res) => res.json())
-      .then((data) => setSummary(data))
-      .catch((err) => console.log(String(err)));
-
-    fetchAllRegistrations();
-  }, []);
+  
 
   const searchRegistrations = (keyword: string) => {
     apiFetch(`http://localhost:8080/eventRegistrations/search?keyword=${keyword}`)
@@ -54,6 +47,14 @@ function AdminEventRegistration() {
       })
       .catch((err) => console.log(String(err)));
   };
+  useEffect(() => {
+    apiFetch("http://localhost:8080/eventRegistrations/summary")
+      .then((res) => res.json())
+      .then((data) => setSummary(data))
+      .catch((err) => console.log(String(err)));
+
+    fetchAllRegistrations();
+  }, []);
 
   const filterByStatus = (status: string) => {
     if (status === "") {
@@ -208,7 +209,7 @@ function AdminEventRegistration() {
               </thead>
 
               <tbody>
-                {registrations.map((registration: any) => (
+                {registrations.map((registration: Registration) => (
                   <tr
                     key={registration.registration_id}
                     className="bg-gray-50 hover:bg-gray-100"
@@ -224,7 +225,7 @@ function AdminEventRegistration() {
                       {formatDate(registration.eventDate)}
                     </td>
                     <td className="px-6 py-4">
-                      {formatDateTime(registration.registration_date)}
+                      {formatDateTime(registration.registrationDate)}
                     </td>
 
                     <td className="px-6 py-4">

@@ -1,7 +1,26 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import OrganizerLayout from "../../shared/ui/OrganizerLayout";
-import { eventsApi, categoriesApi, type Event, type Category } from "../../shared/api/organizerApi";
+import { apiFetch } from "../../utils/apiFetch";
+
+export interface Category {
+    category_id: number;
+    category_name: string;
+}
+
+export interface Event {
+    event_id: number;
+    event_title: string;
+    description: string;
+    event_date: string;
+    event_time: string;
+    location: string;
+    status: string;
+    max_participants: number;
+    image?: string;
+    category?: Category;
+    category_id?: number;
+}
 
 const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
     UPCOMING:   { bg: "#dbeafe", text: "#1d4ed8" },
@@ -33,13 +52,28 @@ export default function OrganizerHomePage() {
     const [error, setError] = useState("");
 
     useEffect(() => {
-        Promise.all([eventsApi.getAll(), categoriesApi.getAll()])
-            .then(([evs, cats]) => {
-                setEvents(evs);
-                setCategories(cats);
-            })
-            .catch(() => setError("Failed to load events. Check your connection."))
-            .finally(() => setLoading(false));
+        const loadData = async () => {
+            try {
+                const [evsRes, catsRes] = await Promise.all([
+                    apiFetch("http://localhost:8080/api/events/allEvents"),
+                    apiFetch("http://localhost:8080/api/category/getCategories")
+                ]);
+
+                if (!evsRes.ok || !catsRes.ok) throw new Error("Failed to fetch");
+
+                const evsData = await evsRes.json();
+                const catsData = await catsRes.json();
+
+                setEvents(evsData);
+                setCategories(catsData);
+            } catch (err) {
+                setError("Failed to load events. Check your connection.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadData();
     }, []);
 
     const filtered = events.filter(e => {
