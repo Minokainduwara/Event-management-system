@@ -1,7 +1,8 @@
 package com.example.eventmanagement.controller;
-
+import com.example.eventmanagement.enums.Role;
 import com.example.eventmanagement.dto.ChangePasswordDTO;
 import com.example.eventmanagement.dto.LoginDTO;
+import com.example.eventmanagement.dto.RegisterDTO;
 import com.example.eventmanagement.dto.StudentProfileDTO;
 import com.example.eventmanagement.model.ADUser;
 import com.example.eventmanagement.repository.ADUserRepository;
@@ -22,6 +23,28 @@ public class ADUserController {
 
     @Autowired
     private ADUserRepository userRepository;
+
+    // ================= REGISTER (FIXED - DTO BASED) =================
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody RegisterDTO dto) {
+
+        if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
+            return ResponseEntity.badRequest().body("Email already exists");
+        }
+
+        ADUser user = new ADUser();
+        user.setName(dto.getName());
+        user.setEmail(dto.getEmail());
+        user.setPassword(dto.getPassword());
+        user.setUniversityId(dto.getUniversityId());
+
+        // DEFAULT ROLE
+        user.setRole(Role.STUDENT);
+
+        ADUser savedUser = userService.saveUser(user);
+
+        return ResponseEntity.ok(savedUser);
+    }
 
     // ================= LOGIN =================
     @PostMapping("/login")
