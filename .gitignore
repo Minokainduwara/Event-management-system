@@ -1,0 +1,57 @@
+# =============================
+# IntelliJ IDEA
+# =============================
+.idea
+.idea/
+*.iml
+*.iws
+out/
+target/
+
+# =============================
+# Java / Maven
+# =============================
+*.class
+*.jar
+*.war
+*.ear
+*.log
+*.tmp
+*.bak
+hs_err_pid*
+*.hprof
+.mvn/wrapper/maven-wrapper.jar
+
+# =============================
+# Spring Boot
+# =============================
+/logs/
+/tmp/
+/spring.log
+spring-boot-devtools.properties
+
+# =============================
+# Node / Bun
+# =============================
+node_modules/
+bun.lockb
+dist/
+build/
+.env
+
+# =============================
+# OS
+# =============================
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# =============================
+# Others
+# =============================
+.vscode/
+*.zip
+*.tar.gz
+*.bak
+*.old

@@ -1,0 +1,62 @@
+package com.example.eventmanagement.controller;
+
+import com.example.eventmanagement.dto.StudentDashboardDTO;
+import com.example.eventmanagement.model.ADEvent;
+import com.example.eventmanagement.model.ADEventRegistration;
+import com.example.eventmanagement.services.StudentService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/student")
+public class StudentController {
+    @Autowired
+    private StudentService service;
+
+
+    @GetMapping("/events")
+    public List<ADEvent> getEvents() {
+        return service.getEvents();
+    }
+
+
+    @GetMapping("/count/{eventId}")
+    public long getCount(@PathVariable int eventId) {
+        return service.getEventCount(eventId);
+    }
+
+
+    @GetMapping("/myEvents/{userId}")
+    public List<ADEventRegistration> myEvents(@PathVariable int userId) {
+        return service.getMyEvents(userId);
+    }
+
+
+    @GetMapping("/dashboard")
+    public StudentDashboardDTO dashboard(Authentication auth) {
+        String email = auth.getName();
+        return service.getDashboard(email);
+    }
+    @GetMapping("/activity/{userId}")
+    public List<ADEventRegistration> getStudentActivity(@PathVariable int userId) {
+        return service.getStudentActivity(userId);
+    }
+    @GetMapping("/student/events/search")
+    public List<ADEvent> searchEvents(@RequestParam String keyword) {
+        return service.searchEvents(keyword);
+    }
+    @GetMapping("/student/events/filter")
+    public List<ADEvent> filterEvents(@RequestParam int categoryId) {
+        return service.filterEventsByCategory(categoryId);
+    }
+}
