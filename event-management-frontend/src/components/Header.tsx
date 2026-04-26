@@ -3,10 +3,9 @@ import Navbar from "./Navbar";
 
 function Header() {
   return (
-    <header className="bg-blue-600 text-white shadow-md">
+    <header >
 
-      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-
+      
         {/* LEFT - Logo */}
        
 
@@ -14,18 +13,18 @@ function Header() {
         <Navbar
           links={[
             { label: "Dashboard", path: "/admin" },
-            { label: "Events", path: "/events" },
-            { label: "Categories", path: "/catogory" },
-            { label: "Students", path: "/viewstudents" },
-            { label: "Registrations", path: "/registration" },
-            { label: "Announcements", path: "/announcement" },
+            { label: "Events", path: "/admin/events" },
+            { label: "Categories", path: "/admin/category" },
+            { label: "Students", path: "/admin/viewstudents" },
+            { label: "Registrations", path: "/admin/registration" },
+            { label: "Announcements", path: "/admin/announcements" },
           ]}
           profilePath="/profile"
         />
 
         
 
-      </div>
+
     </header>
   );
 }
