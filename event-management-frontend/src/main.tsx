@@ -23,7 +23,16 @@ import StudentAnnouncements from "./pages/student/StudentAnnoucement.tsx";
 import StudentProfile from "./pages/student/StudentProfile.tsx";
 import StudentEventDetails from "./pages/student/StudentEventDetails.tsx";
 import AdminProfile from "./pages/admin/AdminProfile.tsx";
+import HomePage from "./pages/HomePage.tsx";
 const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <HomePage/>,
+  },
+  {
+    path: "/home",
+    element: <HomePage/>,
+  },
   {
     path: "/admin",
     element: <AdminDashboard />,
