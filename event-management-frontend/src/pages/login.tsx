@@ -1,150 +1,230 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { GraduationCap, Mail, Lock, ArrowRight } from "lucide-react";
+import {
+  GraduationCap,
+  Mail,
+  Lock,
+  ArrowRight,
+  User,
+  IdCard,
+} from "lucide-react";
 
 export function Login() {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [isSignUp, setIsSignUp] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [universityId, setUniversityId] = useState("");
 
-        try {
-            // 🔴 FIX 1: Call backend login API (REAL DB LOGIN)
-            const response = await fetch("http://localhost:8080/users/login", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                // 🔴 FIX 2: Send credentials to backend
-                body: JSON.stringify({
-                    email,
-                    password,
-                }),
-            });
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-            const data = await response.json();
+    try {
+      const url = isSignUp
+        ? "http://localhost:8080/users/register"
+        : "http://localhost:8080/users/login";
 
-            // 🔴 FIX 3: Handle backend error response
-            if (!response.ok) {
-                alert(data); // e.g. "User not found" or "Invalid password"
-                return;
-            }
+      const payload = isSignUp
+        ? {
+            name: name.trim(),
+            email: email.trim(),
+            password,
+            universityId: universityId.trim(),
+          }
+        : {
+            email: email.trim(),
+            password,
+          };
 
-            // 🔴 FIX 4: Store REAL backend data (NO dummy values)
-            localStorage.setItem("userRole", data.role);
-            localStorage.setItem("userId", data.userId);
-            localStorage.setItem("userName", data.name);
-            localStorage.setItem("userEmail", data.email);
-            localStorage.setItem("universityId", data.universityId);
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
 
-            // 🔴 FIX 5: Role-based navigation (IMPORTANT FIX)
-            if (data.role === "ADMIN") {
-                navigate("/admin"); // admin dashboard
-            } else if (data.role === "FACULTY") {
-                navigate("/faculty"); // faculty dashboard
-            } else if (data.role === "STUDENT") {
-                navigate("/student"); // student dashboard
-            } else {
-                navigate("/login"); // fallback safety
-            }
+      const text = await response.text();
 
-        } catch (error) {
-            console.error("Login error:", error);
-            alert("Server error. Please try again later.");
-        }
-    };
+      let data;
 
-    return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#1E3A8A] via-[#60A5FA] to-[#1E3A8A] p-4">
-            <div className="w-full max-w-md">
-                <div className="bg-white rounded-2xl shadow-2xl p-8">
+      try {
+        data = text ? JSON.parse(text) : null;
+      } catch {
+        data = text;
+      }
 
-                    {/* Logo */}
-                    <div className="flex justify-center mb-6">
-                        <div className="bg-[#1E3A8A] p-4 rounded-full">
-                            <GraduationCap className="w-12 h-12 text-white" />
-                        </div>
-                    </div>
+      if (!response.ok) {
+        alert(
+          typeof data === "string"
+            ? data
+            : data?.message || "Request failed"
+        );
+        return;
+      }
 
-                    {/* Title */}
-                    <h1 className="text-3xl text-center mb-2 text-[#1E3A8A]">
-                        University Events
-                    </h1>
+      // ================= SIGN UP =================
 
-                    <p className="text-center text-gray-600 mb-8">
-                        {isSignUp ? "Create your account" : "Welcome back! Please login"}
-                    </p>
+      if (isSignUp) {
+        alert("Account created successfully!");
 
-                    {/* FORM */}
-                    <form onSubmit={handleSubmit} className="space-y-6">
+        setIsSignUp(false);
 
-                        {/* EMAIL */}
-                        <div>
-                            <label className="block text-sm mb-2 text-gray-700">
-                                Email Address
-                            </label>
+        setName("");
+        setEmail("");
+        setPassword("");
+        setUniversityId("");
 
-                            <div className="relative">
-                                <Mail className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+        return;
+      }
 
-                                <input
-                                    type="email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    required
-                                    placeholder="your.email@university.edu"
-                                    className="w-full pl-12 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#1E3A8A]"
-                                />
-                            </div>
-                        </div>
+      // ================= LOGIN =================
 
-                        {/* PASSWORD */}
-                        <div>
-                            <label className="block text-sm mb-2 text-gray-700">
-                                Password
-                            </label>
+      if (!data || !data.role) {
+        alert("Invalid login response");
+        return;
+      }
 
-                            <div className="relative">
-                                <Lock className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+      // FIXED STORAGE
 
-                                <input
-                                    type="password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    required
-                                    placeholder="••••••••"
-                                    className="w-full pl-12 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#1E3A8A]"
-                                />
-                            </div>
-                        </div>
+      localStorage.setItem("isLoggedIn", "true");
 
-                        {/* SUBMIT BUTTON */}
-                        <button
-                            type="submit"
-                            className="w-full bg-[#1E3A8A] text-white py-3 rounded-lg hover:bg-[#163172] transition flex items-center justify-center gap-2"
-                        >
-                            {isSignUp ? "Sign Up" : "Login"}
-                            <ArrowRight className="w-5 h-5" />
-                        </button>
-                    </form>
+      localStorage.setItem("role", data.role);
 
-                    {/* TOGGLE */}
-                    <div className="mt-6 text-center">
-                        <button
-                            type="button"
-                            onClick={() => setIsSignUp(!isSignUp)}
-                            className="text-sm text-gray-600"
-                        >
-                            {isSignUp ? "Already have an account? Login" : "Create new account"}
-                        </button>
-                    </div>
+      localStorage.setItem("userId", data.id || "");
+      localStorage.setItem("userName", data.name || "");
+      localStorage.setItem("userEmail", data.email || "");
+      localStorage.setItem(
+        "universityId",
+        data.universityId || ""
+      );
 
-                </div>
-            </div>
+      // REDIRECT
+
+      if (data.role === "ADMIN") {
+        navigate("/admin");
+      } else {
+        navigate("/student");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Server error");
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 via-blue-400 to-blue-900 p-4">
+      <div className="bg-white w-full max-w-md rounded-2xl shadow-xl p-8">
+
+        <div className="flex justify-center mb-4">
+          <div className="bg-blue-900 p-3 rounded-full">
+            <GraduationCap className="text-white" />
+          </div>
         </div>
-    );
+
+        <h1 className="text-center text-2xl text-blue-900 font-semibold">
+          University Event System
+        </h1>
+
+        <p className="text-center text-gray-500 mb-6">
+          {isSignUp
+            ? "Create your account"
+            : "Login to continue"}
+        </p>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+
+          {isSignUp && (
+            <div className="relative">
+              <User className="absolute left-3 top-3 text-gray-400" />
+
+              <input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Full Name"
+                className="w-full pl-10 p-3 border rounded-lg"
+                required
+              />
+            </div>
+          )}
+
+          {isSignUp && (
+            <div className="relative">
+              <IdCard className="absolute left-3 top-3 text-gray-400" />
+
+              <input
+                value={universityId}
+                onChange={(e) =>
+                  setUniversityId(e.target.value)
+                }
+                placeholder="University ID"
+                className="w-full pl-10 p-3 border rounded-lg"
+                required
+              />
+            </div>
+          )}
+
+          <div className="relative">
+            <Mail className="absolute left-3 top-3 text-gray-400" />
+
+            <input
+              type="email"
+              value={email}
+              onChange={(e) =>
+                setEmail(e.target.value)
+              }
+              placeholder="Email"
+              className="w-full pl-10 p-3 border rounded-lg"
+              required
+            />
+          </div>
+
+          <div className="relative">
+            <Lock className="absolute left-3 top-3 text-gray-400" />
+
+            <input
+              type="password"
+              value={password}
+              onChange={(e) =>
+                setPassword(e.target.value)
+              }
+              placeholder="Password"
+              className="w-full pl-10 p-3 border rounded-lg"
+              required
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="w-full bg-blue-900 text-white py-3 rounded-lg flex items-center justify-center gap-2"
+          >
+            {isSignUp ? "Sign Up" : "Login"}
+
+            <ArrowRight size={18} />
+          </button>
+        </form>
+
+        <div className="text-center mt-5">
+          <button
+            onClick={() => {
+              setIsSignUp(!isSignUp);
+
+              setName("");
+              setEmail("");
+              setPassword("");
+              setUniversityId("");
+            }}
+            className="text-sm text-blue-900 hover:underline"
+          >
+            {isSignUp
+              ? "Already have an account? Login"
+              : "Create new account"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }
