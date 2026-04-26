@@ -1,6 +1,6 @@
 import './App.css'
 import './index.css'
-import { Navigate, Route, Routes } from "react-router";
+import { Navigate, Route, Routes } from "react-router-dom";
 import { Login } from "./pages/login.tsx";
 
 import { RoleGuard } from "./shared/ui/RoleGuard.tsx";
