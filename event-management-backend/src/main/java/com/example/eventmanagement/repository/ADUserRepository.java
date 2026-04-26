@@ -1,5 +1,6 @@
 package com.example.eventmanagement.repository;
 
+import com.example.eventmanagement.enums.Role;
 import com.example.eventmanagement.model.ADUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -8,7 +9,7 @@ import java.util.Optional;
 
 public interface ADUserRepository extends JpaRepository<ADUser,Integer> {
     // ✅ Get users by role (ADMIN / STUDENT / FACULTY)
-    List<ADUser> findByRole(ADUser.Role role);
+    List<ADUser> findByRole(Role role);
 
     // ✅ Filter by department
     List<ADUser> findByDepartment(String department);
@@ -20,7 +21,7 @@ public interface ADUserRepository extends JpaRepository<ADUser,Integer> {
     );
 
     // ✅ Count users by role
-    long countByRole(ADUser.Role role);
+    long countByRole(Role role);
 
     // 🔴 FIX (IMPORTANT): login lookup
     Optional<ADUser> findByEmail(String email);

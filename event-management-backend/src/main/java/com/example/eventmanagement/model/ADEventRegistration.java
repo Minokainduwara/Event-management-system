@@ -19,7 +19,7 @@ public class ADEventRegistration {
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private ADUser ADUser;
+    private ADUser user;
 
     @JsonIgnore
     @ManyToOne
@@ -27,16 +27,16 @@ public class ADEventRegistration {
     private ADEvent event;
     @JsonProperty("studentName")
     public String getStudentName() {
-        return ADUser != null ? ADUser.getName() : null;
+        return user != null ? user.getName() : null;
     }
     @JsonProperty("universityId")
     public String getUniversityId() {
-        return ADUser != null ? ADUser.getUniversityId() : null;
+        return user != null ? user.getUniversityId() : null;
     }
 
     @JsonProperty("email")
     public String getEmail() {
-        return ADUser != null ? ADUser.getEmail() : null;
+        return user != null ? user.getEmail() : null;
     }
 
     @JsonProperty("eventName")
@@ -87,11 +87,11 @@ public class ADEventRegistration {
     }
 
     public ADUser getUser() {
-        return ADUser;
+        return user;
     }
 
     public void setUser(ADUser ADUser) {
-        this.ADUser = ADUser;
+        this.user = ADUser;
     }
 
     public ADEvent getEvent() {

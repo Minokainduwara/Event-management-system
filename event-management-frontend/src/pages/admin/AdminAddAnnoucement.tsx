@@ -15,12 +15,26 @@ function AdminAddAnnoucement() {
   });
   const handleChange = (e: any) => {
     const { name, value } = e.target;
+
+    if (name === "createdBy") {
+      // allow empty input
+      if (value === "") {
+        setFormData({ ...formData, [name]: value });
+        return;
+      }
+
+      // convert safely
+      const num = parseInt(value, 10);
+
+      // block invalid or negative numbers
+      if (isNaN(num) || num < 0) return;
+    }
+
     setFormData({
       ...formData,
       [name]: value,
     });
   };
-
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     if (!formData.createdBy) {
@@ -92,6 +106,8 @@ function AdminAddAnnoucement() {
                 </label>
                 <input
                   type="number"
+
+                  required
                   name="createdBy"
                   value={formData.createdBy}
                   onChange={handleChange}
@@ -107,6 +123,7 @@ function AdminAddAnnoucement() {
                   type="text"
                   placeholder="Enter title"
                   name="title"
+                  required
                   value={formData.title}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -122,6 +139,7 @@ function AdminAddAnnoucement() {
                   name="message"
                   value={formData.message}
                   onChange={handleChange}
+                  required
                   placeholder="Enter message"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-400"
                 ></textarea>

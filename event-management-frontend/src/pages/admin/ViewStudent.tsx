@@ -3,6 +3,9 @@ import { apiFetch } from "../../utils/apiFetch";
 import Header from "../../components/Header";
 import Body from "../../components/Body";
 function ViewStudent() {
+
+
+  console.log("Component mounted");
   type Student = {
     userId: number;
     universityId: string;
@@ -25,12 +28,15 @@ function ViewStudent() {
       .then((data) => setTotalStudents(data))
       .catch((err) => console.log(String(err)));
   }, []);
-
+  useEffect(() => {
+    console.log("Students loaded:", students);
+  }, [students]);
   const fetchAllStudents = () => {
     apiFetch("http://localhost:8080/users/getAllStudents")
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) {
+          console.log(data)
           setStudents(data);
         } else {
           console.log("Unexpected response:", data);
@@ -56,6 +62,7 @@ function ViewStudent() {
     }
   };
   useEffect(() => {
+    console.log("Component mounted");
     fetchAllStudents();
   }, []);
 
@@ -204,8 +211,8 @@ function ViewStudent() {
                       {student.year}
                     </td>
                     <td className="px-4 py-3 font-semibold text-md text-gray-600">
-                      {student.created_at
-                        ? new Date(student.created_at).toLocaleString()
+                      {student.createdAt
+                        ? new Date(student.createdAt).toLocaleString()
                         : ""}
                     </td>
                     <td className="px-4 py-3 font-semibold text-md text-gray-600">
