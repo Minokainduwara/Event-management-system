@@ -177,6 +177,7 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
+
   {
     path: "/student/registered-events",
     element: (
@@ -185,6 +186,7 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
+
   {
     path: "/student/announcements",
     element: (
@@ -193,6 +195,7 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
+
   {
     path: "/student/profile",
     element: (
@@ -201,6 +204,8 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
+
+  /* ✅ FIXED EVENT DETAILS ROUTE */
   {
     path: "/student/event/:id",
     element: (

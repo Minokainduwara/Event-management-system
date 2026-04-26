@@ -4,26 +4,16 @@ import Navbar from "./Navbar";
 
 function StudentHeader() {
   return (
-    <header >
-
-      
-
-        
-
-        {/* CENTER - Reusable Navbar */}
-        <Navbar
-          profilePath="/studentprofile"
-          links={[
-            { label: "Home", path: "/student" },
-            { label: "Events", path: "/studentbrowseevent" },
-            { label: "My Events", path: "/studentevents" },
-            { label: "Announcements", path: "/studentannoucement" },
-          ]}
-        />
-
-        
-
-
+    <header>
+      <Navbar
+        profilePath="/student/profile"
+        links={[
+          { label: "Home", path: "/student" },
+          { label: "Events", path: "/browse-events" },
+          { label: "My Events", path: "/student/registered-events" },
+          { label: "Announcements", path: "/student/announcements" },
+        ]}
+      />
     </header>
   );
 }
