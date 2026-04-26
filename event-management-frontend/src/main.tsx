@@ -34,6 +34,15 @@ import StudentAnnouncements from "./pages/student/StudentAnnoucement";
 import StudentProfile from "./pages/student/StudentProfile";
 import StudentEventDetails from "./pages/student/StudentEventDetails";
 
+/* ================= ORGANIZER (FACULTY) ================= */
+
+import OrganizerHomePage from "./pages/organizer/OrganizerHomePage";
+import MyEventsPage from "./pages/organizer/MyEventsPage";
+import CreateEventPage from "./pages/organizer/CreateEventPage";
+import AnalyticsPage from "./pages/organizer/AnalyticsPage";
+import AnnouncementsPage from "./pages/organizer/AnnoucementsPage";
+import ProfilePage from "./pages/organizer/ProfilePage";
+
 /* ================= AUTH / PUBLIC ================= */
 
 import HomePage from "./pages/Homepage";
@@ -42,121 +51,146 @@ import { Login } from "./pages/login";
 /* ================= ROUTES ================= */
 
 const router = createBrowserRouter([
-  /* ---------- PUBLIC ---------- */
+    /* ---------- PUBLIC ---------- */
 
-  {
-    path: "/",
-    element: <HomePage />,
-  },
-  {
-    path: "/home",
-    element: <HomePage />,
-  },
-  {
-    path: "/login",
-    element: <Login />,
-  },
+    {
+        path: "/",
+        element: <HomePage />,
+    },
+    {
+        path: "/home",
+        element: <HomePage />,
+    },
+    {
+        path: "/login",
+        element: <Login />,
+    },
 
-  /* ---------- ADMIN ---------- */
 
-  {
-    path: "/admin",
-    element: <AdminDashboard />,
-  },
-  {
-    path: "/admin/events",
-    element: <AdminEvents />,
-  },
-  {
-    path: "/admin/events/add",
-    element: <AdminAddEvent />,
-  },
-  {
-    path: "/admin/events/edit/:id",
-    element: <AdminEditEvent />,
-  },
-  {
-    path: "/admin/events/students/:eventId",
-    element: <AdminEventStudent />,
-  },
+    /* ---------- ADMIN ---------- */
 
-  /* CATEGORY (FIXED SPELLING + STRUCTURE) */
+    {
+        path: "/admin",
+        element: <AdminDashboard />,
+    },
+    {
+        path: "/admin/events",
+        element: <AdminEvents />,
+    },
+    {
+        path: "/admin/events/add",
+        element: <AdminAddEvent />,
+    },
+    {
+        path: "/admin/events/edit/:id",
+        element: <AdminEditEvent />,
+    },
+    {
+        path: "/admin/events/students/:eventId",
+        element: <AdminEventStudent />,
+    },
 
-  {
-    path: "/admin/category",
-    element: <ManageCategory />,
-  },
-  {
-    path: "/admin/category/add",
-    element: <AdminAddCategory />,
-  },
-  {
-    path: "/admin/category/edit/:id",
-    element: <AdminEditCategory />,
-  },
+    /* CATEGORY */
 
-  {
-    path: "/admin/view-students",
-    element: <ViewStudent />,
-  },
-  {
-    path: "/admin/registration",
-    element: <AdminEventRegistration />,
-  },
+    {
+        path: "/admin/category",
+        element: <ManageCategory />,
+    },
+    {
+        path: "/admin/category/add",
+        element: <AdminAddCategory />,
+    },
+    {
+        path: "/admin/category/edit/:id",
+        element: <AdminEditCategory />,
+    },
 
-  /* ANNOUNCEMENTS */
+    {
+        path: "/admin/view-students",
+        element: <ViewStudent />,
+    },
+    {
+        path: "/admin/registration",
+        element: <AdminEventRegistration />,
+    },
 
-  {
-    path: "/admin/announcements",
-    element: <AdminAddAnnouncement />,
-  },
-  {
-    path: "/admin/announcements/all",
-    element: <ShowAllAnnouncement />,
-  },
-  {
-    path: "/admin/announcements/edit/:id",
-    element: <EditAnnouncement />,
-  },
+    /* ANNOUNCEMENTS */
 
-  {
-    path: "/admin/profile",
-    element: <AdminProfile />,
-  },
+    {
+        path: "/admin/announcements",
+        element: <AdminAddAnnouncement />,
+    },
+    {
+        path: "/admin/announcements/all",
+        element: <ShowAllAnnouncement />,
+    },
+    {
+        path: "/admin/announcements/edit/:id",
+        element: <EditAnnouncement />,
+    },
 
-  /* ---------- STUDENT ---------- */
+    {
+        path: "/admin/profile",
+        element: <AdminProfile />,
+    },
 
-  {
-    path: "/student",
-    element: <StudentDashboard />,
-  },
+    /* ---------- STUDENT ---------- */
 
-  /* ✅ FIXED ROUTE (your original bug) */
-  {
-    path: "/browse-events",
-    element: <StudentBrowseEvents />,
-  },
+    {
+        path: "/student",
+        element: <StudentDashboard />,
+    },
+    {
+        path: "/browse-events",
+        element: <StudentBrowseEvents />,
+    },
+    {
+        path: "/student/registered-events",
+        element: <StudentRegisteredEvents />,
+    },
+    {
+        path: "/student/announcements",
+        element: <StudentAnnouncements />,
+    },
+    {
+        path: "/student/profile",
+        element: <StudentProfile />,
+    },
+    {
+        path: "/student/event/:id",
+        element: <StudentEventDetails />,
+    },
 
-  {
-    path: "/student/registered-events",
-    element: <StudentRegisteredEvents />,
-  },
-  {
-    path: "/student/announcements",
-    element: <StudentAnnouncements />,
-  },
-  {
-    path: "/student/profile",
-    element: <StudentProfile />,
-  },
-  {
-    path: "/student/event/:id",
-    element: <StudentEventDetails />,
-  },
+    /* ---------- ORGANIZER (FACULTY) ---------- */
+
+    {
+        path: "/organizer",
+        element: <OrganizerHomePage />,
+    },
+    {
+        path: "/organizer/my-events",
+        element: <MyEventsPage />,
+    },
+    {
+        path: "/organizer/create-event",
+        element: <CreateEventPage />,
+    },
+    {
+        path: "/organizer/analytics",
+        element: <AnalyticsPage />,
+    },
+    {
+        path: "/organizer/announcements",
+        element: <AnnouncementsPage />,
+    },
+    {
+        path: "/organizer/profile",
+        element: <ProfilePage />,
+    },
 ]);
 
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <RouterProvider router={router} />
-  </StrictMode>
+    <StrictMode>
+        <RouterProvider router={router} />
+    </StrictMode>
 );
