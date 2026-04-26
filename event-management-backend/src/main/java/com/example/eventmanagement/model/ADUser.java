@@ -7,13 +7,12 @@ import java.time.LocalDateTime;
 @Table(name = "user")
 public class ADUser {
 
-    // 🔴 FIX 1: primary key
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int userId;
+    @Column(name = "user_id") // ✅ IMPORTANT: maps explicitly to DB column
+    private Integer userId;
 
-    // 🔴 FIX 2: database column consistency (important for login & constraints)
-    @Column(nullable = false, unique = true)
+    @Column(name = "university_id", nullable = false, unique = true)
     private String universityId;
 
     private String name;
@@ -23,7 +22,6 @@ public class ADUser {
 
     private String password;
 
-    // 🔴 FIX 3: role enum stored as STRING in DB
     @Enumerated(EnumType.STRING)
     private Role role;
 
@@ -31,11 +29,9 @@ public class ADUser {
     private String year;
     private String phone;
 
-    // 🔴 FIX 4: auto timestamp handling
-    @Column(updatable = false)
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    // 🔴 FIX 5: not stored in DB (calculated field)
     @Transient
     private int eventsRegistered;
 
@@ -45,11 +41,9 @@ public class ADUser {
         FACULTY
     }
 
-    public ADUser() {
-    }
+    public ADUser() {}
 
-    // 🔴 FIX 6: removed created_at from constructor (handled automatically)
-    public ADUser(int userId, String universityId, String name, String email,
+    public ADUser(Integer userId, String universityId, String name, String email,
                   String password, Role role, String department,
                   String year, String phone) {
         this.userId = userId;
@@ -63,19 +57,18 @@ public class ADUser {
         this.phone = phone;
     }
 
-    // 🔴 FIX 7: auto set createdAt before insert
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
     }
 
-    // GETTERS + SETTERS (unchanged but clean structure)
+    // GETTERS & SETTERS
 
-    public int getUserId() {
+    public Integer getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
 
