@@ -8,15 +8,7 @@ function Header() {
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
 
         {/* LEFT - Logo */}
-        <div className="flex items-center gap-3">
-          <div className="bg-white p-2 rounded-lg">
-            <h1 className="text-blue-600 font-bold text-xl">UE</h1>
-          </div>
-
-          <h1 className="text-xl font-bold">
-            University Events
-          </h1>
-        </div>
+       
 
         {/* CENTER - Reusable Navbar */}
         <Navbar
