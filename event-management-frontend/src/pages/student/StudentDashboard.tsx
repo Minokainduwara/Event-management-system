@@ -181,7 +181,7 @@ function StudentDashboard() {
                       </td>
                       <td className="px-6 py-4">
                         <span className="inline-flex px-3 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                          {event.category}
+                          {event.category?.categoryName}
                         </span>
                       </td>
                       <td className="px-6 py-4">
