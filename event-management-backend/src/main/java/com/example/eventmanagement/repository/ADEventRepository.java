@@ -14,4 +14,6 @@ public interface ADEventRepository extends JpaRepository<ADEvent,Integer> {
     int countByCategoryCategoryId(int categoryId);
     @Query("SELECT e.category AS category, COUNT(e) AS count FROM ADEvent e GROUP BY e.category")
     List<CategoryCount> countEventsByCategory();
+
+    List<ADEvent> findTop6ByOrderByEventDateDesc();
 }
