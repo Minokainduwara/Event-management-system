@@ -23,27 +23,7 @@ function Header() {
           profilePath="/profile"
         />
 
-        {/* RIGHT - Actions */}
-        <div className="flex items-center gap-4">
-
-          <Link
-            to="/profile"
-            className="hover:bg-white/10 px-4 py-2 rounded-lg transition"
-          >
-            Admin Profile
-          </Link>
-
-          <button
-            onClick={() => {
-              localStorage.clear();
-              window.location.href = "/login";
-            }}
-            className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg transition font-semibold"
-          >
-            Logout
-          </button>
-
-        </div>
+        
 
       </div>
     </header>
