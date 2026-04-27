@@ -10,6 +10,7 @@ import com.example.eventmanagement.services.ADUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.example.eventmanagement.util.JwtUtil;
 
 import java.util.List;
 
@@ -17,6 +18,9 @@ import java.util.List;
 @RequestMapping("/users")
 @CrossOrigin(origins = "http://localhost:5173") // React Vite
 public class ADUserController {
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @Autowired
     private ADUserService userService;
@@ -51,14 +55,25 @@ public class ADUserController {
     public ResponseEntity<?> login(@RequestBody LoginDTO dto) {
 
         ADUser user = userRepository.findByEmail(dto.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElse(null);
 
-        // ⚠️ plain password check (NO JWT yet)
-        if (!user.getPassword().equals(dto.getPassword())) {
+        if (user == null || !user.getPassword().equals(dto.getPassword())) {
             return ResponseEntity.status(401).body("Invalid credentials");
         }
 
-        return ResponseEntity.ok(user);
+        // Generate JWT token
+        String token = jwtUtil.generateToken(user.getEmail(), user.getRole().name());
+
+        LoginDTO response = new LoginDTO(
+                (long) user.getUserId(),   // cast int → long if needed
+                user.getEmail(),
+                user.getName(),
+                user.getRole().name(),
+                token,
+                user.getUniversityId()
+        );
+
+        return ResponseEntity.ok(response);
     }
 
     // ================= CRUD =================

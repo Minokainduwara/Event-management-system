@@ -53,7 +53,7 @@ import { LogOut, User } from "lucide-react";
             </Link>
 
             <Link
-              to="homebrowseevent"
+              to="/home-events"
               className={`px-4 py-2 rounded transition 
               }`}
             >

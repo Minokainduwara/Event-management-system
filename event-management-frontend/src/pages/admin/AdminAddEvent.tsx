@@ -26,12 +26,12 @@ function AdminAddEvent() {
   }, []);
 
   const [eventData, setEventData] = React.useState({
-    event_title: "",
+    eventTitle: "",
     description: "",
     eventDate: "",
     eventTime: "",
     location: "",
-    status: "Upcoming",
+    status: "UPCOMING",
     maxParticipants: "",
     category: { categoryId: "" },
   });
@@ -54,7 +54,7 @@ function AdminAddEvent() {
     }
 
     if (
-      !eventData.event_title ||
+      !eventData.eventTitle ||
       !eventData.description ||
       !eventData.eventDate ||
       !eventData.eventTime ||
@@ -84,7 +84,7 @@ function AdminAddEvent() {
       }
     }
     const eventToSend = {
-      event_title: eventData.event_title,
+      event_title: eventData.eventTitle,
       description: eventData.description,
       eventDate: `${eventData.eventDate}T${eventData.eventTime}:00`,
       location: eventData.location,
@@ -162,8 +162,8 @@ function AdminAddEvent() {
               </label>
               <input
                 type="text"
-                name="event_title"
-                value={eventData.event_title}
+                name="eventTitle"
+                value={eventData.eventTitle}
                 onChange={handleChange}
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Enter event name"

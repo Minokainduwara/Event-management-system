@@ -18,13 +18,15 @@ import AdminEventStudent from "./pages/admin/AdminEventStudent.tsx";
 import { Login } from "./pages/login.tsx";
 import StudentDashboard from "./pages/student/StudentDashboard.tsx";
 import StudentBrowseEvents from "./pages/student/StudentdBrowseEvent.tsx";
-import StudentRegisteredEvents from "./pages/student/StudentRegisteredEvent.tsx";
+import StudentRegisteredEvents from "./pages/student/StudentRegisteredEvents.tsx";
 import StudentAnnouncements from "./pages/student/StudentAnnoucement.tsx";
 import StudentProfile from "./pages/student/StudentProfile.tsx";
 import StudentEventDetails from "./pages/student/StudentEventDetails.tsx";
 import AdminProfile from "./pages/admin/AdminProfile.tsx";
 import HomePage from "./pages/HomePage.tsx";
 import EventsBrowseHome from "./components/Eventsbrowsehome.tsx";
+import GuestEventDetails from "./pages/Guesteventdetails.tsx";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -126,6 +128,14 @@ const router = createBrowserRouter([
   {
     path: "/home-events",
     element: <EventsBrowseHome />,
+  },
+  {
+    path: "/guest-events-details/:id",  
+    element: <GuestEventDetails />,
+  },
+  {
+    path: "/student/events/:id",  
+    element: <StudentEventDetails />,
   },
 
 ]);

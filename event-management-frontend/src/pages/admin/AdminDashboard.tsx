@@ -41,6 +41,18 @@ function AdminDashboard() {
       .catch((err) => console.error(String(err)));
   }, []);
 
+  const handleDelete = (eventId: number) => {
+    if (!confirm("Are you sure you want to delete this event?")) return;
+  
+    apiFetch(`http://localhost:8080/events/deleteEvent/${eventId}`, {
+      method: "DELETE",
+    })
+      .then(() => {
+        setEvents((prev) => prev.filter((e) => e.eventId !== eventId));
+      })
+      .catch((err) => alert("Error deleting event: " + String(err)));
+  };
+
   return (
     <>
       <Header />
@@ -165,7 +177,7 @@ function AdminDashboard() {
                     <tr key={event.id} className=" hover:bg-gray-100">
                       <td className="px-4 py-3">{event.eventId}</td>
                       <td className="px-4 py-3 font-medium">
-                        {event.event_title}
+                        {event.eventTitle}
                       </td>
                       <td className="px-4 py-3">{event.eventDate}</td>
                       <td className="px-4 py-3">{event.location}</td>
@@ -183,7 +195,7 @@ function AdminDashboard() {
                         >
                           Edit
                         </Link>
-                        <button className="bg-red-500 text-white px-3 py-1 rounded">
+                        <button className="bg-red-500 text-white px-3 py-1 rounded" onClick={() => handleDelete(event.eventId)}>
                           Delete
                         </button>
                       </td>

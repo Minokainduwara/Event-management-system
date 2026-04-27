@@ -4,6 +4,7 @@ import com.example.eventmanagement.model.ADEventRegistration;
 import com.example.eventmanagement.model.ADRegistrationSummary;
 import com.example.eventmanagement.services.ADEventRegistrationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -56,20 +57,45 @@ public class ADEventRegistrationController {
         return ADEventRegistrationService.getRegistrationsByEventId(eventId);
     }
 
+    @PostMapping("/register")
+    public ResponseEntity<String> register(
+            @RequestParam int userId,
+            @RequestParam int eventId
+    ) {
+        return ResponseEntity.ok(ADEventRegistrationService.registerStudent(userId, eventId));
+    }
+
     @GetMapping("/my")
-    public List<ADEventRegistration> getMyRegistrations(
+    public ResponseEntity<?> getMyRegistrations(
             Authentication auth,
             @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) String status) {
+            @RequestParam(required = false) String status
+    ) {
+
+        if (auth == null) {
+            return ResponseEntity.status(401).body("Unauthorized");
+        }
 
         String email = auth.getName();
 
-        return ADEventRegistrationService.getRegistrationsByUserEmail(email, keyword, status);
+        return ResponseEntity.ok(
+                ADEventRegistrationService
+                        .getRegistrationsByUserEmail(email, keyword, status)
+        );
     }
 
     @GetMapping("/my/stats")
-    public Map<String, Long> getMyRegistrationStats(Authentication auth) {
+    public ResponseEntity<?> getMyRegistrationStats(Authentication auth) {
+
+        if (auth == null) {
+            return ResponseEntity.status(401).body("Unauthorized");
+        }
+
         String email = auth.getName();
-        return ADEventRegistrationService.getMyRegistrationStats(email);
+
+        return ResponseEntity.ok(
+                ADEventRegistrationService
+                        .getMyRegistrationStats(email)
+        );
     }
 }

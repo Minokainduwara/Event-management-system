@@ -1,5 +1,7 @@
 package com.example.eventmanagement.services;
 
+import com.example.eventmanagement.ADenum.EventStatus;
+import com.example.eventmanagement.enums.Role;
 import com.example.eventmanagement.model.*;
 import com.example.eventmanagement.repository.ADEventRegistrationRepository;
 import com.example.eventmanagement.repository.ADEventRepository;
@@ -7,6 +9,7 @@ import com.example.eventmanagement.repository.ADUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -115,5 +118,51 @@ public List<ADEventRegistration> searchRegisteredStudent(String keyword)
         stats.put("cancelled", cancelled);
 
         return stats;
+    }
+
+    public String registerStudent(int userId, int eventId) {
+
+        // ✅ 1. Prevent duplicate registration
+        if (ADEventRegistrationRepository.existsByUser_UserIdAndEvent_EventId(userId, eventId)) {
+            return "You are already registered for this event!";
+        }
+
+        // ✅ 2. Get user
+        ADUser user = ADUserRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // ✅ 3. Check role
+        if (user.getRole() != Role.STUDENT) {
+            throw new RuntimeException("Only students can register!");
+        }
+
+        // ✅ 4. Get event
+        ADEvent event = ADEventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("Event not found"));
+
+        // ✅ 5. Check event status
+        if (event.getStatus() != EventStatus.UPCOMING) {
+            throw new RuntimeException("Event is not open for registration");
+        }
+
+        // ✅ 6. Check capacity
+        int approvedCount =
+                ADEventRegistrationRepository.countByEvent_EventIdAndStatus(eventId, "APPROVED");
+
+        if (event.getMaxParticipants() != null &&
+                approvedCount >= event.getMaxParticipants()) {
+            throw new RuntimeException("Event is full!");
+        }
+
+        // ✅ 7. Create registration
+        ADEventRegistration reg = new ADEventRegistration();
+        reg.setUser(user);
+        reg.setEvent(event);
+        reg.setStatus("PENDING"); // or APPROVED if auto approve
+        reg.setRegistration_date(LocalDateTime.now());
+
+        ADEventRegistrationRepository.save(reg);
+
+        return "Registration successful!";
     }
 }

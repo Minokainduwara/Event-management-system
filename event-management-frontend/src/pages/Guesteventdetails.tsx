@@ -1,7 +1,7 @@
-import { Search, MapPin, Users, Calendar, Clock, ArrowRight, Sparkles } from "lucide-react";
+import { Search, MapPin, Users, Calendar, Clock, ArrowRight, Sparkles, Lock } from "lucide-react";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { Link } from "react-router";
-import HomeHeader from "./HomeHeader";
+import HomeHeader from "../components/HomeHeader";
 
 type Event = {
   id: number;
@@ -37,9 +37,9 @@ function getCategoryStyle(name: string) {
 
 function AvailabilityBar({ registered, max }: { registered: number; max: number }) {
   const pct = Math.min((registered / max) * 100, 100);
-  const color      = pct >= 90 ? "bg-red-400"    : pct >= 65 ? "bg-amber-400"   : "bg-emerald-400";
-  const label      = pct >= 90 ? "Almost full"   : pct >= 65 ? "Filling up"     : "Open";
-  const labelColor = pct >= 90 ? "text-red-600"  : pct >= 65 ? "text-amber-600" : "text-emerald-600";
+  const color     = pct >= 90 ? "bg-red-400"    : pct >= 65 ? "bg-amber-400"   : "bg-emerald-400";
+  const label     = pct >= 90 ? "Almost full"   : pct >= 65 ? "Filling up"     : "Open";
+  const labelColor = pct >= 90 ? "text-red-600" : pct >= 65 ? "text-amber-600" : "text-emerald-600";
 
   return (
     <div className="mt-3">
@@ -51,10 +51,7 @@ function AvailabilityBar({ registered, max }: { registered: number; max: number 
         <span className={`text-xs font-medium ${labelColor}`}>{label}</span>
       </div>
       <div className="h-1.5 w-full rounded-full bg-gray-100 overflow-hidden">
-        <div
-          className={`h-full rounded-full transition-all duration-500 ${color}`}
-          style={{ width: `${pct}%` }}
-        />
+        <div className={`h-full rounded-full transition-all duration-500 ${color}`} style={{ width: `${pct}%` }} />
       </div>
     </div>
   );
@@ -72,6 +69,7 @@ function EventCard({ event, index }: { event: Event; index: number }) {
       className="group bg-white rounded-2xl border border-gray-100 hover:border-violet-200 hover:shadow-lg hover:shadow-violet-50 transition-all duration-300 flex flex-col overflow-hidden"
       style={{ animationDelay: `${index * 60}ms` }}
     >
+      {/* Date stripe */}
       <div className="flex items-center gap-4 px-5 pt-5 pb-4 border-b border-gray-50">
         <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-gray-50 flex flex-col items-center justify-center border border-gray-100">
           <span className="text-[10px] font-semibold uppercase tracking-widest text-gray-400 leading-none">{month}</span>
@@ -88,6 +86,7 @@ function EventCard({ event, index }: { event: Event; index: number }) {
         </div>
       </div>
 
+      {/* Body */}
       <div className="px-5 py-4 flex flex-col flex-1 gap-3">
         <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed">{event.description}</p>
 
@@ -106,6 +105,7 @@ function EventCard({ event, index }: { event: Event; index: number }) {
         <AvailabilityBar registered={event.registered} max={event.maxParticipants} />
       </div>
 
+      {/* Action — guest: view details only, no register */}
       <div className="px-5 pb-4">
         <Link
           to={`/events/${event.id}`}
@@ -119,32 +119,20 @@ function EventCard({ event, index }: { event: Event; index: number }) {
   );
 }
 
-// ── Change these to match your actual backend endpoints ──────────────────────
-const API = {
-    all: "http://localhost:8080/events/allEvents",
-  
-    categoryCounts:
-      "http://localhost:8080/events/category-counts",
-  
-    search: (kw: string) =>
-      `http://localhost:8080/events/searchEvent?keyword=${encodeURIComponent(kw)}`,
-  
-    filter: (id: string) =>
-      `http://localhost:8080/events/filter?categoryId=${id}`,
-  };
-// ─────────────────────────────────────────────────────────────────────────────
-
-export default function EventsBrowseHome() {
-  const [searchQuery, setSearchQuery]       = useState("");
+export default function GuestEventsBrowseHome() {
+  const [searchQuery, setSearchQuery]     = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("");
-  const [events, setEvents]                 = useState<Event[]>([]);
+  const [events, setEvents]               = useState<Event[]>([]);
   const [categoryCounts, setCategoryCounts] = useState<CategoryCount[]>([]);
-  const [loading, setLoading]               = useState(true);
+  const [loading, setLoading]             = useState(true);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Plain fetch — no auth token needed
+  const apiFetch = (url: string) => fetch(url);
 
   const fetchAll = useCallback(() => {
     setLoading(true);
-    fetch(API.all)
+    apiFetch("http://localhost:8080/events")
       .then((r) => r.json())
       .then((d) => setEvents(Array.isArray(d) ? d : []))
       .catch(console.error)
@@ -153,7 +141,7 @@ export default function EventsBrowseHome() {
 
   useEffect(() => {
     fetchAll();
-    fetch(API.categoryCounts)
+    apiFetch("http://localhost:8080/events/category-counts")
       .then((r) => r.json())
       .then((d) => {
         const safe = Array.isArray(d) ? d : Array.isArray(d?.data) ? d.data : [];
@@ -172,7 +160,7 @@ export default function EventsBrowseHome() {
     setCategoryFilter("");
     debounceRef.current = setTimeout(() => {
       setLoading(true);
-      fetch(API.search(searchQuery))
+      apiFetch(`http://localhost:8080/events/search?keyword=${encodeURIComponent(searchQuery)}`)
         .then((r) => r.json())
         .then((d) => setEvents(Array.isArray(d) ? d : []))
         .catch(console.error)
@@ -188,7 +176,7 @@ export default function EventsBrowseHome() {
     }
     setSearchQuery("");
     setLoading(true);
-    fetch(API.filter(categoryFilter))
+    apiFetch(`http://localhost:8080/events/filter?categoryId=${categoryFilter}`)
       .then((r) => r.json())
       .then((d) => setEvents(Array.isArray(d) ? d : []))
       .catch(console.error)
@@ -203,14 +191,24 @@ export default function EventsBrowseHome() {
     ).entries()
   );
 
-  const totalEvents = categoryCounts.reduce((sum, cat) => sum + cat.count, 0);
+  const totalEvents = categoryCounts.reduce((s, c) => s + c.count, 0);
   const isFiltered  = searchQuery !== "" || categoryFilter !== "";
 
   return (
     <>
       <HomeHeader />
 
+      {/* Guest sign-in nudge */}
+      <div className="bg-indigo-600 text-white text-sm py-2 px-6 text-center flex items-center justify-center gap-2">
+        <Lock className="w-3.5 h-3.5 opacity-80" />
+        <span>Sign in to register for events and track your attendance.</span>
+        <Link to="/login" className="ml-1 underline underline-offset-2 font-semibold hover:opacity-90">
+          Sign in →
+        </Link>
+      </div>
+
       <section className="max-w-7xl mx-auto px-6 py-12">
+        {/* Hero */}
         <div className="mb-10">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-violet-50 border border-violet-100 text-violet-600 text-xs font-semibold mb-4">
             <Sparkles className="w-3.5 h-3.5" />
@@ -221,10 +219,11 @@ export default function EventsBrowseHome() {
             <span className="text-violet-600">on campus?</span>
           </h1>
           <p className="mt-3 text-gray-500 text-lg max-w-xl">
-            Browse, filter, and register for upcoming university events in one place.
+            Browse upcoming university events. Sign in to register and save your spot.
           </p>
         </div>
 
+        {/* Search + filter bar */}
         <div className="flex flex-col sm:flex-row gap-3 mb-8">
           <div className="flex-1 relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 pointer-events-none" />
@@ -245,7 +244,23 @@ export default function EventsBrowseHome() {
             )}
           </div>
 
-          
+          <div className="relative">
+            <select
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
+              className="appearance-none pl-4 pr-10 py-3 text-sm bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-400 focus:border-transparent min-w-[180px] text-gray-700 transition"
+            >
+              <option value="">All categories</option>
+              {categoryOptions.map(([id, name]) => (
+                <option key={id} value={String(id)}>{name}</option>
+              ))}
+            </select>
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+              <svg width="12" height="8" viewBox="0 0 12 8" fill="none">
+                <path d="M1 1l5 5 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+          </div>
 
           {isFiltered && (
             <button
@@ -257,6 +272,7 @@ export default function EventsBrowseHome() {
           )}
         </div>
 
+        {/* Category pills */}
         {!isFiltered && categoryCounts.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-8">
             {categoryCounts.map((cat) => {
@@ -281,6 +297,7 @@ export default function EventsBrowseHome() {
           </div>
         )}
 
+        {/* Results meta */}
         <div className="flex items-center justify-between mb-4">
           <p className="text-sm text-gray-500">
             {loading ? "Loading…" : (
@@ -293,6 +310,7 @@ export default function EventsBrowseHome() {
           {isFiltered && <span className="text-xs text-violet-600 font-medium">Filtered view</span>}
         </div>
 
+        {/* Cards grid */}
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
             {Array.from({ length: 8 }).map((_, i) => (
@@ -317,6 +335,29 @@ export default function EventsBrowseHome() {
             {events.map((event, i) => (
               <EventCard key={event.id} event={event} index={i} />
             ))}
+          </div>
+        )}
+
+        {/* Sign-in CTA footer */}
+        {!loading && events.length > 0 && (
+          <div className="mt-12 text-center bg-indigo-50 border border-indigo-100 rounded-2xl py-8 px-6">
+            <Lock className="w-6 h-6 text-indigo-400 mx-auto mb-2" />
+            <p className="text-sm font-semibold text-indigo-900 mb-1">Ready to join an event?</p>
+            <p className="text-xs text-indigo-600 mb-4">Create a free account to register and track your events.</p>
+            <div className="flex items-center justify-center gap-3">
+              <Link
+                to="/login"
+                className="px-5 py-2.5 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 transition"
+              >
+                Sign in
+              </Link>
+              <Link
+                to="/register"
+                className="px-5 py-2.5 rounded-xl border border-indigo-200 text-indigo-700 text-sm font-medium hover:bg-indigo-100 transition"
+              >
+                Create account
+              </Link>
+            </div>
           </div>
         )}
       </section>

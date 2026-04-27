@@ -98,4 +98,6 @@ public class ADEventController {
     public List<CategoryCountDTO> getCategoryCounts() {
         return ADEventService.getCategoryCounts();
     }
+
+
 }

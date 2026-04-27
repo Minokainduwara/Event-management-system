@@ -25,4 +25,6 @@ public interface ADEventRegistrationRepository extends JpaRepository<ADEventRegi
     List<ADEventRegistration> findByUser_Email(String email);
     long countByUser_Email(String email);
     long countByUser_EmailAndStatus(String email, String status);
+
+    long countByEvent_EventId(int eventId);
 }

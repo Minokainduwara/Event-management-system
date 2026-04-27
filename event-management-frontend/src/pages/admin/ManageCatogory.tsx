@@ -89,7 +89,7 @@ function ManageCatogory() {
                           >
                             Edit
                           </Link>
-                          <button onClick={() => deleteCategory(category.id)} className="px-3 py-1 text-white bg-red-500 rounded hover:bg-red-600">
+                          <button onClick={() => deleteCategory(category.categoryId)} className="px-3 py-1 text-white bg-red-500 rounded hover:bg-red-600">
                             Delete
                           </button>
                         </td>

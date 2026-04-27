@@ -359,7 +359,7 @@ export default function HomePage() {
 
             {/* CTAs — guest-safe, no admin links */}
             <div className="a4" style={{ display:"flex", gap:14, flexWrap:"wrap", justifyContent:"center" }}>
-              <Link to="/browse-events" className="pill" style={{ background:"linear-gradient(135deg,#6366f1,#8b5cf6)", color:"#fff" }}>
+              <Link to="/home-events" className="pill" style={{ background:"linear-gradient(135deg,#6366f1,#8b5cf6)", color:"#fff" }}>
                 Browse Events →
               </Link>
               {!role && (
@@ -409,7 +409,7 @@ export default function HomePage() {
               <p style={{ fontSize:11, fontWeight:700, letterSpacing:"0.1em", color:"#6366f1", marginBottom:8 }}>WHAT'S ON</p>
               <h2 style={{ fontSize:32, fontWeight:800, color:"#0f172a", letterSpacing:"-0.025em", margin:0 }}>Upcoming events</h2>
             </div>
-            <Link to="/browse-events" style={{ color:"#6366f1", fontWeight:700, fontSize:14, textDecoration:"none" }}>View all →</Link>
+            <Link to="/home-events" style={{ color:"#6366f1", fontWeight:700, fontSize:14, textDecoration:"none" }}>View all →</Link>
           </div>
 
           {loading ? (
@@ -439,7 +439,7 @@ export default function HomePage() {
                   </div>
 
                   <div style={{ borderTop:"1px solid #f1f5f9", paddingTop:12, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
-                    <Link to={`/browse-events/${ev.eventId}`} style={{ fontSize:13, fontWeight:700, color:"#6366f1", textDecoration:"none" }}>
+                    <Link to={`/guest-events-details/${ev.eventId}`} style={{ fontSize:13, fontWeight:700, color:"#6366f1", textDecoration:"none" }}>
                       View details →
                     </Link>
                     {/* Only show Register if logged in as student */}
@@ -465,7 +465,7 @@ export default function HomePage() {
             {[
               { title:"I'm a Student",  desc:"Register for events, track your schedule, and stay up to date with campus announcements.", cta:"Student Login", path:"/login", accent:"#6366f1" },
               { title:"I'm Faculty",    desc:"Manage events you're coordinating, view registrations, and post announcements to students.", cta:"Faculty Login",  path:"/login", accent:"#8b5cf6" },
-              { title:"Just Visiting", desc:"No account needed — browse all public events happening on campus freely.", cta:"Browse Events",  path:"/browse-events", accent:"#0ea5e9" },
+              { title:"Just Visiting", desc:"No account needed — browse all public events happening on campus freely.", cta:"Browse Events",  path:"/home-events", accent:"#0ea5e9" },
             ].map(card => (
               <div key={card.title} style={{ background:"#f8fafc", border:"1px solid #e2e8f0", borderRadius:18, padding:"32px 28px", display:"flex", flexDirection:"column", gap:14 }}>
                 <div style={{ width:44, height:44, borderRadius:12, background:`${card.accent}18`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:22 }}>
@@ -497,7 +497,7 @@ export default function HomePage() {
           <p style={{ color:"rgba(255,255,255,.5)", fontSize:17, maxWidth:430, margin:"0 auto 44px" }}>
             No account required to explore events. Sign in when you're ready to participate.
           </p>
-          <Link to="/browse-events" className="pill" style={{ background:"linear-gradient(135deg,#6366f1,#8b5cf6)", color:"#fff", fontSize:15, padding:"15px 38px" }}>
+          <Link to="/home-events" className="pill" style={{ background:"linear-gradient(135deg,#6366f1,#8b5cf6)", color:"#fff", fontSize:15, padding:"15px 38px" }}>
             Browse All Events →
           </Link>
         </div>
@@ -512,7 +512,7 @@ export default function HomePage() {
         {/* Footer only shows public links */}
         <div style={{ display:"flex", gap:24 }}>
           {[
-            { label:"Events", to:"/browse-events" },
+            { label:"Events", to:"/home-events" },
             { label:"Sign In", to:"/login" },
           ].map(l => (
             <Link key={l.to} to={l.to} style={{ color:"rgba(255,255,255,.3)", fontSize:13, textDecoration:"none" }}>{l.label}</Link>
