@@ -244,10 +244,10 @@ function AdminEventRegistration() {
                         }
                         className="block mt-2 text-xs border rounded"
                       >
-                        <option value="pending">Pending</option>
-                        <option value="confirmed">Confirmed</option>
-                        <option value="attended">Attended</option>
-                        <option value="cancelled">Cancelled</option>
+                        <option value="PENDING">Pending</option>
+                        <option value="CONFIRMED">Confirmed</option>
+                        <option value="ATTENDED">Attended</option>
+                        <option value="CANCELLED">Cancelled</option>
                       </select>
                     </td>
 

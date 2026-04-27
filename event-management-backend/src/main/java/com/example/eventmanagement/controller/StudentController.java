@@ -54,11 +54,11 @@ public class StudentController {
     public List<ADEventRegistration> getStudentActivity(@PathVariable int userId) {
         return service.getStudentActivity(userId);
     }
-    @GetMapping("/student/events/search")
+    @GetMapping("/events/search")
     public List<ADEvent> searchEvents(@RequestParam String keyword) {
         return service.searchEvents(keyword);
     }
-    @GetMapping("/student/events/filter")
+    @GetMapping("/events/filter")
     public List<ADEvent> filterEvents(@RequestParam int categoryId) {
         return service.filterEventsByCategory(categoryId);
     }

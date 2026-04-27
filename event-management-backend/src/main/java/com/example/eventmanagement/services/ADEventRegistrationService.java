@@ -10,13 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.stream.Collectors;
 
 @Service
 public class ADEventRegistrationService {
+
     @Autowired
     private ADEventRegistrationRepository ADEventRegistrationRepository;
 
@@ -26,55 +27,46 @@ public class ADEventRegistrationService {
     @Autowired
     private ADEventRepository ADEventRepository;
 
-    public List<ADEventRegistration> getAllRegistrations(){
-
-        return  ADEventRegistrationRepository.findAll();
+    public List<ADEventRegistration> getAllRegistrations() {
+        return ADEventRegistrationRepository.findAll();
     }
 
-public ADRegistrationSummary getRegistrationSummary()
-{
+    public ADRegistrationSummary getRegistrationSummary() {
+        ADRegistrationSummary summary = new ADRegistrationSummary();
+        summary.setTotal(ADEventRegistrationRepository.count());
+        summary.setConfirmed(ADEventRegistrationRepository.countByStatus("confirmed"));
+        summary.setAttended(ADEventRegistrationRepository.countByStatus("attended"));
+        summary.setPending(ADEventRegistrationRepository.countByStatus("pending"));
+        summary.setCancelled(ADEventRegistrationRepository.countByStatus("cancelled"));
+        return summary;
+    }
 
-    ADRegistrationSummary ADRegistrationSummary =new ADRegistrationSummary();
-    ADRegistrationSummary.setTotal(ADEventRegistrationRepository.count());
-    ADRegistrationSummary.setConfirmed(ADEventRegistrationRepository.countByStatus("confirmed"));
-    ADRegistrationSummary.setAttended(ADEventRegistrationRepository.countByStatus("attended"));
-    ADRegistrationSummary.setPending(ADEventRegistrationRepository.countByStatus("pending"));
-    ADRegistrationSummary.setCancelled(ADEventRegistrationRepository.countByStatus("cancelled"));
-    return ADRegistrationSummary;
-}
-public List<ADEventRegistration> searchRegisteredStudent(String keyword)
-{
-    return ADEventRegistrationRepository.findByUser_NameContainingIgnoreCaseOrUser_UniversityIdContainingIgnoreCase(keyword,keyword);
+    public List<ADEventRegistration> searchRegisteredStudent(String keyword) {
+        return ADEventRegistrationRepository
+                .findByUser_NameContainingIgnoreCaseOrUser_UniversityIdContainingIgnoreCase(keyword, keyword);
+    }
 
-
-
-
-}
     public List<ADEventRegistration> searchRegisteredStudents(String status) {
-
-        return  ADEventRegistrationRepository.findByStatus( status);
-
-
+        return ADEventRegistrationRepository.findByStatus(status);
     }
-
 
     public ADEventRegistration updateStatus(int id, String status) {
-        ADEventRegistration ADEventRegistration = ADEventRegistrationRepository.findById(id).orElse(null);
-        if (ADEventRegistration != null)
-        {
-            ADEventRegistration.setStatus(status);
-            return ADEventRegistrationRepository.save(ADEventRegistration);
+        ADEventRegistration reg = ADEventRegistrationRepository.findById(id).orElse(null);
+        if (reg != null) {
+            reg.setStatus(status);
+            return ADEventRegistrationRepository.save(reg);
         }
-        return null ;
+        return null;
     }
 
     public void deleteRegistration(int id) {
         ADEventRegistrationRepository.deleteById(id);
     }
+
     public int getConfirmedCount(int eventId) {
-        return ADEventRegistrationRepository
-                .countByEvent_EventIdAndStatus(eventId, "confirmed");
+        return ADEventRegistrationRepository.countByEvent_EventIdAndStatus(eventId, "confirmed");
     }
+
     public List<ADEventRegistration> getRegistrationsByEventId(int eventId) {
         return ADEventRegistrationRepository.findByEvent_EventId(eventId);
     }
@@ -89,12 +81,12 @@ public List<ADEventRegistration> searchRegisteredStudent(String keyword)
         }
 
         if (keyword != null && !keyword.isEmpty()) {
-            String lowerKeyword = keyword.toLowerCase();
+            String lower = keyword.toLowerCase();
             registrations = registrations.stream()
-                    .filter(reg -> 
-                        (reg.getEventName() != null && reg.getEventName().toLowerCase().contains(lowerKeyword)) ||
-                        (reg.getLocation() != null && reg.getLocation().toLowerCase().contains(lowerKeyword)) ||
-                        (reg.getCategory() != null && reg.getCategory().toLowerCase().contains(lowerKeyword))
+                    .filter(reg ->
+                            (reg.getEventName() != null && reg.getEventName().toLowerCase().contains(lower)) ||
+                                    (reg.getLocation() != null && reg.getLocation().toLowerCase().contains(lower)) ||
+                                    (reg.getCategory() != null && reg.getCategory().toLowerCase().contains(lower))
                     )
                     .collect(Collectors.toList());
         }
@@ -104,61 +96,53 @@ public List<ADEventRegistration> searchRegisteredStudent(String keyword)
 
     public Map<String, Long> getMyRegistrationStats(String email) {
         Map<String, Long> stats = new HashMap<>();
-        
-        long totalRegistrations = ADEventRegistrationRepository.countByUser_Email(email);
-        long confirmed = ADEventRegistrationRepository.countByUser_EmailAndStatus(email, "confirmed");
-        long pending = ADEventRegistrationRepository.countByUser_EmailAndStatus(email, "pending");
-        long attended = ADEventRegistrationRepository.countByUser_EmailAndStatus(email, "attended");
-        long cancelled = ADEventRegistrationRepository.countByUser_EmailAndStatus(email, "cancelled");
-
-        stats.put("totalRegistrations", totalRegistrations);
-        stats.put("confirmed", confirmed);
-        stats.put("pending", pending);
-        stats.put("attended", attended);
-        stats.put("cancelled", cancelled);
-
+        stats.put("totalRegistrations", ADEventRegistrationRepository.countByUser_Email(email));
+        stats.put("confirmed",  ADEventRegistrationRepository.countByUser_EmailAndStatus(email, "confirmed"));
+        stats.put("pending",    ADEventRegistrationRepository.countByUser_EmailAndStatus(email, "pending"));
+        stats.put("attended",   ADEventRegistrationRepository.countByUser_EmailAndStatus(email, "attended"));
+        stats.put("cancelled",  ADEventRegistrationRepository.countByUser_EmailAndStatus(email, "cancelled"));
         return stats;
     }
 
     public String registerStudent(int userId, int eventId) {
 
-        // ✅ 1. Prevent duplicate registration
+        // 1. Prevent duplicate registration
         if (ADEventRegistrationRepository.existsByUser_UserIdAndEvent_EventId(userId, eventId)) {
             return "You are already registered for this event!";
         }
 
-        // ✅ 2. Get user
+        // 2. Get user
         ADUser user = ADUserRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // ✅ 3. Check role
+        // 3. Check role
         if (user.getRole() != Role.STUDENT) {
             throw new RuntimeException("Only students can register!");
         }
 
-        // ✅ 4. Get event
+        // 4. Get event
         ADEvent event = ADEventRepository.findById(eventId)
                 .orElseThrow(() -> new RuntimeException("Event not found"));
 
-        // ✅ 5. Check event status
+        // 5. Check event status
         if (event.getStatus() != EventStatus.UPCOMING) {
             throw new RuntimeException("Event is not open for registration");
         }
 
-        // ✅ 6. Check capacity
-        int approvedCount =
-                ADEventRegistrationRepository.countByEvent_EventIdAndStatus(eventId, "APPROVED");
+        // 6. Check capacity (using PENDING count, not APPROVED)
+        int pendingCount = ADEventRegistrationRepository
+                .countByEvent_EventIdAndStatus(eventId, "PENDING");
 
         if (event.getMaxParticipants() != null &&
-                approvedCount >= event.getMaxParticipants()) {
+                pendingCount >= event.getMaxParticipants()) {
             throw new RuntimeException("Event is full!");
         }
 
-        // ✅ 7. Create registration
+        // 7. Save registration
         ADEventRegistration reg = new ADEventRegistration();
         reg.setUser(user);
         reg.setEvent(event);
-        reg.setStatus("PENDING"); // or APPROVED if auto approve
+        reg.setStatus("PENDING");
         reg.setRegistration_date(LocalDateTime.now());
 
         ADEventRegistrationRepository.save(reg);

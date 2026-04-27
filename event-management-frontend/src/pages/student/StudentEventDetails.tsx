@@ -49,7 +49,7 @@ function EventDetails() {
 
     if (window.confirm(`Confirm registration for "${event.eventTitle || event.name}"?`)) {
       try {
-        const res = await authFetch(`http://localhost:8080/eventRegistrations/register`, {
+        const res = await authFetch(`http://localhost:8080/eventRegistrations/register?userId=8&eventId=${id}`, {
           method: "POST",
           body: JSON.stringify({ eventId: Number(id) })
         });
