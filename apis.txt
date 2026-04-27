@@ -1,0 +1,124 @@
+1. Announcement APIs (/announcement)
+POST /announcement/add → Add announcement
+GET /announcement/all → Get all announcements
+PUT /announcement/update/{id} → Update announcement
+DELETE /announcement/delete/{id} → Delete announcement
+GET /announcement/count → Get announcement count
+📂 2. Category APIs (/category)
+POST /category/addCategory → Create category
+GET /category/getCategories → Get all categories
+GET /category/getCategory/{id} → Get category by ID
+PUT /category/updateCategory/{id} → Update category
+DELETE /category/deleteCategory/{id} → Delete category
+🎉 3. Event APIs (/events)
+POST /events/saveEvent → Save event
+GET /events/allEvents → Get all events
+GET /events/getEvent/{id} → Get event by ID
+DELETE /events/deleteEvent/{id} → Delete event
+PUT /events/updateEvent/{id} → Update event
+GET /events/searchEvent?keyword= → Search events
+GET /events/filter?categoryId= → Filter events by category
+PUT /events/updateStatus/{id}?status= → Update event status
+PUT /events/events/{id}/status?status= → Update event status (duplicate endpoint ⚠️)
+POST /events/uploadImage → Upload event image
+GET /events/category-counts → Get event counts per category
+📝 4. Event Registration APIs (/eventRegistrations)
+GET /eventRegistrations/registration → Get all registrations
+GET /eventRegistrations/summary → Registration summary
+GET /eventRegistrations/search?keyword= → Search registrations
+GET /eventRegistrations/filter?status= → Filter registrations by status
+PUT /eventRegistrations/{id}/status?status= → Update registration status
+DELETE /eventRegistrations/{id} → Delete registration
+GET /eventRegistrations/count/{eventId} → Count confirmed registrations
+GET /eventRegistrations/event/{eventId} → Get registrations by event
+GET /eventRegistrations/my → Logged-in user registrations
+GET /eventRegistrations/my/stats → Logged-in user stats
+👤 5. User APIs (/users)
+POST /users/saveUser → Save user
+GET /users/getAllUsers → Get all users
+GET /users/getUser/{id} → Get user by ID
+PUT /users/updateUser/{id} → Update user
+DELETE /users/deleteUser/{id} → Delete user
+👨‍🎓 Student management:
+GET /users/getAllStudents → Get all students
+GET /users/students/department/{dept} → Filter students by department
+GET /users/students/search?keyword= → Search students
+GET /users/students/count → Student count
+👤 Profile APIs (IMPORTANT — logged user)
+GET /users/profile → Get logged-in user profile
+PUT /users/profile → Update logged-in profile
+PUT /users/change-password → Change password
+🎓 6. Student APIs (/student)
+GET /student/events → Get all events for students
+GET /student/count/{eventId} → Event registration count
+GET /student/myEvents/{userId} → Student registered events
+GET /student/dashboard → Logged-in student dashboard
+GET /student/activity/{userId} → Student activity
+GET /student/student/events/search?keyword= → Search student events
+GET /student/student/events/filter?categoryId= → Filter student events
+
+
+
+
+
+
+create database event_db;
+
+CREATE TABLE user (
+    user_id INT NOT NULL AUTO_INCREMENT,
+    created_at DATETIME(6),
+    department VARCHAR(255),
+    email VARCHAR(255) UNIQUE,
+    name VARCHAR(255),
+    password VARCHAR(255),
+    phone VARCHAR(255),
+    university_id VARCHAR(255) NOT NULL UNIQUE,
+    year VARCHAR(255),
+    role ENUM('ADMIN','STUDENT','FACULTY'),
+    PRIMARY KEY (user_id)
+);
+CREATE TABLE event_category (
+    category_id INT NOT NULL AUTO_INCREMENT,
+    created_at DATETIME(6),
+    updated_at DATETIME(6),
+    category_name VARCHAR(255) NOT NULL UNIQUE,
+    description VARCHAR(255),
+    PRIMARY KEY (category_id)
+);
+CREATE TABLE event (
+    event_id INT NOT NULL AUTO_INCREMENT,
+    category_id INT,
+    created_by INT,
+    event_date DATETIME(6),
+    event_time TIME,
+    max_participants INT,
+    description VARCHAR(255),
+    event_title VARCHAR(255),
+    location VARCHAR(255),
+    status VARCHAR(255),
+    image VARCHAR(255),
+    PRIMARY KEY (event_id),
+    FOREIGN KEY (category_id) REFERENCES event_category(category_id),
+    FOREIGN KEY (created_by) REFERENCES user(user_id)
+);
+
+CREATE TABLE event_registration (
+    registration_id INT NOT NULL AUTO_INCREMENT,
+    event_id INT,
+    user_id INT,
+    registration_date DATETIME(6),
+    status VARCHAR(255),
+    PRIMARY KEY (registration_id),
+    FOREIGN KEY (event_id) REFERENCES event(event_id),
+    FOREIGN KEY (user_id) REFERENCES user(user_id)
+);
+
+CREATE TABLE announcement (
+    announcement_id INT NOT NULL AUTO_INCREMENT,
+    created_at DATETIME(6),
+    message TEXT NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    created_by INT NOT NULL,
+    PRIMARY KEY (announcement_id),
+    FOREIGN KEY (created_by) REFERENCES user(user_id)
+);

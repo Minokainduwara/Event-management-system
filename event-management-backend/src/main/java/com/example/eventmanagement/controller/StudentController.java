@@ -1,117 +1,67 @@
 package com.example.eventmanagement.controller;
 
+import com.example.eventmanagement.dto.StudentDashboardDTO;
+import com.example.eventmanagement.model.ADEvent;
+import com.example.eventmanagement.model.ADEventRegistration;
+import com.example.eventmanagement.services.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import com.example.eventmanagement.dto.*;
-import com.example.eventmanagement.security.JwtUserDetails;
-import com.example.eventmanagement.service.StudentService;
+import org.springframework.security.core.Authentication;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/students")
-@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
+@RequestMapping("/student")
 public class StudentController {
     @Autowired
-    private StudentService studentService;
+    private StudentService service;
 
-    private Long getUserId(Authentication authentication) {
-        JwtUserDetails userDetails = (JwtUserDetails) authentication.getDetails();
-        return userDetails.getUserId();
+
+    @GetMapping("/events")
+    public List<ADEvent> getEvents() {
+        return service.getEvents();
     }
 
-    @GetMapping("/profile")
-    public ResponseEntity<ApiResponse<StudentProfileDTO>> getProfile(Authentication authentication) {
-        try {
-            Long userId = getUserId(authentication);
-            StudentProfileDTO profile = studentService.getStudentProfile(userId);
-            return ResponseEntity.ok(ApiResponse.ok(profile));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                    .body(ApiResponse.error(e.getMessage()));
+
+    @GetMapping("/count/{eventId}")
+    public long getCount(@PathVariable int eventId) {
+        return service.getEventCount(eventId);
+    }
+
+
+    @GetMapping("/myEvents/{userId}")
+    public List<ADEventRegistration> myEvents(@PathVariable int userId) {
+        return service.getMyEvents(userId);
+    }
+
+
+    @GetMapping("/dashboard")
+    public ResponseEntity<?> dashboard(Authentication auth) {
+
+        if (auth == null) {
+            return ResponseEntity.status(401).body("Unauthorized - No Authentication");
         }
+
+        String email = auth.getName();
+        StudentDashboardDTO data = service.getDashboard(email);
+
+        return ResponseEntity.ok(data);
+    }
+    @GetMapping("/activity/{userId}")
+    public List<ADEventRegistration> getStudentActivity(@PathVariable int userId) {
+        return service.getStudentActivity(userId);
+    }
+    @GetMapping("/events/search")
+    public List<ADEvent> searchEvents(@RequestParam String keyword) {
+        return service.searchEvents(keyword);
+    }
+    @GetMapping("/events/filter")
+    public List<ADEvent> filterEvents(@RequestParam int categoryId) {
+        return service.filterEventsByCategory(categoryId);
     }
 
-    @PutMapping("/profile")
-    public ResponseEntity<ApiResponse<Void>> updateProfile(
-            Authentication authentication,
-            @RequestBody StudentProfileDTO profileDTO) {
-        try {
-            Long userId = getUserId(authentication);
-            studentService.updateStudentProfile(userId, profileDTO);
-            return ResponseEntity.ok(ApiResponse.ok("Profile updated successfully", null));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                    .body(ApiResponse.error(e.getMessage()));
-        }
-    }
 
-    @GetMapping("/dashboard/stats")
-    public ResponseEntity<ApiResponse<DashboardStatsDTO>> getDashboardStats(Authentication authentication) {
-        try {
-            Long userId = getUserId(authentication);
-            DashboardStatsDTO stats = studentService.getDashboardStats(userId);
-            return ResponseEntity.ok(ApiResponse.ok(stats));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                    .body(ApiResponse.error(e.getMessage()));
-        }
-    }
-
-    @GetMapping("/registrations")
-    public ResponseEntity<ApiResponse<List<RegistrationDTO>>> getRegistrations(Authentication authentication) {
-        try {
-            Long userId = getUserId(authentication);
-            List<RegistrationDTO> registrations = studentService.getStudentRegistrations(userId);
-            return ResponseEntity.ok(ApiResponse.ok(registrations));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                    .body(ApiResponse.error(e.getMessage()));
-        }
-    }
-
-    @GetMapping("/registrations/{eventId}")
-    public ResponseEntity<ApiResponse<RegistrationDTO>> getRegistration(
-            Authentication authentication,
-            @PathVariable Long eventId) {
-        try {
-            Long userId = getUserId(authentication);
-            RegistrationDTO registration = studentService.getRegistrationForEvent(userId, eventId);
-            return ResponseEntity.ok(ApiResponse.ok(registration));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                    .body(ApiResponse.error(e.getMessage()));
-        }
-    }
-
-    @PostMapping("/register/{eventId}")
-    public ResponseEntity<ApiResponse<Void>> registerForEvent(
-            Authentication authentication,
-            @PathVariable Long eventId) {
-        try {
-            Long userId = getUserId(authentication);
-            studentService.registerForEvent(userId, eventId);
-            return ResponseEntity.ok(ApiResponse.ok("Event registration successful", null));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                    .body(ApiResponse.error(e.getMessage()));
-        }
-    }
-
-    @DeleteMapping("/registrations/{eventId}")
-    public ResponseEntity<ApiResponse<Void>> cancelRegistration(
-            Authentication authentication,
-            @PathVariable Long eventId) {
-        try {
-            Long userId = getUserId(authentication);
-            studentService.cancelRegistration(userId, eventId);
-            return ResponseEntity.ok(ApiResponse.ok("Registration cancelled successfully", null));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                    .body(ApiResponse.error(e.getMessage()));
-        }
-    }
 }
